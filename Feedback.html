@@ -1,0 +1,75 @@
+<? var locale = getUserLocale(); ?>
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+<style>
+  textarea { width: 100%; height: 230px; }
+  #thankyou,#tryagain { display:none; text-align: justify; margin-top:100px; }
+  .closeme { margin-top: 30px; }
+  .apps-share-sprite {
+    background-image: url(//ssl.gstatic.com/docs/documents/share/images/sprite-15.svg);
+  }
+  .scb-container, .scb-icon {
+    display: inline-block;
+  }
+  .scb-button-icon {
+    margin: -3px 2px 0px -5px;
+    vertical-align: middle!important;
+  }
+  
+  .scb-public-icon-white, .scb-public-icon-black, .scb-unlisted-icon-white, .scb-unlisted-icon-black, .scb-domain-public-icon-white, .scb-domain-public-icon-black, .scb-domain-unlisted-icon-white, .scb-domain-unlisted-icon-black, .scb-privately-shared-icon-white, .scb-privately-shared-icon-black, .scb-private-icon-white, .scb-private-icon-black, .scb-mail-icon {
+    width: 21px;
+    height: 21px;
+    background-repeat: no-repeat;
+    vertical-align: bottom;
+  }
+  
+  .scb-mail-icon { background-position: -0px -124px; }
+
+</style>
+</head>
+<body>
+<div id="initial">
+  <div class="form-group">
+    <label><b><?=__('Scrivi le tue osservazioni su BibleGet I/O',locale)?></b><br />
+    <textarea id="feedback-msg"></textarea>
+    </label>
+  </div>
+  <div style="text-align:right;"><button id="sendmessage" class="action goog-inline-block"><span class="scb-icon apps-share-sprite scb-button-icon scb-mail-icon">&nbsp;</span><?=__('Invia Messaggio',locale)?></button></div>
+</div>
+
+<div id="thankyou">
+  <span><?=__('Il tuo messaggio è stato inviato con successo. Grazie per averci contattato!',locale)?></span>
+  <div style="text-align:center;"><button class="gray closeme"><?=__('CHIUDI',locale)?></button></div>
+</div>
+
+<div id="tryagain">
+  <span><?=__("L'invio del messaggio non è andato a buon fine... Ritenta l'invio.",locale)?></span>
+  <div style="text-align:center;"><button class="gray closeme"><?=__('CHIUDI',locale)?></button></div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+
+<script>
+  $(document).ready(function(){
+    $('#sendmessage').click(function(){
+      var msg = $('#feedback-msg').val();
+      google.script.run.withSuccessHandler(thankyou).withFailureHandler(tryagain).sendMail(msg);
+    });
+    
+    $('.closeme').click(function(){
+      google.script.host.close();
+    });
+  });
+  
+  var thankyou = function(){
+    $('#initial').fadeOut("slow",function(){ $('#thankyou').fadeIn("slow"); });    
+  }
+  
+  var tryagain = function(){
+    $('#initial').fadeOut("slow",function(){ $('#tryagain').fadeIn("slow"); });
+  }
+</script>
+</body>

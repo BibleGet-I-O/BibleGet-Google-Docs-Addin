@@ -1,0 +1,903 @@
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/smoothness/jquery-ui.css" />
+
+<style>
+/* CONTAINERS */
+
+body {
+  color: #222;
+  font: 13px/18px arial, sans-serif;
+}
+
+.branding-below {
+  /*bottom: 106px; */
+  bottom: 62px;
+  top: 0;
+}
+
+.sidebar {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: 0px 12px 12px 12px;
+  position: absolute;
+  width: 100%;
+}
+
+.block {
+  display: block;
+}
+
+.block + .block {
+  margin-top: 16px;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.inline + .inline {
+  margin-left: 12px;
+}
+
+.top,
+.top-left {
+  top: 0;
+  position: absolute;
+}
+
+.top-right {
+  top: 0;
+  position: absolute;
+  right: 0;
+}
+
+.bottom,
+.bottom-left,
+.button-bar {
+  bottom: 0;
+  position: absolute;
+}
+
+.bottom-right,
+.button-bar-right {
+  bottom: 0;
+  position: absolute;
+  right: 0;
+}
+
+/* TEXT */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #000;
+  font: 16px/20px arial, sans-serif normal;
+}
+
+a {
+  color: #15c;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.current {
+  color: #dd4b39;
+  font-weight: bold;
+}
+
+.error {
+  color: #dd4b39;
+}
+
+.gray,
+.grey {
+  color: #777;
+}
+
+.secondary,
+.small {
+  color: #777;
+  font: 11px/16px arial, sans-serif;
+}
+
+/* TABLES */
+
+table {
+  border-spacing: 0;
+}
+
+th {
+  border-bottom: 1px solid #acacac;
+  font-weight: normal;
+  padding: 2px 0 11px 0;
+  text-align: left;
+}
+
+td {
+  border-bottom: 1px solid #ebebeb;
+  padding: 11px 0;
+}
+
+tr:last-child > td, tr:last-child > th {
+  border-bottom: 0;
+}
+
+table.layout th,
+table.layout td {
+  border: 0;
+  padding: 0;
+  vertical-align: top;
+}
+
+/* BUTTONS -> only targeted buttons, not all */
+
+.button.gapp-addon,
+button.gapp-addon,
+input[type="button"].gapp-addon,
+input[type="image"].gapp-addon,
+input[type="reset"].gapp-addon,
+input[type="submit"].gapp-addon {
+  background: -moz-linear-gradient(top, #f5f5f5, #f1f1f1);
+  background: -ms-linear-gradient(top, #f5f5f5, #f1f1f1);
+  background: -o-linear-gradient(top, #f5f5f5, #f1f1f1);
+  background: -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
+  background: linear-gradient(top, #f5f5f5, #f1f1f1);
+  border: 1px solid #dcdcdc;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  color: #333;
+  cursor: default;
+  font-family: arial, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  height: 29px;
+  line-height: 27px;
+  margin: 0;
+  min-width: 72px;
+  outline: 0;
+  padding: 0 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.button.gapp-addon {
+  box-sizing: border-box;
+  display: inline-block;
+  padding: 0;
+}
+
+.button.action.gapp-addon,
+.button.blue.gapp-addon,
+button.action.gapp-addon,
+button.blue.gapp-addon,
+input[type="button"].action.gapp-addon,
+input[type="button"].blue.gapp-addon,
+input[type="submit"].action.gapp-addon,
+input[type="submit"].blue.gapp-addon {
+  background: -moz-linear-gradient(top, #4d90fe, #4787ed);
+  background: -ms-linear-gradient(top, #4d90fe, #4787ed);
+  background: -o-linear-gradient(top, #4d90fe, #4787ed);
+  background: -webkit-linear-gradient(top, #4d90fe, #4787ed);
+  background: linear-gradient(top, #4d90fe, #4787ed);
+  border: 1px solid #3079ed;
+  color: #fff;
+}
+
+.button.create.gapp-addon,
+.button.red.gapp-addon,
+button.create.gapp-addon,
+button.red.gapp-addon,
+input[type="button"].create.gapp-addon,
+input[type="button"].red.gapp-addon,
+input[type="submit"].create.gapp-addon,
+input[type="submit"].red.gapp-addon {
+  background: -moz-linear-gradient(top, #dd4b39, #d14836);
+  background: -ms-linear-gradient(top, #dd4b39, #d14836);
+  background: -o-linear-gradient(top, #dd4b39, #d14836);
+  background: -webkit-linear-gradient(top, #dd4b39, #d14836);
+  background: linear-gradient(top, #dd4b39, #d14836);
+  border: 1px solid transparent;
+  color: #fff;
+  text-shadow: 0 1px rgba(0, 0, 0, .1);
+  text-transform: uppercase;
+}
+
+.button.green.gapp-addon,
+.button.share.gapp-addon,
+button.green.gapp-addon,
+button.share.gapp-addon,
+input[type="button"].green.gapp-addon,
+input[type="button"].share.gapp-addon,
+input[type="submit"].green.gapp-addon,
+input[type="submit"].share.gapp-addon {
+  background: -moz-linear-gradient(top, #3d9400, #398a00);
+  background: -ms-linear-gradient(top, #3d9400, #398a00);
+  background: -o-linear-gradient(top, #3d9400, #398a00);
+  background: -webkit-linear-gradient(top, #3d9400, #398a00);
+  background: linear-gradient(top, #3d9400, #398a00);
+  border: 1px solid #29691d;
+  color: #fff;
+  text-shadow: 0 1px rgba(0, 0, 0, .1);
+}
+
+.button.gapp-addon:hover,
+button.gapp-addon:hover,
+input[type="button"].gapp-addon:hover,
+input[type="image"].gapp-addon:hover,
+input[type="reset"].gapp-addon:hover,
+input[type="submit"].gapp-addon:hover {
+  background: -moz-linear-gradient(top, #f8f8f8, #f1f1f1);
+  background: -ms-linear-gradient(top, #f8f8f8, #f1f1f1);
+  background: -o-linear-gradient(top, #f8f8f8, #f1f1f1);
+  background: -webkit-linear-gradient(top, #f8f8f8, #f1f1f1);
+  background: linear-gradient(top, #f8f8f8, #f1f1f1);
+  border: 1px solid #c6c6c6;
+  color: #111;
+  text-decoration: none;
+}
+
+.button.action.gapp-addon:hover,
+.button.blue.gapp-addon:hover,
+button.action.gapp-addon:hover,
+button.blue.gapp-addon:hover,
+input[type="button"].action.gapp-addon:hover,
+input[type="button"].blue.gapp-addon:hover,
+input[type="submit"].action.gapp-addon:hover,
+input[type="submit"].blue.gapp-addon:hover {
+  background: -moz-linear-gradient(top, #4d90fe, #357ae8);
+  background: -ms-linear-gradient(top, #4d90fe, #357ae8);
+  background: -o-linear-gradient(top, #4d90fe, #357ae8);
+  background: -webkit-linear-gradient(top, #4d90fe, #357ae8);
+  background: linear-gradient(top, #4d90fe, #357ae8);
+  border: 1px solid #2f5bb7;
+  color: #fff;
+}
+
+.button.create.gapp-addon:hover,
+.button.red.gapp-addon:hover,
+button.create.gapp-addon:hover,
+button.red.gapp-addon:hover,
+input[type="button"].create.gapp-addon:hover,
+input[type="button"].red.gapp-addon:hover,
+input[type="submit"].create.gapp-addon:hover,
+input[type="submit"].red.gapp-addon:hover {
+  background: -webkit-linear-gradient(top, #dd4b39, #c53727);
+  background: -moz-linear-gradient(top, #dd4b39, #c53727);
+  background: -ms-linear-gradient(top, #dd4b39, #c53727);
+  background: -o-linear-gradient(top, #dd4b39, #c53727);
+  background: linear-gradient(top, #dd4b39, #c53727);
+  border: 1px solid #b0281a;
+  border-bottom: 1px solid #af301f;
+  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+  color: #fff;
+}
+
+.button.green.gapp-addon:hover,
+.button.share.gapp-addon:hover,
+button.green.gapp-addon:hover,
+button.share.gapp-addon:hover,
+input[type="button"].green.gapp-addon:hover,
+input[type="button"].share.gapp-addon:hover,
+input[type="button"].green.gapp-addon:hover,
+input[type="submit"].share.gapp-addon:hover {
+  background: -moz-linear-gradient(top, #3d9400, #368200);
+  background: -ms-linear-gradient(top, #3d9400, #368200);
+  background: -o-linear-gradient(top, #3d9400, #368200);
+  background: -webkit-linear-gradient(top, #3d9400, #368200);
+  background: linear-gradient(top, #3d9400, #368200);
+  border: 1px solid #2d6200;
+  color: #fff;
+  text-shadow: 0 1px rgba(0, 0, 0, .3);
+}
+
+.button.gapp-addon:focus,
+button.gapp-addon:focus,
+input[type="button"].gapp-addon:focus,
+input[type="image"].gapp-addon:focus,
+input[type="reset"].gapp-addon:focus,
+input[type="submit"].gapp-addon:focus {
+  -moz-box-shadow: inset 0 0 0 1px #fff;
+  -webkit-box-shadow: inset 0 0 0 1px #fff;
+  box-shadow: inset 0 0 0 1px #fff;
+}
+
+.button.gapp-addon:active,
+button.gapp-addon:active,
+input[type="button"].gapp-addon:active,
+input[type="submit"].gapp-addon:active {
+  background: -moz-linear-gradient(top, #f8f8f8, #f1f1f1);
+  background: -ms-linear-gradient(top, #f8f8f8, #f1f1f1);
+  background: -o-linear-gradient(top, #f8f8f8, #f1f1f1);
+  background: -webkit-linear-gradient(top, #f8f8f8, #f1f1f1);
+  background: linear-gradient(top, #f8f8f8, #f1f1f1);
+  border: 1px solid #ccc;
+  -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+  color: #111;
+}
+
+.button.action.gapp-addon:active,
+.button.blue.gapp-addon:active,
+button.action.gapp-addon:active,
+button.blue.gapp-addon:active,
+input[type="button"].action.gapp-addon:active,
+input[type="button"].blue.gapp-addon:active,
+input[type="submit"].action.gapp-addon:active,
+input[type="submit"].blue.gapp-addon:active {
+  background: #357ae8;
+  border: 1px solid #2f5bb7;
+  -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
+  color: #fff;
+}
+
+.button.create.gapp-addon:active,
+.button.red.gapp-addon:active,
+button.create.gapp-addon:active,
+button.red.gapp-addon:active,
+input[type="button"].create.gapp-addon:active,
+input[type="button"].red.gapp-addon:active,
+input[type="submit"].create.gapp-addon:active,
+input[type="submit"].red.gapp-addon:active {
+  background: -moz-linear-gradient(top, #dd4b39, #b0281a);
+  background: -ms-linear-gradient(top, #dd4b39, #b0281a);
+  background: -o-linear-gradient(top, #dd4b39, #b0281a);
+  background: -webkit-linear-gradient(top, #dd4b39, #b0281a);
+  background: linear-gradient(top, #dd4b39, #b0281a);
+  border: 1px solid #992a1b;
+  -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
+  color: #fff;
+}
+
+.button.green.gapp-addon:active,
+.button.share.gapp-addon:active,
+button.green.gapp-addon:active,
+button.share.gapp-addon:active,
+input[type="button"].green.gapp-addon:active,
+input[type="button"].share.gapp-addon:active,
+input[type="submit"].green.gapp-addon:active,
+input[type="submit"].share.gapp-addon:active {
+  background: #368200;
+  border: 1px solid #2d6200;
+  -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
+  color: #fff;
+}
+
+.button.disabled.gapp-addon,
+button:disabled.gapp-addon,
+input[type="button"].gapp-addon:disabled,
+input[type="image"].gapp-addon:disabled,
+input[type="reset"].gapp-addon:disabled,
+input[type="submit"].gapp-addon:disabled {
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  color: #333;
+  opacity: .5;
+}
+
+.button.action.disabled.gapp-addon,
+.button.blue.disabled.gapp-addon,
+button.action:disabled.gapp-addon,
+button.blue:disabled.gapp-addon,
+input[type="button"].action.gapp-addon:disabled,
+input[type="button"].blue.gapp-addon:disabled,
+input[type="submit"].action.gapp-addon:disabled,
+input[type="submit"].blue.gapp-addon:disabled {
+  background: -moz-linear-gradient(top, #4d90fe, #4787ed);
+  background: -ms-linear-gradient(top, #4d90fe, #4787ed);
+  background: -o-linear-gradient(top, #4d90fe, #4787ed);
+  background: -webkit-linear-gradient(top, #4d90fe, #4787ed);
+  background: linear-gradient(top, #4d90fe, #4787ed);
+  border: 1px solid #3079ed;
+  color: #fff;
+}
+
+.button.create.disabled.gapp-addon,
+.button.red.disabled.gapp-addon,
+button.create.gapp-addon:disabled,
+button.red.gapp-addon:disabled,
+input[type="button"].create.gapp-addon:disabled,
+input[type="button"].red.gapp-addon:disabled,
+input[type="submit"].create.gapp-addon:disabled,
+input[type="submit"].red.gapp-addon:disabled {
+  background: -moz-linear-gradient(top, #dd4b39, #d14836);
+  background: -ms-linear-gradient(top, #dd4b39, #d14836);
+  background: -o-linear-gradient(top, #dd4b39, #d14836);
+  background: -webkit-linear-gradient(top, #dd4b39, #d14836);
+  background: linear-gradient(top, #dd4b39, #d14836);
+  border: 1px solid transparent;
+  color: #fff;
+}
+
+.button.green.disabled.gapp-addon,
+.button.share.disabled.gapp-addon,
+button.green:disabled.gapp-addon,
+button.share:disabled.gapp-addon,
+input[type="button"].green.gapp-addon:disabled,
+input[type="button"].share.gapp-addon:disabled,
+input[type="submit"].green.gapp-addon:disabled,
+input[type="submit"].share.gapp-addon:disabled {
+  background: -moz-linear-gradient(top, #3d9400, #398a00);
+  background: -ms-linear-gradient(top, #3d9400, #398a00);
+  background: -o-linear-gradient(top, #3d9400, #398a00);
+  background: -webkit-linear-gradient(top, #3d9400, #398a00);
+  background: linear-gradient(top, #3d9400, #398a00);
+  border: 1px solid #29691d;
+  color: #fff;
+  text-shadow: 0 1px rgba(0, 0, 0, .1);
+}
+
+.button.gapp-addon + .button.gapp-addon,
+button.gapp-addon + button.gapp-addon,
+input.gapp-addon + input.gapp-addon {
+  margin-left: 12px;
+}
+
+/* CHECKBOXES */
+
+input[type="checkbox"].gapp-addon {
+  -webkit-appearance: none;
+  background: #fff;
+  border: 1px solid #c6c6c6;
+  border-image: -ms-linear-gradient(top, #fff, #fff);
+  -webkit-border-radius: 1px;
+  border-radius: 1px;
+  height: 13px;
+  left: 1px;
+  margin: 2px 8px 0 0;
+  outline: 0;
+  position: relative;
+  top: 1px;
+  width: 13px;
+}
+
+input[type="checkbox"].gapp-addon:hover {
+  border: 1px solid #b2b2b2;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1);
+}
+
+input[type="checkbox"].gapp-addon:active {
+  background-color: #ebebeb;
+  border: 1px solid #c6c6c6;
+}
+
+input[type="checkbox"].gapp-addon:focus {
+  border: 1px solid #4d90fe;
+}
+
+input[type="checkbox"].gapp-addon:checked:after {
+  background: url(https://ssl.gstatic.com/ui/v1/menu/checkmark_2x.png) no-repeat 0 0 / 21px;
+  content: '';
+  display: block;
+  height: 21px;
+  left: -5px;
+  position: relative;
+  top: -6px;
+  width: 21px;
+}
+
+input[type="checkbox"].gapp-addon:disabled {
+  background-color: #fff;
+  border: 1px solid #e1e1e1;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  opacity: .5;
+}
+
+/* RADIO BUTTONS */
+
+input[type="radio"].gapp-addon {
+  -webkit-appearance: none;
+  background: #fff;
+  border: 1px solid #c6c6c6;
+  border-image: -ms-linear-gradient(top, #fff, #fff);
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 15px;
+  margin: 0 6px 0 0;
+  outline: 0;
+  position: relative;
+  top: 2px;
+  width: 15px;
+}
+
+input[type="radio"].gapp-addon:hover {
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1);
+}
+
+input[type="radio"].gapp-addon:active {
+  background: #ebebeb;
+  border: 1px solid #c6c6c6;
+}
+
+input[type="radio"].gapp-addon:focus {
+  border: 1px solid #4d90fe;
+}
+
+input[type="radio"].gapp-addon:checked {
+  background: #fff;
+}
+
+input[type="radio"].gapp-addon:checked:after {
+  background: #606060;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  content: '';
+  display: block;
+  height: 7px;
+  left: 3px;
+  position: relative;
+  top: 3px;
+  width: 7px;
+}
+
+input[type="radio"].gapp-addon:disabled {
+  background-color: #fff;
+  border: 1px solid #e1e1e1;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  opacity: .5;
+}
+
+input:disabled.gapp-addon + label.gapp-addon {
+  color: #afafaf;
+}
+
+/* SELECTS */
+
+select.gapp-addon {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  background: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), -moz-linear-gradient(top, #f5f5f5, #f1f1f1);
+  background: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), -ms-linear-gradient(top, #f5f5f5, #f1f1f1);
+  background: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), -o-linear-gradient(top, #f5f5f5, #f1f1f1);
+  background: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
+  background: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), linear-gradient(top, #f5f5f5, #f1f1f1);
+  background-position: 95% 50%;
+  background-repeat: no-repeat;
+  border: 1px solid #dcdcdc;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  color: #333;
+  cursor: default;
+  font-family: arial, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  height: 29px;
+  margin: 0;
+  min-width: 72px;
+  outline: 0;
+  padding: 7px 19px 7px 4px;
+  text-align: center;
+  text-indent: .01px;
+  text-overflow: ellipsis;
+  /* text-overflow: ''; */
+  white-space: nowrap;
+}
+
+select.gapp-addon:-ms-expand {
+    display: none;
+}
+
+select.gapp-addon:hover {
+  background-image: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), -moz-linear-gradient(top, #f5f5f5, #f1f1f1);
+  background-image: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), -ms-linear-gradient(top, #f8f8f8, #f1f1f1);
+  background-image: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), -o-linear-gradient(top, #f8f8f8, #f1f1f1);
+  background-image: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
+  background-image: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png), linear-gradient(top, #f8f8f8, #f1f1f1);
+  border: 1px solid #c6c6c6;
+  color: #111;
+}
+
+select.gapp-addon:focus {
+  border: 1px solid #4d90fe;
+}
+
+select.gapp-addon:disabled {
+  background-image: url(https://ssl.gstatic.com/ui/v1/disclosure/grey-disclosure-arrow-up-down.png);
+  border: 1px solid #dcdcdc;
+  color: #333;
+  opacity: .5;
+}
+
+/* OTHER FORM ELEMENTS */
+
+.form-group label.gapp-addon + input.gapp-addon,
+.form-group label.gapp-addon + select.gapp-addon,
+.form-group label.gapp-addon + textarea.gapp-addon {
+  display: block;
+}
+
+fieldset {
+  border: 1px solid #ebebeb;
+  margin: 0;
+}
+
+legend {
+  font-weight: bold;
+  padding: 8px;
+}
+
+input[type="date"].gapp-addon,
+input[type="datetime"].gapp-addon,
+input[type="datetime-local"].gapp-addon,
+input[type="email"].gapp-addon,
+input[type="month"].gapp-addon,
+input[type="number"].gapp-addon,
+input[type="password"].gapp-addon,
+input[type="search"].gapp-addon,
+input[type="tel"].gapp-addon,
+input[type="text"].gapp-addon,
+input[type="time"].gapp-addon,
+input[type="url"].gapp-addon,
+input[type="week"].gapp-addon,
+select[multiple].gapp-addon,
+select[size].gapp-addon,
+textarea.gapp-addon {
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  -moz-border-radius: 1px;
+  -webkit-border-radius: 1px;
+  border-radius: 1px;
+  border-top: 1px solid #c0c0c0;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  color: #000;
+  font-family: arial, sans-serif;
+  font-size: 13px;
+  font-weight: normal;
+  margin: 0;
+  outline: 0;
+  padding: 4px;
+}
+
+select[multiple].gapp-addon { width: 100%; text-align:left; height:auto; min-height: 150px; max-height:300px; overflow:auto; }
+
+input[type="date"].gapp-addon,
+input[type="datetime"].gapp-addon,
+input[type="datetime-local"].gapp-addon,
+input[type="email"].gapp-addon,
+input[type="month"].gapp-addon,
+input[type="number"].gapp-addon,
+input[type="password"].gapp-addon,
+input[type="search"].gapp-addon,
+input[type="tel"].gapp-addon,
+input[type="text"].gapp-addon,
+input[type="time"].gapp-addon,
+input[type="url"].gapp-addon,
+input[type="week"].gapp-addon {
+  height: 25px;
+}
+
+input[type="date"].gapp-addon:focus,
+input[type="datetime"].gapp-addon:focus,
+input[type="datetime-local"].gapp-addon:focus,
+input[type="email"].gapp-addon:focus,
+input[type="month"].gapp-addon:focus,
+input[type="number"].gapp-addon:focus,
+input[type="password"].gapp-addon:focus,
+input[type="search"].gapp-addon:focus,
+input[type="tel"].gapp-addon:focus,
+input[type="text"].gapp-addon:focus,
+input[type="time"].gapp-addon:focus,
+input[type="url"].gapp-addon:focus,
+input[type="week"].gapp-addon:focus,
+select[multiple].gapp-addon:focus,
+select[size].gapp-addon:focus,
+textarea.gapp-addon:focus {
+  border: 1px solid #4d90fe;
+  -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+select[multiple].gapp-addon,
+select[size].gapp-addon {
+  height: auto;
+  padding: 0;
+}
+
+select[multiple].gapp-addon:disabled
+select[size].gapp-addon: disabled {
+  background: #fff;
+  opacity: 1;
+}
+
+textarea.gapp-addon {
+  resize: vertical;
+}
+
+/* jQuery UI toolbar style */
+.toolbar {
+    /* padding: 4px; */
+    /* display: inline-block; */
+    font-family: arial, sans-serif normal;
+    font-size: 11px;
+    font-weight: bold;
+    /*width: 80%; */
+}
+/* support: IE7 */
+*+html .toolbar {
+    /* display: inline; */
+}
+
+.toolbar div{
+  margin-bottom: 6px;
+}
+
+.ui-accordion .ui-accordion-content {
+  padding: .6em 1em;
+}
+
+.ui-helper-reset {
+  font-size:.9em;
+}
+
+select.gapp-addon.fontsizes {
+  width: 45px;
+  min-width: 10px;
+}
+
+select.gapp-addon.fontfamilies {
+  width: 150px;
+}
+
+input[type="color"] {
+  width: 25px;
+  height: 25px;
+  min-width: 10px;
+  position:relative;
+  top: 3px;
+}
+
+input#bibleget-search{
+  height: 28px;
+}
+
+ul.nav {
+  display: block;
+  width: 100%;
+  position: relative;
+  left: -36px;
+}
+ul.nav li{
+  cursor: pointer;
+  display: table-cell;
+  vertical-align: middle;
+  width: 50%;
+  background-color: Gray;
+  text-align: center;
+  font-weight:bold;
+  color: LightGrey;
+  height: 40px;
+  border: 1px solid  DimGray;
+  padding: 0px 12px;
+}
+ul.nav li:hover {
+  background-color: LightGrey;
+  color: DimGray;
+}
+ul.nav li.active {
+  cursor: default;
+  background-color: White;
+  color: DimGray;
+  border-left: 1px solid DimGray;
+  border-right: 1px solid DimGray;
+  border-bottom: 1px solid DimGray;
+  border-top: none;
+  box-shadow: 0px 3px 3px Black;
+}
+
+div.inactive-tab {
+  position:absolute;
+  left:-3000px;
+}
+
+div.active-tab {
+  position:relative;
+  left:0px;
+  height: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+}
+
+fieldset.fieldset-results{
+ border: 1px groove LightBlue;
+ border-radius:6px;
+ padding:0px 8px 3px 6px;
+ background-color:#EEEEFF;
+ min-height: 60px;
+ max-height: 200px;
+ overflow-y:auto;
+}
+
+#quote-result{
+  min-height:50px;
+  /* max-height: 120px; */
+  /* overflow-y:scroll; */
+}
+
+#spinner-bg{
+  position:absolute;
+  top:0px;
+  left:0px;
+  width:100%;
+  height:100%;
+  z-index:998;
+  background-color:#333333;
+  opacity: 0.6;
+}
+#spinner-gif{
+  position:absolute;
+  top:50%;
+  left:50%;
+  height: 120px;
+  width: 120px;
+  margin-top: -60px;
+  margin-left: -60px;
+  z-index:999;
+  opacity: 1.0;
+}
+
+.gb_Fa {
+background-image: url('//ssl.gstatic.com/gb/images/v1_2e543709.png');
+background-size: 112px 1828px;
+}
+.gbqfi {
+background-position: -69px -351px;
+display: inline-block;
+margin: -1px;
+margin-left: -6px;
+height: 30px;
+width: 30px;
+}
+
+.docs-icon-img {
+background-image: url("//ssl.gstatic.com/docs/common/jfk_sprite115.png");
+background-size: 42px 3150px;
+background-position: -21px -2015px;
+height: 21px;
+width: 21px;
+display:inline-block;
+margin:1px 3px;
+margin-left: -6px;
+
+}
+
+#selectedversions{
+  color:Blue;
+  font-style:italic;
+}
+
+#selectedversions.empty{
+  color:Red;
+}
+</style>

@@ -1,0 +1,153 @@
+<script>
+window.locale = '';
+google.script.run.withSuccessHandler(window.setLocaleVar).getUserLocale();
+
+window.setLocaleVar = function(val){
+  window.locale = val;
+};
+
+window.queryServer = function(goodqueries){
+  goodqueries = goodqueries || [];
+  if(goodqueries.length===0){
+    $('.spinner').hide();
+    return false;
+  }else{
+    var finalquery = goodqueries.join(';');
+    if(finalquery != ''){
+      var versions = $("select#text-version :selected").map(function(){ return this.value; }).get().join(',');
+      if(versions.length<1){
+        alertMe(__("Please select a version.",locale));
+        return false;
+      }else{
+        finalquery += '&version='+versions;
+        google.script.run.withSuccessHandler(parseResponse).fetchData(finalquery);
+      }
+    }
+  }
+}
+
+window.parseResponse = function(response){
+  if(response===false){
+    $('.spinner').hide();
+  }
+  var myjson = {};
+  myjson = JSON.parse(response);
+  if(myjson.hasOwnProperty("results")){
+    //google.script.run.docLog("yayy we have results!");
+    parseResults(myjson);
+  }  
+  if(myjson.hasOwnProperty("errors")){
+    parseErrors(myjson.errors);
+  }
+};
+
+window.parseResults = function(myjson){
+    //google.script.run.docLog(JSON.stringify(myjson));
+    google.script.run.withSuccessHandler(hideSpinner).docInsert(myjson);
+};
+
+window.hideSpinner = function(){
+    $('.spinner').hide();
+};
+
+window.parseErrors = function(errors){
+    if(errors.length < 1){ return false; }
+    else{
+      var errmessage = '';
+      for(var i=0;i<errors.length;i++){
+        errmessage += '(' + errors[i].errNum + ') : ' + errors[i].errMessage+'\n';
+      }
+      if(errmessage !== ''){ 
+        //we must hide the spinner before the alert opens, because the alert interrupts the script!
+        $('.spinner').hide();
+        alertMe('[Server Error Message] '+errmessage);
+      }
+    }
+};
+
+window.queryClean = function(query){
+  // enforce query rules
+  if(query===''){ 
+    alertMe(__("I cannot send an empty query.",locale));
+  }
+  query = query.trim().replace(/ /g,'');
+      
+  if(query.indexOf(':') != -1 && query.indexOf('.') != -1){
+    alertMe(__("Mixed notations have been detected. Please use either english notation or european notation.",locale)+'<'+query+'>');
+  }
+  else if(query.indexOf(':') != -1){ //if english notation is detected, translate it to european notation
+    if(query.indexOf(',') != -1){
+      query = query.replace(/,/g,'.');
+    }
+    query = query.replace(/:/g,',');
+  }
+  return query.split(';').filter(function(n){ return n !== ""; });
+};
+
+window.alertMe = function(errmex){
+  $('.spinner').hide();
+  google.script.run.alertMe(errmex); 
+  return false; 
+};
+
+window.__ = function(str,ling){
+  if(translatables.hasOwnProperty(str) && translatables[str].hasOwnProperty(ling)){ 
+    return translatables[str][ling]; 
+  } 
+  else{ return translatables[str].en; }
+};
+
+window.translatables = {
+  "Please select a version.":{
+    "en":"Please select a Bible version.",
+    "it":"Si prega selezionare una versione della Bibbia.",
+    "es":"Por favor seleccionar una versión de la Biblia.",
+    "fr":"Se il vous plaît sélectionner une version de la Bible.",
+    "de":"Bitte wählen Sie eine Version der Bibel."
+  },
+  "I cannot send an empty query.":{
+    "en":"I cannot send an empty query.",
+    "it":"Non posso inviare una richiesta vuota.",
+    "es":"No puedo enviar una consulta vacía.",
+    "fr":"Je ne peux pas envoyer une requête vide.",
+    "de":"Ich kann eine leere Abfrage nicht senden."
+  },
+  "Mixed notations have been detected. Please use either english notation or european notation.":{
+    "en":"Mixed notations have been detected. Please use either english notation or european notation.",
+    "it":"Sono state rilevate notazioni multiple. Si prega utilizzare o la notazione inglese, o la notazione europea.",
+    "es":"Se han detectado varias notaciónes. Por favor, utilice o la notación Inglés, o la notación internacional.",
+    "fr":"Notations multiples ont été détectées. Se il vous plaît utiliser ou la notation anglaise, ou la notation européenne.",
+    "de":"Multiple Notationen erkannt wurden. Bitte benutzen Sie entweder Englisch Notation oder europäische Notation."
+  }  
+};
+
+$(document).ready(function(){
+    $('.spinner').hide();
+    $('#text-version').change(function(){
+      var selectedversions = $(this).val();
+      if(selectedversions===null){
+        if($('#selectedversions').hasClass("empty")===false){$('#selectedversions').addClass("empty");}
+        $('#selectedversions').text('none');
+        selectedversions = [];
+      }
+      else{
+        if($('#selectedversions').hasClass("empty")){$('#selectedversions').removeClass("empty");}
+        $('#selectedversions').text(selectedversions.join(','));
+       }
+       google.script.run.setUserProperty("RecentSelectedVersions",JSON.stringify(selectedversions));
+    });
+    
+    $('#btn-get-bible-quote').click(function(){
+      $('.spinner').show();      
+      var versions = $("#text-version").val();
+      if(versions===null){
+        $('.spinner').hide();
+        alertMe(__('Please select a version.',locale));
+        return false;
+      }
+      var query = $('#bibleget-search').val();
+      var queries = queryClean(query);      
+      google.script.run.withSuccessHandler(queryServer).processQueries(queries,versions);
+    });
+});
+</script>

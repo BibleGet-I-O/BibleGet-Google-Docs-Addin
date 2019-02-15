@@ -1,0 +1,167 @@
+<? var locale = getUserLocale(); 
+  var biblebooks = [];
+  var abbreviations = [];
+  var userProperties = PropertiesService.getScriptProperties();
+  if(userProperties.getProperty("biblebooks0")===null){
+    //docLog('biblebooks not yet defined in script properties, now retrieving from server');
+    setProps();
+  }
+  var usrProps = userProperties.getProperties();
+  var languages = JSON.parse(usrProps["languages"]);
+  Logger.log(languages);
+  var idx;
+  for(var i=0;i<73;i++){
+    var usrprop = "biblebooks"+i;
+    var jsbook = JSON.parse(usrProps[usrprop]);
+    var lclbook = "";
+    var lclabbrev = "";
+    idx = languages.indexOf(_c(locale));    
+    if(idx==-1){ idx = languages.indexOf("English"); }
+    lclabbrev = jsbook[idx][1];
+    lclbook = jsbook[idx][0];    
+    lclbook = lclbook.replace(/\s+\|/g, "&emsp;|");
+    biblebooks.push(lclbook);
+    abbreviations.push(lclabbrev);
+  }
+  //biblebooks.map(function(str){ return str.replace(/\s+\|/g, "&emsp;|"); });
+?>
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+
+<style>
+
+.branding-below {
+  bottom: 56px;
+  top: 0;
+}
+
+ul.nav {
+  display: block;
+  width: 100%;
+  position: relative;
+  left: -36px;
+}
+ul.nav li{
+  cursor: pointer;
+  display: table-cell;
+  vertical-align: middle;
+  width: 50%;
+  background-color: Gray;
+  text-align: center;
+  font-weight:bold;
+  color: LightGrey;
+  height: 40px;
+  border: 1px solid  DimGray;
+  padding: 0px 12px;
+}
+ul.nav li:hover {
+  background-color: LightGrey;
+  color: DimGray;
+}
+ul.nav li.active {
+  cursor: default;
+  background-color: White;
+  color: DimGray;
+  border-left: 1px solid DimGray;
+  border-right: 1px solid DimGray;
+  border-bottom: 1px solid DimGray;
+  border-top: none;
+  box-shadow: 0px 3px 3px Black;
+}
+
+div.sidebar-body {
+  position:absolute;
+  left:-3000px;
+}
+div.active-tab {
+  position:relative;
+  left:0px;
+  height: 94%;
+  max-height: 94%;
+  /* max-height: 390px;*/
+  overflow-y: scroll;
+  text-align: justify;
+  padding-right: 8px;
+}
+table { width: 100%; }
+table th { font-weight:bold;text-align:left;width:50%; }
+table th,table td{ padding-left: 3px; }
+table td+td{ border-left: 1px dashed #ebebeb; }
+
+
+span.internal-link {
+  color:#000044;
+  background-color:#EEEEEE;
+  cursor:pointer;
+}
+span.internal-link:hover {
+  color:#0000FF;
+  background-color:#CCCCCC;
+}
+</style>
+</head>
+<body>
+<div class="sidebar branding-below">
+
+
+<div class="sidebar-body active-tab" id="explan-div">
+<h1><?=__("Formulazione delle query bibliche",locale)?></h1>
+<p><?!=__("p1",locale)?></p>
+<p><?=__("p2",locale)?></p>
+<ul>
+<li><?=__("li1",locale)?>
+<li><?=__("li2",locale)?>
+<li><?=__("li3",locale)?>
+	<ol>
+	<li><?=__("li4",locale)?>
+	<li><?=__("li5",locale)?>
+	<li><?=__("li6",locale)?>
+	</ol>
+</ul>
+<p><?=__("p3",locale)?></p>
+<p><?=__("p4",locale)?></p>
+<p><?!=__("p5",locale)?></p>
+<p><?!=__("p6",locale)?></p>
+</div>
+
+<div class="sidebar-body inactive-tab" style="display:none;" id="bookabbrevs-div">
+<table>
+<tr><th><?=__("LIBRO",locale)?></th><th><?=__("ABBREVIAZIONE",locale)?></th></tr>
+<? for(var i=0;i<73;i++){ ?>
+<tr><td><?!=biblebooks[i]?></td><td><?=abbreviations[i]?></td></tr>
+<? } ?>
+</table>
+</div>
+
+</div>
+
+<div class="sidebar bottom">
+  <ul class="nav" id="tabs-ul"><li class="active" id="explan"><?=__("Formare una query",locale)?></li><li id="bookabbrevs"><?=__("Libri / Abbreviazioni",locale)?></li></ul>  
+  <div style="background:linear-gradient(white,gray,lightblue,black);color:White;font-weight:bold;text-shadow:3px 3px 3px Black;padding:1px;vertical-align:middle;"><a target="_blank" href="http://www.bibleget.io"><img style="box-shadow:3px 3px 3px Black;background-color:#FFFFFF;margin-right:12px;padding:1px;position:relative;top:-4px;" width="32" height="32" title="" alt="" src="https://googledrive.com/host/0B2T2bACoqOyKVzJVUjRnQXlQNlk/holy-bible-x32.png" /></a><span style="position:relative;top:-9px;">BibleGet I/O for Google Docs</span></div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+
+<script>
+$(function() {
+  $(".nav li").click(function(){
+    var thisid = $(this).attr("id");
+    $(".active").removeClass("active");
+    $(this).addClass("active");
+    $(".active-tab").fadeOut().removeClass("active-tab");
+    $("#"+thisid+"-div").addClass("active-tab").fadeIn();
+  });
+  
+  $("span.internal-link").click(function(){
+    var toid = $(this).attr("id").replace("to-","");
+    $(".active").removeClass("active");
+    $("#"+toid).addClass("active");
+    $(".sidebar-body").fadeOut().removeClass("active-tab");
+    $("#"+toid+"-div").addClass("active-tab").fadeIn();
+  });
+});
+</script>
+</body>

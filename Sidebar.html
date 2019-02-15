@@ -1,0 +1,91 @@
+<? 
+  var userProperties = PropertiesService.getUserProperties();
+  var recentSelectedVersionsProp = userProperties.getProperty("RecentSelectedVersions");
+  if(recentSelectedVersionsProp===null){
+    recentSelectedVersions = [];
+  }
+  else{
+    recentSelectedVersions = JSON.parse(recentSelectedVersionsProp);
+  }
+  //Logger.log("recentSelectedVersions = "+recentSelectedVersions.join(','));
+  
+  var locale = getUserLocale();
+  
+  var scriptProperties = PropertiesService.getScriptProperties();
+  if(scriptProperties.getProperty("versions")===null){
+    setProps();
+  }
+  var propVersions = scriptProperties.getProperty("versions");
+  var versions = JSON.parse(propVersions);
+  var versionsbylang = {};
+  var langs = [];
+  for(var i in versions){
+    //i corresponds with the abbreviation "sigla"
+    var info = versions[i].split("|");
+    var fullname = info[0];
+    var year = info[1];
+    var lang = _c(info[2]);
+    lang = _l(lang,locale);
+    if(versionsbylang.hasOwnProperty(lang)){
+      if(versionsbylang[lang].hasOwnProperty(i)){
+        //how can that be?
+      }
+      else{
+        versionsbylang[lang][i] = {"fullname":fullname,"year":year};
+      }
+    }
+    else{
+      versionsbylang[lang] = {};
+      langs.push(lang);
+      versionsbylang[lang][i] = {"fullname":fullname,"year":year};
+    }
+  }
+  //docLog(JSON.stringify(versionsbylang));
+  var direction = 1; // 1 asc   -1 desc
+  langs.sort(function(a, b){
+    return a.localeCompare(b,locale) === 1? direction : -1 * direction;
+  });
+?>
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+<?!= include("Stylesheet"); ?>
+</head>
+<body>
+<img src="https://googledrive.com/host/0B2T2bACoqOyKVzJVUjRnQXlQNlk/mherfbook.gif" class="spinner" id="spinner-gif" />
+<div class="spinner" id="spinner-bg"></div>
+
+<div class="sidebar branding-below">
+    <h1><?=__("Get bible quotes",locale)?></h1>
+    <div class="block form-group">
+      <label class="gapp-addon" for="text-version"><b><?=__("Versions available:",locale)?></b></label>
+      <select class="gapp-addon" id="text-version" multiple>
+        <? for(var q in langs){ ?>
+        <optgroup label="-<?=langs[q]?>-">
+          <?for(var s in versionsbylang[langs[q]]){?>
+          <option value="<?=s?>" <?if(recentSelectedVersions.indexOf(s) != -1){?>SELECTED<?}?>><?=s+' — '+versionsbylang[langs[q]][s]["fullname"]+' ('+versionsbylang[langs[q]][s]["year"]+')'?></option>
+          <?}?>
+        </optgroup>
+        <?}?>
+      </select>
+      <div><?=__("Versions selected:",locale)?> <span id="selectedversions" <?if(recentSelectedVersions.length<1){?>class="empty">none<?}else{?>><?=recentSelectedVersions.join(',')?><?}?></span></div>
+    </div>    
+    <div class="block form-group" style="margin-top:50px;">
+      <label class="gapp-addon"><b><?=__('Insert query',locale)?></b></label>
+      <div class="inline form-group">
+        <input class="gapp-addon" id="bibleget-search" type="search" placeholder="<?=__("e.g. Matthew 1:1-10,13-15",locale)?>" />
+        <button id="btn-get-bible-quote" class="action gapp-addon"><span class="gbqfi gb_Fa">&nbsp;</span><?=__("Search",locale)?></button>
+      </div>
+    </div>
+</div>
+
+<div class="sidebar bottom">
+  <div style="background:linear-gradient(white,gray,lightblue,black);color:White;font-weight:bold;text-shadow:3px 3px 3px Black;padding:1px;vertical-align:middle;"><a target="_blank" href="http://www.bibleget.io"><img style="box-shadow:3px 3px 3px Black;background-color:#FFFFFF;margin-right:12px;padding:1px;position:relative;top:-4px;" width="32" height="32" title="" alt="" src="https://googledrive.com/host/0B2T2bACoqOyKVzJVUjRnQXlQNlk/holy-bible-x32.png" /></a><span style="position:relative;top:-9px;">BibleGet I/O for Google Docs</span></div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
+
+<?!= include("SidebarJS"); ?>
+
+</body>
