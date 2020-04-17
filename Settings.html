@@ -1,17 +1,20 @@
 <? 
+  //FOR WHATEVER STRANGE REASON, ON ONE GMAIL ACCOUNT I'M GETTING AN ERROR
+  //WHEN OPENING THE SETTINGS DIALOG, ABOUT AN UNEXPEXTED 'u' CHARACTER???
+  //ONLY SEEMS TO HAPPEN WITH THE BIBLEGET ACCOUNT AND NOT OTHER ACCOUNTS
   var userProperties = getUserProperties();
   var lftindnt = Math.round(parseFloat(userProperties.RientroSinistro)*28.3464567);
   var locale = getUserLocale();
   var scriptProperties = PropertiesService.getScriptProperties();
   if(scriptProperties.getProperty("languages")===null || scriptProperties.getProperty("versions")===null){
-    consoleLog('now setting properties from Settings.html');
+    //consoleLog('now setting properties from Settings.html');
     setProps();
   }
   var propLangs = scriptProperties.getProperty("languages");
   //consoleLog(propLangs);
   languages = JSON.parse(propLangs);
   var propVersions = scriptProperties.getProperty("versions");
-  consoleLog(propVersions);
+  //consoleLog(propVersions);
   var versions = JSON.parse(propVersions);  
 ?>
 <!DOCTYPE html>
@@ -198,7 +201,7 @@ html>body tbody.scrollContent td + td + td {
 </style>
 </head>
 <body>
-<img src="https://googledrive.com/host/0B2T2bACoqOyKVzJVUjRnQXlQNlk/mherfbook.gif" class="spinner" id="spinner-gif" />
+<div class="spinner lds-ring"><div></div><div></div><div></div><div></div></div>
 <div class="spinner" id="spinner-bg"></div>
 <input type="hidden" id="activetab" value="<?=activetab?>" />
 <div id="tabs">
@@ -402,7 +405,7 @@ window.updateUserProperties = function(propsobj){
 google.script.run.withSuccessHandler(updateUserProperties).getUserProperties();
 
 window.addFontFamilyOptions = function(response){
-    var fontfamilies = response.split(",");
+    var fontfamilies = (response.indexOf(',') != -1) ? response.split(",") : response;
     $.each(fontfamilies, function(key, value) {   
         $('select.fontfamilies')
           .append($('<option>', { "value" : value })

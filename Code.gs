@@ -2,8 +2,8 @@
  * @OnlyCurrentDoc
  */
 
-var version = 21; //corresponds with version in the store; local version is -1!
-var requestparameters = "&return=json&appid=googledocs&pluginversion="+version;
+const version = 21; //corresponds with version in the store; local version is -1!
+const requestparameters = "&return=json&appid=googledocs&pluginversion="+version;
 
 function onInstall(e){
   
@@ -129,7 +129,7 @@ function openHelpUI(){
 /***********************************************/
 
 function getFontFamilies(){
-  var fontfamilies = DocumentApp.FontFamily.values().toString();
+  var fontfamilies = [""];//DocumentApp.FontFamily.values().toString();
   Logger.log(fontfamilies);
   return fontfamilies;
 }

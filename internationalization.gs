@@ -1,8 +1,4 @@
-function include(filename){
-  //if(authMode==ScriptApp.AuthMode.LIMITED || authMode==ScriptApp.AuthMode.FULL){
-    return HtmlService.createHtmlOutputFromFile(filename).getContent();
-  //}
-}
+var include = filename => HtmlService.createHtmlOutputFromFile(filename).getContent();
 
 var __ = function(str,ling){
       if(translatables.hasOwnProperty(str)){
