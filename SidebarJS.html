@@ -19,8 +19,8 @@ window.queryServer = function(goodqueries){
         alertMe(__("Please select a version.",locale));
         return false;
       }else{
-        finalquery += '&version='+versions;
-        google.script.run.withSuccessHandler(parseResponse).fetchData(finalquery);
+        let payload = {'query':finalquery,'version':versions};
+        google.script.run.withSuccessHandler(parseResponse).fetchData(payload);
       }
     }
   }

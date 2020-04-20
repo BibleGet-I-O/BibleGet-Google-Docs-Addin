@@ -46,6 +46,7 @@ var __ = function(str,ling){
       else{ return str; }      
     },
     translatables = {
+      //TEMPLATE: "":{"en":"","it":"","es":"","fr":"","de":""},
       "Avvia":{"en":"Start","it":"Avvia","es":"Iniciar","fr":"Lancer","de":"Starten"},
       "Istruzioni":{"en":"Instructions","it":"Istruzioni","es":"Instrucciones","fr":"Instructions","de":"Anleitung"},
       "Impostazioni":{"en":"Settings","it":"Impostazioni","es":"Ajustes","fr":"Paramètres","de":"Einstellungen"},
@@ -54,7 +55,10 @@ var __ = function(str,ling){
       "Sostieni BibleGet I/O":{"en":"Support the BibleGet I/O Project","it":"Sostieni il Progetto BibleGet I/O","es":"Apoya el Proyecto BibleGet I/O","fr":"Soutenir le Projet BibleGet I/O","de":"Unterstützt das Projekt BibleGet I/O"},
       "Cannot insert text at this document location.":{"en":"Cannot insert text at this document location.","it":"Non è possibile inserire testo in questa posizione nel documento.","es":"No es posible insertar el texto en esa posición en el documento.","fr":"Il n'est pas possible d'insérer du texte à cet emplacement dans le document.","de":"Es ist nicht möglich, Text an dieser Stelle in das Dokument einzufügen."},
       "Get bible quotes":{"en":"Get bible quotes","it":"Ricerca citazioni bibliche","es":"Buscar citas biblicas","fr":"Obtenir citations bibliques","de":"Erhalten Bibelzitate"},
+      "Please grant permissions":{"en":"Please grant permissions so that the BibleGet addon can communicate with the BibleGet server","it":"Devi autorizzare l'estensione di BibleGet a comunicare con il server di BibleGet","es":"Es necesario autorizar la extensión BibleGet para comunicarse con el servidor BibleGet","fr":"Vous devez autoriser l'extension BibleGet à communiquer avec le serveur BibleGet","de":"Sie müssen die BibleGet-Erweiterung autorisieren, um mit dem BibleGet-Server zu kommunizieren"},
       "Formattazione":{"en":"Formatting","it":"Formattazione","es":"Formato","fr":"Formatage","de":"Formatierung"},
+      "Set Font from current selected text":{"en":"Set Font from current selected text","it":"Imposta Carattere dal testo selezionato","es":"Configura fuente desde el texto seleccionado","fr":"Définir la police à partir du texte sélectionné","de":"Stellen Sie die Schriftart aus dem ausgewählten Text ein"},
+      "Font for Bible Quotes":{"en":"Font for Bible Quotes","it":"Tipo Carattere per le Citazioni Bibliche","es":"Fuente para las Citas bíblicas","fr":"Police des Citations bibliques","de":"Schriftart für Bibel Zitate"},
       "Versions available:":{"en":"Versions available:","it":"Versioni disponibili:","es":"Versiones disponibles:","fr":"Versions disponibles:","de":"Versionen verfügbare:"},
       "Versions selected:":{"en":"Versions selected:","it":"Versioni selezionate:","es":"Versiones seleccionadas:","fr":"Versions sélectionnées:","de":"Ausgewählten Versionen:"},
       "Insert query":{"en":"Insert query","it":"Inserisci richiesta","es":"Insertar consulta","fr":"Insérer requête","de":"Legen Sie die Abfrage"},
@@ -62,7 +66,7 @@ var __ = function(str,ling){
       "Search":{"en":"Search","it":"Cerca","es":"Buscar","fr":"Rechercher","de":"Suchen"},
       "There are Errors":{"en":"There are Errors","it":"Ci sono degli Errori","es":"Hay algunos Errores","fr":"Il y a des Erreurs","de":"Es gibt Fehler"},
       "Risultato":{"en":"Result","it":"Risultato","es":"Resultado","fr":"Résultat","de":"Ergebnis"},
-      "Formato Paragrafo e Testo":{"en":"Paragraph Format","it":"Formato Paragrafo","es":"Formato de Párrafo","fr":"Format de Paragraphe","de":"Absatzformat"},
+      "Paragraph Styles":{"en":"Paragraph Styles","it":"Stili Paragrafo","es":"Estilos de Párrafo","fr":"Styles de Paragraphe","de":"Absatzstile"},
       "Interlinea":{"en":"Linespacing","it":"Interlinea","es":"Interlínea","fr":"Interligne","de":"Zeilenabstand"},
       "Rientro Sinistro":{"en":"Left Indent","it":"Rientro Sinistro","es":"Sangría Izquierda","fr":"Tiret Gauche","de":"Linken Einzug"},
       "Formato Libro / Capitolo":{"en":"Book / Chapter Format","it":"Formato Libro / Capitolo","es":"Formato Libro / Capítulo","fr":"Format Livre / Chapitre","de":"Buchformat und Kapitel-Format"},

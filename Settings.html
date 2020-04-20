@@ -22,7 +22,6 @@
   <meta charset="UTF-8">
 
 <?!= include("Stylesheet"); ?>
-
 <style>
 
 .liveview-quote {
@@ -198,10 +197,45 @@ html>body tbody.scrollContent td + td + td {
 .indevelopment{
   background-color: #333;
 }
+
+.custom-combobox {
+  position: relative;
+  display: inline-block;
+}
+.custom-combobox-toggle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin-left: -1px;
+  padding: 0;
+}
+.custom-combobox-input {
+  margin: 0;
+  padding: 5px 10px;
+  background: -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
+  background-position: 95% 50%;
+  background-repeat: no-repeat;
+}
+
+.flexcontainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.flexitem:nth-child(3) {
+  min-width: 215px;
+}
+
+ul.ui-autocomplete.ui-widget {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
 </style>
 </head>
 <body>
-<div class="spinner lds-ring"><div></div><div></div><div></div><div></div></div>
+<div class="spinner lds-ring" id="spinner-gif"><div></div><div></div><div></div><div></div></div>
 <div class="spinner" id="spinner-bg"></div>
 <input type="hidden" id="activetab" value="<?=activetab?>" />
 <div id="tabs">
@@ -213,24 +247,31 @@ html>body tbody.scrollContent td + td + td {
   <!-- BEGIN TAB 1-->
   <div id="tab1">
     <div id="accordion">    
-      <h3><b><?=__('Formato Paragrafo e Testo',locale)?></b></h3>
-      <div class="toolbar ui-widget-header ui-corner-bottom">
-        <label for="interlinea-quote" class="gapp-addon"><b><?=__('Interlinea',locale)?></b></label>
-        &nbsp;&nbsp;&nbsp;
-        <label for="rientrosinistro-quote"><b><?!=__('Rientro Sinistro',locale)?></b></label><br />
-        <select id="interlinea-quote" class="gapp-addon">
-          <option value="1.0"<? if(userProperties.Interlinea=="1.0"){ ?> SELECTED<? } ?>>Single 1.0</option>
-          <option value="1.15"<? if(userProperties.Interlinea=="1.15"){ ?> SELECTED<? } ?>>1.15</option>
-          <option value="1.5"<? if(userProperties.Interlinea=="1.5"){ ?> SELECTED<? } ?>>1&#189;</option>
-          <option value="2.0"<? if(userProperties.Interlinea=="2.0"){ ?> SELECTED<? } ?>>Double 2.0</option>
-        </select>
-        <select id="rientrosinistro-quote" class="gapp-addon">
-        <? var vals = ["0","0.25","0.5","0.75","1","1.25","1.5","1.75","2"]; 
-        for(var n in vals){ ?>
-          <option value=<?=vals[n]?> <? if(userProperties.RientroSinistro==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
-        <? }
-        ?>    
-        </select>
+      <h3><b><?=__('Paragraph Styles',locale)?></b></h3>
+      <div class="toolbar ui-widget-header ui-corner-bottom flexcontainer">
+        <div class="flexitem">
+          <label for="interlinea-quote" class="gapp-addon"><b><?=__('Interlinea',locale)?></b></label><br />
+          <select id="interlinea-quote" class="gapp-addon">
+            <option value="1.0"<? if(userProperties.Interlinea=="1.0"){ ?> SELECTED<? } ?>>Single 1.0</option>
+            <option value="1.15"<? if(userProperties.Interlinea=="1.15"){ ?> SELECTED<? } ?>>1.15</option>
+            <option value="1.5"<? if(userProperties.Interlinea=="1.5"){ ?> SELECTED<? } ?>>1&#189;</option>
+            <option value="2.0"<? if(userProperties.Interlinea=="2.0"){ ?> SELECTED<? } ?>>Double 2.0</option>
+          </select>
+        </div>
+        <div class="flexitem">
+          <label for="rientrosinistro-quote"><b><?!=__('Rientro Sinistro',locale)?></b></label><br />
+          <select id="rientrosinistro-quote" class="gapp-addon">
+          <? var vals = ["0","0.25","0.5","0.75","1","1.25","1.5","1.75","2"]; 
+          for(var n in vals){ ?>
+            <option value=<?=vals[n]?> <? if(userProperties.RientroSinistro==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
+          <? }
+          ?>    
+          </select>
+        </div>
+        <div class="flexitem">
+          <label for="bibleget-font-family"><?=__('Font for Bible Quotes',locale)?></label><br />
+          <select id="bibleget-font-family"></select>
+        </div>
       </div>
             
       <h3><b><?!=__('Formato Libro / Capitolo',locale)?></b></h3>
@@ -246,8 +287,6 @@ html>body tbody.scrollContent td + td + td {
             <input type="radio" id="bookchapter-superscript" name="bookchapteralignment"<? if (userProperties.BookChapterAlignment=="SUPERSCRIPT") { ?>CHECKED<? } ?>><label for="bookchapter-superscript"><span title="SUPERSCRIPT"><b style="position: relative; top: -0.5em; font-size: 80%;">A</b></span></label>
             <input type="radio" id="bookchapter-subscript" name="bookchapteralignment"<? if (userProperties.BookChapterAlignment=="SUBSCRIPT") { ?>CHECKED<? } ?>><label for="bookchapter-subscript"><span title="SUBSCRIPT"><b style="position: relative; top: 0.5em; font-size: 80%;">A</b></span></label>
           </span>
-          <select id="bookchapter-fontfamily" name="bookchapter-fontfamily" class="fontfamilies gapp-addon">
-          </select>
           <select id="bookchapter-fontsize" name="bookchapter-fontsize" class="fontsizes gapp-addon">
           <? var ops=[8,9,10,11,12,14,18,24,30,36,48,60,72,96]; 
              for(var i=0;i<ops.length;i++){ ?>
@@ -272,8 +311,6 @@ html>body tbody.scrollContent td + td + td {
           <input type="radio" id="versenumber-superscript" name="versenumberalignment"  <? if(userProperties.VerseNumberAlignment=="SUPERSCRIPT"){ ?>CHECKED<? } ?>><label for="versenumber-superscript"><span title="SUPERSCRIPT"><b style="position: relative; top: -0.5em; font-size: 80%;">A</b></span></label>
           <input type="radio" id="versenumber-subscript" name="versenumberalignment" <? if(userProperties.VerseNumberAlignment=="SUBSCRIPT"){ ?>CHECKED<? } ?>><label for="versenumber-subscript"><span title="SUBSCRIPT"><b style="position: relative; top: 0.5em; font-size: 80%;">A</b></span></label>
         </span>
-        <select id="versenumber-fontfamily" name="versenumber-fontfamily" class="fontfamilies gapp-addon">
-        </select>
         <select id="versenumber-fontsize" name="versenumber-fontsize" class="fontsizes gapp-addon">
           <? var ops=[8,9,10,11,12,14,18,24,30,36,48,60,72,96]; 
              for(var i=0;i<ops.length;i++){ ?>
@@ -298,8 +335,6 @@ html>body tbody.scrollContent td + td + td {
           <input type="radio" id="versetext-superscript" name="versetextalignment" <? if(userProperties.VerseTextAlignment == "SUPERSCRIPT"){ ?>CHECKED<? } ?>><label for="versetext-superscript"><span title="SUPERSCRIPT"><b style="position: relative; top: -0.5em; font-size: 80%;">A</b></span></label>
           <input type="radio" id="versetext-subscript" name="versetextalignment" <? if(userProperties.VerseTextAlignment == "SUBSCRIPT"){ ?>CHECKED<? } ?>><label for="versetext-subscript"><span title="SUBSCRIPT"><b style="position: relative; top: 0.5em; font-size: 80%;">A</b></span></label>
         </span>
-          <select id="versetext-fontfamily" name="versetext-fontfamily" class="fontfamilies gapp-addon">
-          </select>
           <select id="versetext-fontsize" name="versetext-fontsize" class="fontsizes gapp-addon">
             <? var ops=[8,9,10,11,12,14,18,24,30,36,48,60,72,96]; 
             for(var i=0;i<ops.length;i++){ ?>
@@ -381,17 +416,20 @@ html>body tbody.scrollContent td + td + td {
 </div>
 <!-- -->
 
+<?!= include("FontListAutocomplete"); ?>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
+<?!= include("FontListCombobox"); ?>
+
 <script type="text/javascript">
 
 // Initialize user preferences populating initially with default values
-window.bookChapterStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,FONT_FAMILY:"Times New Roman",STRIKETHROUGH:false,FOREGROUND_COLOR:"#000044"};
-window.verseNumberStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,FONT_FAMILY:"Times New Roman",STRIKETHROUGH:false,FOREGROUND_COLOR:"#AA0000"};
-window.verseTextStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:false,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,FONT_FAMILY:"Times New Roman",STRIKETHROUGH:false,FOREGROUND_COLOR:"#666666"};
+window.bookChapterStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#000044"};
+window.verseNumberStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#AA0000"};
+window.verseTextStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:false,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#666666"};
 
 //this will be our global variable that holds the user preferences
-window.userProps = {BookChapterStyles:bookChapterStylesObj,BookChapterAlignment:"NORMAL",VerseNumberStyles:verseNumberStylesObj,VerseNumberAlignment:"SUPERSCRIPT",VerseTextStyles:verseTextStylesObj,VerseTextAlignment:"NORMAL",Interlinea:"1.5",RientroSinistro:"0",NoVersionFormatting:false};
+window.userProps = {BookChapterStyles:bookChapterStylesObj,BookChapterAlignment:"NORMAL",VerseNumberStyles:verseNumberStylesObj,VerseNumberAlignment:"SUPERSCRIPT",VerseTextStyles:verseTextStylesObj,VerseTextAlignment:"NORMAL",Interlinea:"1.5",FONT_FAMILY:"Times New Roman",RientroSinistro:"0",NoVersionFormatting:false};
 
 //function that will update the user preferences object if and when set by user
 window.updateUserProperties = function(propsobj){ 
@@ -399,11 +437,31 @@ window.updateUserProperties = function(propsobj){
   userProps.NoVersionFormatting = JSON.parse(propsobj.NoVersionFormatting);
   //google.script.run.consoleLog("Getting property NoVersionFormatting with value: "+propsobj.NoVersionFormatting+" of type "+typeof propsobj.NoVersionFormatting); 
   //$("#no-version-formatting").prop("checked",propsobj.NoVersionFormatting);
+
+    for(var i in ffAutoComplete){
+      //let selcd = (ffAutoComplete[i] == userProps.FONT_FAMILY);
+      $('#bibleget-font-family').append(jQuery('<option>',{value:ffAutoComplete[i],text:ffAutoComplete[i]})); //,selected:selcd
+      if(i == ffAutoComplete.length-1){
+        if(jQuery('#bibleget-font-family').find('option[value="'+userProps.FONT_FAMILY+'"]').length > 0){
+          jQuery('#bibleget-font-family').val(userProps.FONT_FAMILY);
+        }
+        //jQuery('#bibleget-font-family').find('option[val="'+userProps.FONT_FAMILY+'"]').prop('selected',true);
+        $('#bibleget-font-family').combobox();
+        //$('#btnSetFont').button();
+        jQuery('#bibleget-font-family').on('change',function(){
+          //let myUI = jQuery(this).val();
+          //jQuery('<span>',{text:myUI}).insertAfter('#tabs');
+          userProps.FONT_FAMILY = $(this).val();
+          saveUserProps(userProps);
+        });
+        $('.spinner').fadeOut("fast");
+      }
+    }
+
 }
 
-//try to get stored user preferences if available
-google.script.run.withSuccessHandler(updateUserProperties).getUserProperties();
 
+/*
 window.addFontFamilyOptions = function(response){
     var fontfamilies = (response.indexOf(',') != -1) ? response.split(",") : response;
     $.each(fontfamilies, function(key, value) {   
@@ -419,13 +477,17 @@ window.addFontFamilyOptions = function(response){
     // our page should be pretty much ready now, we can hide the spinner
     $('.spinner').fadeOut("fast");
 }
-
+*/
 window.saveUserProps = function(userprops){
   google.script.run.setUserProperties(userprops);
 }
+//window.COLORSWITCH = 0;
+//window.COLORARRAY = ["blue","green"];
 
 //Start our page manipulation and event handling
 jQuery(document).ready(function(){
+    //try to get stored user preferences if available
+    google.script.run.withSuccessHandler(updateUserProperties).getUserProperties();
 
     jQuery('#tabs').tabs({
       active: $('#activetab').val()
@@ -433,7 +495,7 @@ jQuery(document).ready(function(){
     jQuery('#updatedata').button();
     jQuery('.buttonset').buttonset();
     jQuery('#accordion').accordion();
-    google.script.run.withSuccessHandler(addFontFamilyOptions).getFontFamilies();
+    //google.script.run.withSuccessHandler(addFontFamilyOptions).getFontFamilies();
     
     $('ul.nav li').click(function(){
       var divid = $(this).data("divid");
@@ -446,16 +508,34 @@ jQuery(document).ready(function(){
       $(this).addClass('active');
     });
     
+    
+    /*
+    $('#bibleget-font-family').addClass("ui-widget ui-widget-content ui-corner-all ui-button").css({"cursor":"text","text-align":"left"});
+    $('#bibleget-font-family').on('change',function(){
+      $(this).css({"border-color":"red"});
+      userProps.FONT_FAMILY = $(this).val();
+      saveUserProps(userProps);
+      google.script.run.consoleLog('received font-family input, now:'+$(this).val()+' >> text:'+$(this).text());
+    });
+    $('#bibleget-font-family').on('input',function(){
+      let currentColor = COLORARRAY[COLORSWITCH];
+      COLORSWITCH = ~COLORSWITCH;
+      $(this).css({"border-color":currentColor});
+      userProps.FONT_FAMILY = $(this).val();
+      saveUserProps(userProps);
+      google.script.run.consoleLog('received font-family input, now:'+$(this).val()+' >> text:'+$(this).text());
+    });
+    */
     $('span#bookchapterstyle input').change(function(){
       if($(this).is(':checked')){
-        var thisstyle = $(this).attr('id').replace("bookchapter-","");
+        let thisstyle = $(this).attr('id').replace("bookchapter-","");
         if(thisstyle=="bold"){ $('p.bookchapter').css({"font-weight":"bold"}); userProps.BookChapterStyles.BOLD = true; saveUserProps(userProps); }
         if(thisstyle=="italic"){ $('p.bookchapter').css({"font-style":"italic"}); userProps.BookChapterStyles.ITALIC = true; saveUserProps(userProps); }
         if(thisstyle=="underline"){ $('p.bookchapter').css({"text-decoration":"underline"}); userProps.BookChapterStyles.UNDERLINE = true; saveUserProps(userProps); }
         
       }
       else{
-        var thisstyle = $(this).attr('id').replace("bookchapter-","");
+        let thisstyle = $(this).attr('id').replace("bookchapter-","");
         if(thisstyle=="bold"){ $('p.bookchapter').css({"font-weight":"normal"}); userProps.BookChapterStyles.BOLD = false; saveUserProps(userProps); }
         if(thisstyle=="italic"){ $('p.bookchapter').css({"font-style":"normal"}); userProps.BookChapterStyles.ITALIC = false; saveUserProps(userProps); }
         if(thisstyle=="underline"){ $('p.bookchapter').css({"text-decoration":"none"}); userProps.BookChapterStyles.UNDERLINE = false; saveUserProps(userProps); }
@@ -464,20 +544,20 @@ jQuery(document).ready(function(){
     
     $('span#bookchapteralignment input').change(function(){
       if($(this).is(':checked')){
-        var thisstyle = $(this).attr('id').replace("chapterbook-","");
+        let thisstyle = $(this).attr('id').replace("chapterbook-","");
         if(thisstyle=="normal"){ $('p.bookchapter').css({"position":"relative","top":"0px"}); userProps.BookChapterAlignment = "NORMAL"; saveUserProps(userProps); }
         if(thisstyle=="superscript"){ $('p.bookchapter').css({"position":"relative","top":"-4px"}); userProps.BookChapterAlignment = "SUPERSCRIPT"; saveUserProps(userProps); }
         if(thisstyle=="subscript"){ $('p.bookchapter').css({"position":"relative","top":"4px"}); userProps.BookChapterAlignment = "SUBSCRIPT"; saveUserProps(userProps); }
       }
     });
-    
+/*    
     $('select#bookchapter-fontfamily').change(function(){
       var fontfamily = $(this).val();
       $('p.bookchapter').css({"font-family":fontfamily});
       userProps.BookChapterStyles.FONT_FAMILY = fontfamily;
       saveUserProps(userProps);
     });
-    
+*/    
     $('select#bookchapter-fontsize').change(function(){
       var fontsize = $(this).val() + "px";
       $('p.bookchapter').css({"font-size":fontsize});
@@ -508,14 +588,14 @@ jQuery(document).ready(function(){
         if(thisstyle=="subscript"){ $('span.versenumber').css({"position":"relative","top":"4px"}); userProps.VerseNumberAlignment = "SUBSCRIPT"; saveUserProps(userProps); }
       }
     });
-    
+/*    
     $('select#versenumber-fontfamily').change(function(){
       var fontfamily = $(this).val();
       $('span.versenumber').css({"font-family":fontfamily});
       userProps.VerseNumberStyles.FONT_FAMILY = fontfamily;
       saveUserProps(userProps);
     });
-    
+*/    
     $('select#versenumber-fontsize').change(function(){
       var fontsize = $(this).val() + "px";
       $('span.versenumber').css({"font-size":fontsize});
@@ -526,10 +606,6 @@ jQuery(document).ready(function(){
     $('.indevelopment input').prop('disabled',true);
     
 
-});
-
-
-jQuery(document).ready(function(){
     $('span#versetextstyle input').change(function(){
       if($(this).is(':checked')){
         var thisstyle = $(this).attr('id').replace("versetext-","");
@@ -553,14 +629,14 @@ jQuery(document).ready(function(){
         if(thisstyle=="subscript"){ $('span.versetext').css({"position":"relative","top":"4px"}); userProps.VerseTextAlignment = "SUBSCRIPT"; saveUserProps(userProps); }
       }
     });
-    
+/*    
     $('select#versetext-fontfamily').change(function(){
       var fontfamily = $(this).val();
       $('span.versetext').css({"font-family":fontfamily});
       userProps.VerseTextStyles.FONT_FAMILY = fontfamily;
       saveUserProps(userProps);
     });
-
+*/
     $('select#versetext-fontsize').change(function(){
       var fontsize = $(this).val() + "px";
       $('span.versetext').css({"font-size":fontsize});
@@ -615,7 +691,7 @@ jQuery(document).ready(function(){
       $('.spinner').show();
       google.script.run.refreshData();
     });
-    
+        
 });
 
 </script>

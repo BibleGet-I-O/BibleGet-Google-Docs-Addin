@@ -19,7 +19,6 @@ body {
   box-sizing: border-box;
   overflow-y: auto;
   padding: 0px 12px 12px 12px;
-  position: absolute;
   width: 100%;
 }
 
@@ -56,6 +55,7 @@ body {
 .button-bar {
   bottom: 0;
   position: absolute;
+  left: 0;
 }
 
 .bottom-right,
@@ -694,7 +694,9 @@ input[type="text"].gapp-addon,
 input[type="time"].gapp-addon,
 input[type="url"].gapp-addon,
 input[type="week"].gapp-addon {
-  height: 25px;
+  height: 27px;
+  position: relative;
+  top: 1px;
 }
 
 input[type="date"].gapp-addon:focus,
@@ -784,7 +786,6 @@ input#bibleget-search{
 
 ul.nav {
   display: block;
-  width: 100%;
   position: relative;
   left: -36px;
 }
@@ -900,7 +901,10 @@ margin-left: -6px;
 #selectedversions.empty{
   color:Red;
 }
-
+.lds-ring-container {
+  text-align:center;
+  margin: 0px auto;
+}
 .lds-ring {
   display: inline-block;
   position: relative;
@@ -937,4 +941,16 @@ margin-left: -6px;
   }
 }
 
+::-webkit-input-placeholder {
+   font-style: italic;
+}
+:-moz-placeholder {
+   font-style: italic;  
+}
+::-moz-placeholder {
+   font-style: italic;  
+}
+:-ms-input-placeholder {  
+   font-style: italic; 
+}
 </style>

@@ -96,9 +96,9 @@ function isValidBook(book){
     setProps();
   }
   var usrProps = userProperties.getProperties();
-  for(var i=0;i<73;i++){
-    var usrprop = "biblebooks"+i;
-    var jsbook = JSON.parse(usrProps[usrprop]);
+  for(let i=0;i<73;i++){
+    let usrprop = "biblebooks"+i;
+    let jsbook = JSON.parse(usrProps[usrprop]);
     biblebooks.push(jsbook);
   }
   return idxOf(book,biblebooks);
@@ -110,8 +110,17 @@ function isValidBook(book){
  */
 function getMetaData(request){
   //request can be for building the biblebooks variable, or for building version indexes, or for requesting current validversions
-  var url = "http://query.bibleget.io/metadata.php?query=" + request;
-  var response = UrlFetchApp.fetch(url).getContentText();
+  var payload = {};
+  if(typeof request === 'string'){
+    payload = {'query':request};
+  }
+  else if(typeof request === 'object'){
+    payload = {'query':request.query};
+    if(request.hasOwnProperty('versions')){
+      payload.versions = request.versions; 
+    }
+  }
+  let response = UrlFetchApp.fetch(ENDPOINTURLMETADATA,{'method':'post','payload':payload}).getContentText();
 
   var myjson = {};
   myjson = JSON.parse(response);
@@ -422,7 +431,7 @@ function deleteProps(){
 function setProps(){
   var userProperties = PropertiesService.getScriptProperties();
   var prop = {};      
-  var metadata = getMetaData("biblebooks");
+  var metadata = getMetaData({"query":"biblebooks"});
   if(metadata !== false){
     if(metadata.hasOwnProperty("results")){
       var biblebooks = metadata.results;
@@ -440,7 +449,7 @@ function setProps(){
     }
     //docLog(Object.keys(prop).length+' properties about to be set.');
   }
-  metadata = getMetaData("bibleversions");
+  metadata = getMetaData({"query":"bibleversions"});
   var versionsabbrev = [];
   if(metadata !== false){
     if(metadata.hasOwnProperty("validversions_fullname")){
@@ -452,7 +461,7 @@ function setProps(){
   }
   if(versionsabbrev.length>0){
     var versionsstr = versionsabbrev.join(',');
-    metadata = getMetaData("versionindex&versions="+versionsstr);
+    metadata = getMetaData({"query":"versionindex","versions":versionsstr});
     if(metadata !== false){
       if(metadata.hasOwnProperty("indexes")){
         for(var versabbr in metadata.indexes){

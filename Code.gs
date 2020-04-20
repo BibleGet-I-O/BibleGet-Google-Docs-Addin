@@ -2,72 +2,91 @@
  * @OnlyCurrentDoc
  */
 
-const version = 21; //corresponds with version in the store; local version is -1!
-const requestparameters = "&return=json&appid=googledocs&pluginversion="+version;
+const VERSION = 21; //corresponds with version in the store; local version is -1!
+const REQUESTPARAMS = {'rettype':'json','appid':'googledocs'};
+const ENDPOINTURL = "https://query.bibleget.io/";
+const ENDPOINTURLMETADATA = "https://query.bibleget.io/metadata.php";
+
+function consoleLog(str){
+  Logger.log(str);
+  console.info(str);
+}
 
 function onInstall(e){
   
   // Show instructions for usage only on first install
-  openHelpUI();
+  openHelpSidebar();
 
-  // Add plugin menu to the toolbar
+  // Add plugin menu to the toolbar (according to AuthMode)
   onOpen(e); 
 
 }
 
 function onOpen(e) {
   var locale = getUserLocale();
-  DocumentApp.getUi().createAddonMenu()
-  .addItem(__('Avvia',locale), 'openCoolUI')
-  .addSeparator()
-  .addItem(__('Istruzioni',locale), 'openHelpUI')
-  .addItem(__('Impostazioni',locale), 'openSettings')
-  .addItem(__('Invia Feedback',locale), 'mailPrompt')
-  .addItem(__('Contribuisci',locale), 'contributo')
-  .addToUi();
 
-  // Initialize user preferences ONLY after user has granted permission to the Properties Service!
-  if (e && (e.authMode == ScriptApp.AuthMode.LIMITED || e.authMode == ScriptApp.AuthMode.FULL)) {
+  if (e && (e.authMode == ScriptApp.AuthMode.NONE)) {
+    //User has not yet granted permissions, we will just make a basic menu to start workflow
+    DocumentApp.getUi().createAddonMenu()
+    .addItem(__('Avvia',locale), 'openSimpleSidebar')
+    .addSeparator()
+    .addItem(__('Istruzioni',locale), 'openHelpSidebar')
+    .addItem(__('Invia Feedback',locale), 'mailPrompt')
+    .addItem(__('Contribuisci',locale), 'contributo')
+    .addToUi();
+    //consoleLog('Permissions not yet granted');
+  }
+  else{ //(e && (e.authMode == ScriptApp.AuthMode.LIMITED || e.authMode == ScriptApp.AuthMode.FULL))
+    // Initialize user preferences ONLY after user has granted permission to the Properties Service!
+    DocumentApp.getUi().createAddonMenu()
+    .addItem(__('Avvia',locale), 'openMainSidebar')
+    .addSeparator()
+    .addItem(__('Istruzioni',locale), 'openHelpSidebar')
+    .addItem(__('Impostazioni',locale), 'openSettings')
+    .addItem(__('Invia Feedback',locale), 'mailPrompt')
+    .addItem(__('Contribuisci',locale), 'contributo')
+    .addToUi();
+    
     var userProperties = PropertiesService.getUserProperties();
     //consoleLog("getting properties service");
     
     // Check if preferences have been set yet, if not set defaults
-    if(userProperties.getProperty("BookChapterStyles")==null){
+    if(userProperties.getProperty("FONT_FAMILY")==null){
       
       //consoleLog("preferences have not been set, now setting defaults");
       
-      var bookChapterStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,FONT_FAMILY:"Times New Roman",STRIKETHROUGH:false,FOREGROUND_COLOR:"#000044"};
+      var bookChapterStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#000044"};
       var bookChapterStylesStr = JSON.stringify(bookChapterStylesObj);
       
       //consoleLog("prepared bookChapterStylesStr");
       
-      var verseNumberStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,FONT_FAMILY:"Times New Roman",STRIKETHROUGH:false,FOREGROUND_COLOR:"#AA0000"};
+      var verseNumberStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#AA0000"};
       var verseNumberStylesStr = JSON.stringify(verseNumberStylesObj);
 
       //consoleLog("prepared verseNumberStylesStr");
       
-      var verseTextStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:false,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,FONT_FAMILY:"Times New Roman",STRIKETHROUGH:false,FOREGROUND_COLOR:"#666666"};
+      var verseTextStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:false,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#666666"};
       var verseTextStylesStr = JSON.stringify(verseTextStylesObj);
       
       //consoleLog("prepared verseTextStylesStr");
 
-      var newProperties = {BookChapterStyles:bookChapterStylesStr,BookChapterAlignment:"NORMAL",VerseNumberStyles:verseNumberStylesStr,VerseNumberAlignment:"SUPERSCRIPT",VerseTextStyles:verseTextStylesStr,VerseTextAlignment:"NORMAL",Interlinea:1.5,RientroSinistro:0,NoVersionFormatting:false,RecentSelectedVersions:"[]"};
+      let newProperties = {BookChapterStyles:bookChapterStylesStr,BookChapterAlignment:"NORMAL",VerseNumberStyles:verseNumberStylesStr,VerseNumberAlignment:"SUPERSCRIPT",VerseTextStyles:verseTextStylesStr,VerseTextAlignment:"NORMAL",Interlinea:1.5,RientroSinistro:0,FONT_FAMILY:"Times New Roman",NoVersionFormatting:false,RecentSelectedVersions:"[]"};
       userProperties.setProperties(newProperties);
-
+      consoleLog('default font-family now set:'+newProperties.FONT_FAMILY);
       //consoleLog("default preferences now set in properties service");
       
-    }    
-  }
-  else {
-    //consoleLog("we do not yet have full permissions");
+    }
+    else{
+      consoleLog('Seems we already have preferences set, no need to override. VERSION = '+VERSION);
+    }
   }
 }
 
 function openSettings(){
-  var locale = getUserLocale();
-  var html = HtmlService.createTemplateFromFile('Settings');
+  let locale = getUserLocale();
+  let html = HtmlService.createTemplateFromFile('Settings');
   html.activetab = 0;
-  var evaluated = html.evaluate()
+  let evaluated = html.evaluate()
       .setWidth(800)
       .setHeight(500)
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
@@ -79,8 +98,8 @@ function openSettings(){
  * (email body from custom dialog prompt) 
  */
 function mailPrompt(){
-  var locale = getUserLocale();
-  var html = HtmlService.createTemplateFromFile('Feedback')
+  let locale = getUserLocale();
+  let html = HtmlService.createTemplateFromFile('Feedback')
       .evaluate()
       .setWidth(400)
       .setHeight(300)
@@ -101,8 +120,8 @@ function sendMail(txt) {
 }
 
 function contributo(){
-  var locale = getUserLocale();
-  var html = HtmlService.createTemplateFromFile('Contributo')
+  let locale = getUserLocale();
+  let html = HtmlService.createTemplateFromFile('Contributo')
       .evaluate()
       .setWidth(400)
       .setHeight(300)
@@ -111,29 +130,34 @@ function contributo(){
       .showModalDialog(html,__('Sostieni BibleGet I/O',locale));
 }
 
-function openCoolUI(){
-  var html = HtmlService.createTemplateFromFile('Sidebar');
+function openSimpleSidebar(){
+  let html = HtmlService.createTemplateFromFile('SimpleSidebar');
+  DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O'));
+}
+
+function openMainSidebar(){
+  let html = HtmlService.createTemplateFromFile('Sidebar');
   //Logger.log(html.getCode());
   //MailApp.sendEmail("bibleget.io@gmail.com", "Sidebar Code", html.getCode());
   DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O'));
 }
 
-function openHelpUI(){
-  var locale = getUserLocale();
-  var html = HtmlService.createTemplateFromFile('Help.html');
+function openHelpSidebar(){
+  let locale = getUserLocale();
+  let html = HtmlService.createTemplateFromFile('Help.html');
   DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O - '+__('Istruzioni',locale)));
 }
 
 /***********************************************/
 /* FUNCTIONS THAT RUN FROM THE SIDEBAR SCRIPTS */
 /***********************************************/
-
+/*
 function getFontFamilies(){
   var fontfamilies = [""];//DocumentApp.FontFamily.values().toString();
   Logger.log(fontfamilies);
   return fontfamilies;
 }
-
+*/
 function alertMe(str){
   DocumentApp.getUi().alert(str);
 }
@@ -142,10 +166,10 @@ function getDefaultProperties(){
   
   //consoleLog("returning default properties");
   
-  var bookChapterStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,FONT_FAMILY:"Times New Roman",STRIKETHROUGH:false,FOREGROUND_COLOR:"#000044"};
-  var verseNumberStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,FONT_FAMILY:"Times New Roman",STRIKETHROUGH:false,FOREGROUND_COLOR:"#AA0000"};
-  var verseTextStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:false,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,FONT_FAMILY:"Times New Roman",STRIKETHROUGH:false,FOREGROUND_COLOR:"#666666"};
-  var defaultProperties = {BookChapterStyles:bookChapterStylesObj,BookChapterAlignment:"NORMAL",VerseNumberStyles:verseNumberStylesObj,VerseNumberAlignment:"SUPERSCRIPT",VerseTextStyles:verseTextStylesObj,VerseTextAlignment:"NORMAL",Interlinea:1.5,RientroSinistro:0,NoVersionFormatting:false};
+  let bookChapterStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#000044"};
+  let verseNumberStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#AA0000"};
+  let verseTextStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:false,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#666666"};
+  let defaultProperties = {BookChapterStyles:bookChapterStylesObj,BookChapterAlignment:"NORMAL",VerseNumberStyles:verseNumberStylesObj,VerseNumberAlignment:"SUPERSCRIPT",VerseTextStyles:verseTextStylesObj,VerseTextAlignment:"NORMAL",Interlinea:1.5,RientroSinistro:0,FONT_FAMILY:"Times New Roman",NoVersionFormatting:false};
   return defaultProperties;
 }
 
@@ -153,16 +177,16 @@ function getUserProperties(){
 
   //consoleLog("getting user preferences.");
   
-  var userProperties = PropertiesService.getUserProperties();
+  let userProperties = PropertiesService.getUserProperties();
   
-  //consoleLog("first trying properties service:");
+  consoleLog("first trying properties service:");
   
   //if for any reason defaults have not been set, let's return an object with default values
   if(userProperties.getProperty("BookChapterStyles")===null){
     
-    //consoleLog("preferences not yet set in properties service, will get default preferences...");
+    consoleLog("preferences not yet set in properties service, will get default preferences...");
     
-    var defaultProperties = getDefaultProperties();
+    let defaultProperties = getDefaultProperties();
     return defaultProperties;
     
   }
@@ -172,10 +196,10 @@ function getUserProperties(){
     
     //consoleLog("preferences have been set in properties service, retrieving now...");
     
-    var usrProperties = userProperties.getProperties();
-    var currentProperties = {};
+    let usrProperties = userProperties.getProperties();
+    let currentProperties = {};
     
-    //consoleLog("will now parse json strings from properties service");
+    consoleLog("will now parse json strings from properties service");
     
     //consoleLog(usrProperties.BookChapterStyles);
     currentProperties.BookChapterStyles = JSON.parse(usrProperties.BookChapterStyles);    
@@ -194,7 +218,8 @@ function getUserProperties(){
     currentProperties.VerseTextAlignment = usrProperties.VerseTextAlignment;
     currentProperties.Interlinea = usrProperties.Interlinea;
     currentProperties.RientroSinistro = usrProperties.RientroSinistro;
-    
+    currentProperties.FONT_FAMILY = usrProperties.FONT_FAMILY;
+    consoleLog('FONT_FAMILY = '+currentProperties.FONT_FAMILY);
     currentProperties.NoVersionFormatting = usrProperties.NoVersionFormatting;
     //consoleLog("now returning preferences retrieved from properties service.");
     return currentProperties;
@@ -207,7 +232,7 @@ function setUserProperties(jsonobj){
 
   //consoleLog("setting preferences in properties service");
   
-  var newProperties = {};
+  let newProperties = {};
   newProperties.BookChapterStyles = JSON.stringify(jsonobj.BookChapterStyles);
   newProperties.BookChapterAlignment = jsonobj.BookChapterAlignment;
   newProperties.VerseNumberStyles = JSON.stringify(jsonobj.VerseNumberStyles);
@@ -216,39 +241,38 @@ function setUserProperties(jsonobj){
   newProperties.VerseTextAlignment = jsonobj.VerseTextAlignment;
   newProperties.Interlinea = jsonobj.Interlinea;
   newProperties.RientroSinistro = jsonobj.RientroSinistro;
+  newProperties.FONT_FAMILY = jsonobj.FONT_FAMILY;
   newProperties.NoVersionFormatting = jsonobj.NoVersionFormatting;
   //Logger.log("saving property NoVersionFormatting with value: "+jsonobj.NoVersionFormatting);
-  var userProperties = PropertiesService.getUserProperties();
+  let userProperties = PropertiesService.getUserProperties();
   userProperties.setProperties(newProperties);
   
-  //consoleLog("preferences now set in properties service.");
+  consoleLog("preferences now set in properties service, userProperties.FONT_FAMILY = "+newProperties.FONT_FAMILY);
 }
 
 function setUserProperty(propKey,propVal){
-  var userProperties = PropertiesService.getUserProperties();
+  let userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty(propKey, propVal);
 }
 
 function getUserProperty(propKey){
-  var userProperties = PropertiesService.getUserProperties();
+  let userProperties = PropertiesService.getUserProperties();
   Logger.log("getting user property: "+propKey);
   var userProp = userProperties.getProperty(propKey);
   Logger.log(userProp);
   return userProp;
 }
 
-function consoleLog(str){
-  Logger.log(str);
-}
-
 function fetchData(request){
-  var url = "http://query.bibleget.io/index2.php?query=" + request + requestparameters;
+  let {query,version} = request;
+  let {rettype,appid} = REQUESTPARAMS;
+  var payload = {'query':query,'version':version,'return':rettype,'appid':appid,'pluginversion':VERSION};
   try{
-    var response = UrlFetchApp.fetch(url);
+    var response = UrlFetchApp.fetch(ENDPOINTURL,{'method':'post','payload':payload});
     var responsecode = response.getResponseCode();
     if(responsecode==200){
       //Logger.log("Response code was 200.");
-      var content = response.getContentText();
+      let content = response.getContentText();
       //Logger.log("Contents:");
       //Logger.log(content);
       return content;
@@ -328,6 +352,9 @@ function docInsert(json){
     //DocumentApp.getUi().alert("rientro sinistro = "+rientrosinistro+" >> "+leftindent+"pt");
     newPar.setIndentFirstLine(BibleGetProperties.leftindent);
     newPar.setIndentStart(BibleGetProperties.leftindent);
+    let ffStyle = {};
+    ffStyle[DocumentApp.Attribute.FONT_FAMILY] = BibleGetProperties.FONT_FAMILY;
+    newPar.setAttributes(ffStyle);
     BibleGetGlobal.currentPar = newPar;
   } else {
     DocumentApp.getUi().alert(__('Cannot insert text at this document location.',locale));
@@ -347,7 +374,7 @@ function docInsert(json){
       var versionpargr;
       if(i==0){ versionpargr = BibleGetGlobal.currentPar.appendText(verses[i].version); }
       else { 
-        BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties.linespacing,BibleGetProperties.leftindent);
+        BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties.linespacing,BibleGetProperties.leftindent,BibleGetProperties.FONT_FAMILY);
         versionpargr = BibleGetGlobal.currentPar.appendText(verses[i].version); 
       }
       setVerseStyles(versionpargr,BibleGetProperties.bcStyles,BibleGetProperties.bookchapteralignment);
@@ -433,7 +460,7 @@ function doNestedTagStuff(speakerTagBefore,speakerTagContents,speakerTagAfter,th
   } 
 }
 
-function createNewPar(BibleGetGlobal,linespacing,leftindent){
+function createNewPar(BibleGetGlobal,linespacing,leftindent,fontfamily){
   var newPar;
   if(newPar = BibleGetGlobal.body.insertParagraph(++BibleGetGlobal.idx,"")){
     newPar.setAlignment(DocumentApp.HorizontalAlignment.JUSTIFY);
@@ -441,6 +468,9 @@ function createNewPar(BibleGetGlobal,linespacing,leftindent){
     //DocumentApp.getUi().alert("rientro sinistro = "+rientrosinistro+" >> "+leftindent+"pt");
     newPar.setIndentFirstLine(leftindent);
     newPar.setIndentStart(leftindent);
+    let ffStyle = {};
+    ffStyle[DocumentApp.Attribute.FONT_FAMILY] = fontfamily;
+    newPar.setAttributes(ffStyle);
     BibleGetGlobal.currentPar = newPar;
   }
   return BibleGetGlobal;
@@ -673,29 +703,27 @@ function setAlignmentValue(alignmentvalue){
 }
 
 function prepareProperties(){
-  var userProperties = getUserProperties();
+  let userProperties = getUserProperties();
   
-  var bcStyles,bookchapteralignment,vnStyles,versenumberalignment,vtStyles,versetextalignment,linespacing,rientrosinistro,noVersionFormatting;
+  let noVersionFormatting = JSON.parse(userProperties.NoVersionFormatting);  
+  let bookchapteralignment = setAlignmentValue(userProperties.BookChapterAlignment);  
+  let versenumberalignment = setAlignmentValue(userProperties.VerseNumberAlignment);  
+  let versetextalignment = setAlignmentValue(userProperties.VerseTextAlignment);  
+  let linespacing = parseFloat(userProperties.Interlinea);
+  let rientrosinistro = parseFloat(userProperties.RientroSinistro);
   
-  noVersionFormatting = JSON.parse(userProperties.NoVersionFormatting);  
-  bookchapteralignment = setAlignmentValue(userProperties.BookChapterAlignment);  
-  versenumberalignment = setAlignmentValue(userProperties.VerseNumberAlignment);  
-  versetextalignment = setAlignmentValue(userProperties.VerseTextAlignment);  
-  linespacing = parseFloat(userProperties.Interlinea);
-  rientrosinistro = parseFloat(userProperties.RientroSinistro);
-  
-  bcStyles = userProperties.BookChapterStyles;
-  vnStyles = userProperties.VerseNumberStyles;
-  vtStyles = userProperties.VerseTextStyles;
+  let bcStyles = userProperties.BookChapterStyles;
+  let vnStyles = userProperties.VerseNumberStyles;
+  let vtStyles = userProperties.VerseTextStyles;
   
   bcStyles.FONT_SIZE = parseInt(bcStyles.FONT_SIZE);
   vnStyles.FONT_SIZE = parseInt(vnStyles.FONT_SIZE);
   vtStyles.FONT_SIZE = parseInt(vtStyles.FONT_SIZE);
 
   //var leftindent = Math.round(rientrosinistro * 28.3464567); =centimeters to points conversion
-  var leftindent = Math.round(rientrosinistro * 72); //=inches to points conversion
+  let leftindent = Math.round(rientrosinistro * 72); //=inches to points conversion
 
-  return {"bcStyles":bcStyles,"vnStyles":vnStyles,"vtStyles":vtStyles,"bookchapteralignment":bookchapteralignment,"versenumberalignment":versenumberalignment,"versetextalignment":versetextalignment,"linespacing":linespacing,"rientrosinistro":rientrosinistro,"noVersionFormatting":noVersionFormatting,"leftindent":leftindent};
+  return {"bcStyles":bcStyles,"vnStyles":vnStyles,"vtStyles":vtStyles,"bookchapteralignment":bookchapteralignment,"versenumberalignment":versenumberalignment,"versetextalignment":versetextalignment,"linespacing":linespacing,"rientrosinistro":rientrosinistro,"FONT_FAMILY":userProperties.FONT_FAMILY,"noVersionFormatting":noVersionFormatting,"leftindent":leftindent};
 }
 
 function getCursorIndex(){

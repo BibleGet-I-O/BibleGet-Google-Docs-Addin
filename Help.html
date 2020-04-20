@@ -37,12 +37,21 @@
   bottom: 56px;
   top: 0;
 }
-
+div.sidebar.bottom {
+  padding: 0px;
+}
+div.sidebar.branding-below {
+  box-sizing: content-box;
+}
 ul.nav {
   display: block;
-  width: 100%;
   position: relative;
   left: -36px;
+  top: 10px;
+  border-top: 1px solid Gray;
+  width: 90%;
+  padding-right:10px;
+  background-color: LightGray;
 }
 ul.nav li{
   cursor: pointer;
@@ -54,8 +63,8 @@ ul.nav li{
   font-weight:bold;
   color: LightGrey;
   height: 40px;
-  border: 1px solid  DimGray;
   padding: 0px 12px;
+  box-shadow: inset -1px 0px 3px 2px;
 }
 ul.nav li:hover {
   background-color: LightGrey;
@@ -69,7 +78,10 @@ ul.nav li.active {
   border-right: 1px solid DimGray;
   border-bottom: 1px solid DimGray;
   border-top: none;
-  box-shadow: 0px 3px 3px Black;
+  position: relative;
+  top: -1px;
+  padding-top: 4px;
+  box-shadow: inset -2px -3px 3px #DDD;
 }
 
 div.sidebar-body {
@@ -84,7 +96,7 @@ div.active-tab {
   /* max-height: 390px;*/
   overflow-y: scroll;
   text-align: justify;
-  padding-right: 8px;
+  padding-right: 32px;
 }
 table { width: 100%; }
 table th { font-weight:bold;text-align:left;width:50%; }
@@ -108,7 +120,7 @@ span.internal-link:hover {
 
 
 <div class="sidebar-body active-tab" id="explan-div">
-<h1><?=__("Formulazione delle query bibliche",locale)?></h1>
+<h3><?=__("Formulazione delle query bibliche",locale)?></h3>
 <p><?!=__("p1",locale)?></p>
 <p><?=__("p2",locale)?></p>
 <ul>
@@ -140,7 +152,7 @@ span.internal-link:hover {
 
 <div class="sidebar bottom">
   <ul class="nav" id="tabs-ul"><li class="active" id="explan"><?=__("Formare una query",locale)?></li><li id="bookabbrevs"><?=__("Libri / Abbreviazioni",locale)?></li></ul>  
-  <div style="background:linear-gradient(white,gray,lightblue,black);color:White;font-weight:bold;text-shadow:3px 3px 3px Black;padding:1px;vertical-align:middle;"><a target="_blank" href="http://www.bibleget.io"><img style="box-shadow:3px 3px 3px Black;background-color:#FFFFFF;margin-right:12px;padding:1px;position:relative;top:-4px;" width="32" height="32" title="" alt="" src="https://googledrive.com/host/0B2T2bACoqOyKVzJVUjRnQXlQNlk/holy-bible-x32.png" /></a><span style="position:relative;top:-9px;">BibleGet I/O for Google Docs</span></div>
+  <div style="background:linear-gradient(white,gray,lightblue,black);color:White;font-weight:bold;text-shadow:3px 3px 3px Black;padding:1px;vertical-align:middle;"><a target="_blank" href="https://www.bibleget.io"><?!= include("BibleIcon_32"); ?></a><span style="position:relative;top:-9px;">BibleGet I/O for Google Docs</span></div>
 </div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
