@@ -4,6 +4,7 @@
   //ONLY SEEMS TO HAPPEN WITH THE BIBLEGET ACCOUNT AND NOT OTHER ACCOUNTS
   var userProperties = getUserProperties();
   var lftindnt = Math.round(parseFloat(userProperties.RientroSinistro)*28.3464567);
+  var rgtindnt = Math.round(parseFloat(userProperties.RientroDestro)*28.3464567);
   var locale = getUserLocale();
   var scriptProperties = PropertiesService.getScriptProperties();
   if(scriptProperties.getProperty("languages")===null || scriptProperties.getProperty("versions")===null){
@@ -30,23 +31,25 @@
   margin-top: 3px;
   margin-bottom: 3px;
   margin-left: <?= lftindnt?>pt;
+  margin-right:<?= rgtindnt?>pt;
+  font-family: <?= userProperties.FONT_FAMILY ?>;
 }
 
 .bookchapter{
   <? if(userProperties.BookChapterStyles.BOLD){ ?>font-weight: bold; <? } ?>
   font-size: <?= userProperties.BookChapterStyles.FONT_SIZE ?>px;
-  font-family: <?= userProperties.BookChapterStyles.FONT_FAMILY ?>;
   color: <?= userProperties.BookChapterStyles.FOREGROUND_COLOR ?>;
   background-color: <?= userProperties.BookChapterStyles.BACKGROUND_COLOR ?>;
   padding-top:0px;
   margin-bottom: 3px;
   margin-top: 0px;
   margin-left: <?= lftindnt?>pt;
+  margin-right:<?= rgtindnt?>pt;
+  font-family: <?= userProperties.FONT_FAMILY ?>;
 }
 .versenumber{
   <? if(userProperties.VerseNumberStyles.BOLD){ ?>font-weight: bold; <? } ?>
   font-size: <?= userProperties.VerseNumberStyles.FONT_SIZE ?>px;
-  font-family: <?= userProperties.VerseNumberStyles.FONT_FAMILY ?>;
   color: <?= userProperties.VerseNumberStyles.FOREGROUND_COLOR ?>;
   background-color: <?= userProperties.VerseNumberStyles.BACKGROUND_COLOR ?>;
   position: relative;
@@ -55,7 +58,6 @@
 .versetext{
   <? if(userProperties.VerseTextStyles.BOLD){ ?>font-weight: bold; <? } ?>
   font-size: <?= userProperties.VerseTextStyles.FONT_SIZE ?>px;
-  font-family: <?= userProperties.VerseTextStyles.FONT_FAMILY ?>;
   color: <?= userProperties.VerseTextStyles.FOREGROUND_COLOR ?>;
   background-color: <?= userProperties.VerseTextStyles.BACKGROUND_COLOR ?>;
 }
@@ -201,6 +203,7 @@ html>body tbody.scrollContent td + td + td {
 .custom-combobox {
   position: relative;
   display: inline-block;
+  right: 2px;
 }
 .custom-combobox-toggle {
   position: absolute;
@@ -215,6 +218,7 @@ html>body tbody.scrollContent td + td + td {
   background: -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
   background-position: 95% 50%;
   background-repeat: no-repeat;
+  border: 2px inset #ccc;
 }
 
 .flexcontainer {
@@ -223,7 +227,7 @@ html>body tbody.scrollContent td + td + td {
   justify-content: space-between;
 }
 
-.flexitem:nth-child(3) {
+.flexitem:nth-child(4) {
   min-width: 215px;
 }
 
@@ -264,6 +268,16 @@ ul.ui-autocomplete.ui-widget {
           <? var vals = ["0","0.25","0.5","0.75","1","1.25","1.5","1.75","2"]; 
           for(var n in vals){ ?>
             <option value=<?=vals[n]?> <? if(userProperties.RientroSinistro==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
+          <? }
+          ?>    
+          </select>
+        </div>
+        <div class="flexitem">
+          <label for="rientrodestro-quote"><b><?!=__('Rientro Destro',locale)?></b></label><br />
+          <select id="rientrodestro-quote" class="gapp-addon">
+          <? var vals = ["0","0.25","0.5","0.75","1","1.25","1.5","1.75","2"]; 
+          for(var n in vals){ ?>
+            <option value=<?=vals[n]?> <? if(userProperties.RientroDestro==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
           <? }
           ?>    
           </select>
@@ -453,6 +467,7 @@ window.updateUserProperties = function(propsobj){
           //jQuery('<span>',{text:myUI}).insertAfter('#tabs');
           userProps.FONT_FAMILY = $(this).val();
           saveUserProps(userProps);
+          $('p.bookchapter').add('p.liveview-quote').css({'font-family':userProps.FONT_FAMILY});
         });
         $('.spinner').fadeOut("fast");
       }
@@ -489,13 +504,12 @@ jQuery(document).ready(function(){
     //try to get stored user preferences if available
     google.script.run.withSuccessHandler(updateUserProperties).getUserProperties();
 
+    jQuery('#accordion').accordion();
     jQuery('#tabs').tabs({
       active: $('#activetab').val()
     });
     jQuery('#updatedata').button();
     jQuery('.buttonset').buttonset();
-    jQuery('#accordion').accordion();
-    //google.script.run.withSuccessHandler(addFontFamilyOptions).getFontFamilies();
     
     $('ul.nav li').click(function(){
       var divid = $(this).data("divid");
@@ -679,6 +693,13 @@ jQuery(document).ready(function(){
       saveUserProps(userProps);
     });
     
+    $('#rientrodestro-quote').change(function(){
+      var rightindent = Math.round(parseFloat($(this).val()) * 28.3464567);
+      $('.liveview-quote').css({"margin-right":rightindent+"pt"});
+      $('.bookchapter').css({"margin-right":rightindent+"pt"});
+      userProps.RientroDestro = $(this).val();
+      saveUserProps(userProps);
+    });
     //$('#no-version-formatting').checkbox();
     
     $('#no-version-formatting').change(function(){

@@ -422,15 +422,15 @@ function checkQuery(thisquery,indexes,thisbook){
 }
 
 
-
+/* Seems like it's never actually used, but it might come in handy */
 function deleteProps(){
-  var propService = PropertiesService.getScriptProperties();
-  propService.deleteAllProperties();
+  let scriptProperties = PropertiesService.getScriptProperties();
+  scriptProperties.deleteAllProperties();
 }
 
 function setProps(){
-  var userProperties = PropertiesService.getScriptProperties();
-  var prop = {};      
+  let scriptProperties = PropertiesService.getScriptProperties();
+  var props = {};      
   var metadata = getMetaData({"query":"biblebooks"});
   if(metadata !== false){
     if(metadata.hasOwnProperty("results")){
@@ -439,13 +439,13 @@ function setProps(){
       for(var i in biblebooks){
         var biblebooks_str = JSON.stringify(biblebooks[i]);
         var usrprop = "biblebooks"+i;
-        prop[usrprop] = biblebooks_str;
+        props[usrprop] = biblebooks_str;
       }
     }
     if(metadata.hasOwnProperty("languages")){
       var languages = metadata.languages.map(function(str){ return toProperCase(str); });
       var languages_str = JSON.stringify(languages);
-      prop["languages"] = languages_str;
+      props["languages"] = languages_str;
     }
     //docLog(Object.keys(prop).length+' properties about to be set.');
   }
@@ -456,7 +456,7 @@ function setProps(){
       var bibleversions = metadata.validversions_fullname;
       versionsabbrev = Object.keys(bibleversions);
       var bibleversions_str = JSON.stringify(bibleversions);
-      prop["versions"] = bibleversions_str;
+      props["versions"] = bibleversions_str;
     }
   }
   if(versionsabbrev.length>0){
@@ -470,24 +470,24 @@ function setProps(){
           temp.chapter_limit = metadata["indexes"][versabbr]["chapter_limit"];
           temp.verse_limit = metadata["indexes"][versabbr]["verse_limit"];
           var versionindex_str = JSON.stringify(temp);
-          prop[versabbr+"IDX"] = versionindex_str;
+          props[versabbr+"IDX"] = versionindex_str;
         }
       }
     }
   }
-  userProperties.setProperties(prop);      
+  scriptProperties.setProperties(props);      
 }
 
 function refreshData(){
   setProps();
-  var locale = getUserLocale();
-  //there is no way to test if sidebar is open, so we're gonna pretend it's open and refresh it anyway
-  var html = HtmlService.createTemplateFromFile('Sidebar');
-  DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O'));
+  let locale = getUserLocale();
+  //there is no way to test if modal window is open, so we're gonna pretend it's open and refresh it anyway
+  let html1 = HtmlService.createTemplateFromFile('Sidebar');
+  DocumentApp.getUi().showSidebar(html1.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O'));
 
-  var html = HtmlService.createTemplateFromFile('Settings');
-  html.activetab = 2;
-  var evaluated = html.evaluate()
+  let html2 = HtmlService.createTemplateFromFile('Settings');
+  html2.activetab = 2;
+  let evaluated = html2.evaluate()
       .setWidth(800)
       .setHeight(500)
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
