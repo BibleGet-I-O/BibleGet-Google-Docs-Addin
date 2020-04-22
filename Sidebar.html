@@ -13,7 +13,7 @@
   
   var scriptProperties = PropertiesService.getScriptProperties();
   if(scriptProperties.getProperty("versions")===null){
-    setProps();
+    setScriptProps();
   }
   var propVersions = scriptProperties.getProperty("versions");
   var versions = JSON.parse(propVersions);

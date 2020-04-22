@@ -11,7 +11,7 @@
   var scriptProperties = PropertiesService.getScriptProperties();
   if(scriptProperties.getProperty("languages")===null || scriptProperties.getProperty("versions")===null){
     //consoleLog('now setting properties from Settings.html');
-    setProps();
+    setScriptProps();
   }
   
   var propLangs = scriptProperties.getProperty("languages");
@@ -30,7 +30,7 @@
 <style>
 
 .liveview-quote {
-  line-height: <?= userProperties.Interlinea?>em;
+  line-height: <?= userProperties.Lineheight?>em;
   text-align: justify;
   margin-top: 3px;
   margin-bottom: 3px;
@@ -276,12 +276,22 @@ html>body tbody.scrollContent td + td + td {
   min-height: 200px;
 }
 
+/* override some jquery ui stylings to fix things up to the pixel (or fraction of a pixel!) */
+
 ul.ui-autocomplete.ui-widget {
   max-height: 300px;
   overflow-y: auto;
 }
 
 span.ui-checkboxradio-icon { display: none; }
+
+.ui-button {
+  line-height: 1.3em;
+  min-height: 1.3em;
+}
+
+.ui-button.ui-widget.ui-checkboxradio-radio-label.ui-checkboxradio-checked.ui-state-active.ui-checkboxradio-label.ui-controlgroup-item { position:relative; top: .3px; }
+
 </style>
 </head>
 <body>
@@ -300,16 +310,16 @@ span.ui-checkboxradio-icon { display: none; }
       <h3><b><?=__('Paragraph Styles',locale)?></b></h3>
       <div class="toolbar ui-widget-header ui-corner-bottom flexcontainer">
         <div class="flexitem">
-          <label for="interlinea-quote" class="gapp-addon"><b><?=__('Interlinea',locale)?></b></label><br />
-          <select id="interlinea-quote" class="gapp-addon">
-            <option value="1.0"<? if(userProperties.Interlinea=="1.0"){ ?> SELECTED<? } ?>>Single 1.0</option>
-            <option value="1.15"<? if(userProperties.Interlinea=="1.15"){ ?> SELECTED<? } ?>>1.15</option>
-            <option value="1.5"<? if(userProperties.Interlinea=="1.5"){ ?> SELECTED<? } ?>>1&#189;</option>
-            <option value="2.0"<? if(userProperties.Interlinea=="2.0"){ ?> SELECTED<? } ?>>Double 2.0</option>
+          <label for="Lineheight-quote" class="gapp-addon"><b><?=__('Lineheight',locale)?></b></label><br />
+          <select id="Lineheight-quote" class="gapp-addon">
+            <option value="1.0"<? if(userProperties.Lineheight=="1.0"){ ?> SELECTED<? } ?>>Single 1.0</option>
+            <option value="1.15"<? if(userProperties.Lineheight=="1.15"){ ?> SELECTED<? } ?>>1.15</option>
+            <option value="1.5"<? if(userProperties.Lineheight=="1.5"){ ?> SELECTED<? } ?>>1&#189;</option>
+            <option value="2.0"<? if(userProperties.Lineheight=="2.0"){ ?> SELECTED<? } ?>>Double 2.0</option>
           </select>
         </div>
         <div class="flexitem">
-          <label for="LeftIndent-quote"><b><?!=__('Rientro Sinistro',locale)?></b></label><br />
+          <label for="LeftIndent-quote"><b><?!=__('Left Indent',locale)?></b></label><br />
           <select id="LeftIndent-quote" class="gapp-addon">
           <? var vals = ["0","0.25","0.5","0.75","1","1.25","1.5","1.75","2"]; 
           for(var n in vals){ ?>
@@ -319,7 +329,7 @@ span.ui-checkboxradio-icon { display: none; }
           </select>
         </div>
         <div class="flexitem">
-          <label for="RightIndent-quote"><b><?!=__('Rientro Destro',locale)?></b></label><br />
+          <label for="RightIndent-quote"><b><?!=__('Right Indent',locale)?></b></label><br />
           <select id="RightIndent-quote" class="gapp-addon">
           <? var vals = ["0","0.25","0.5","0.75","1","1.25","1.5","1.75","2"]; 
           for(var n in vals){ ?>
@@ -334,7 +344,7 @@ span.ui-checkboxradio-icon { display: none; }
         </div>
       </div>
             
-      <h3><b><?!=__('Formato Libro / Capitolo',locale)?></b></h3>
+      <h3><b><?!=__('Book / Chapter Format',locale)?></b></h3>
       <div class="toolbar ui-widget-header ui-corner-bottom">
         <div>
           <span id="bookchapterstyle" class="buttonset">
@@ -358,7 +368,7 @@ span.ui-checkboxradio-icon { display: none; }
         </div>
       </div>    
 
-    <h3><b><?!=__('Formato Numero del Versetto',locale)?></b></h3>
+    <h3><b><?!=__('Verse Number Format',locale)?></b></h3>
     <div class="toolbar ui-widget-header ui-corner-bottom">
       <div>
         <span id="versenumberstyle" class="buttonset">
@@ -382,7 +392,7 @@ span.ui-checkboxradio-icon { display: none; }
       </div>
     </div>    
 
-    <h3><b><?!=__('Formato Testo del Versetto',locale)?></b></h3>
+    <h3><b><?!=__('Verse Text Format',locale)?></b></h3>
     <div class="toolbar ui-widget-header ui-corner-bottom">
       <div>
         <span id="versetextstyle" class="buttonset">
@@ -408,8 +418,8 @@ span.ui-checkboxradio-icon { display: none; }
     </div> <!-- END ACCORDION  -->
 
     <fieldset class="fieldset-results">
-      <legend><b><?!=__('Anteprima',locale)?></b></legend>
-      <p class="bookchapter"><?!=__('Genesi',locale)?> 1</p>
+      <legend><b><?!=__('Preview',locale)?></b></legend>
+      <p class="bookchapter"><?!=__('Genesis',locale)?> 1</p>
       <p class="liveview-quote" style="margin-top:-6px;padding-top:0px;">
         <span class="versenumber">1</span><span class="versetext"><?!=__('Gen1:1',locale)?></span>
         <span class="versenumber">2</span><span class="versetext"><?!=__('Gen1:2',locale)?></span>
@@ -538,8 +548,8 @@ span.ui-checkboxradio-icon { display: none; }
     </div><!-- flexContainerX END -->
     
     <fieldset class="fieldset-results">
-      <legend><b><?!=__('Anteprima',locale)?></b></legend>
-      <p class="bookchapter"><?!=__('Genesi',locale)?> 1</p>
+      <legend><b><?!=__('Preview',locale)?></b></legend>
+      <p class="bookchapter"><?!=__('Genesis',locale)?> 1</p>
       <p class="liveview-quote" style="margin-top:-6px;padding-top:0px;">
         <span class="versenumber">1</span><span class="versetext"><?!=__('Gen1:1',locale)?></span>
         <span class="versenumber">2</span><span class="versetext"><?!=__('Gen1:2',locale)?></span>
@@ -561,7 +571,7 @@ span.ui-checkboxradio-icon { display: none; }
     <div id="tableContainer" class="tableContainer">
       <table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
         <thead class="fixedHeader">
-          <tr class="alternateRow"><th><a href="#"><?=toProperCase(__('ABBREVIAZIONE',locale))?></a></th><th><a href="#"><?=__('Full Name',locale)?></a></th><th><a href="#"><?=__('Year',locale)?></a></th></tr>
+          <tr class="alternateRow"><th><a href="#"><?=toProperCase(__('ABBREVIATION',locale))?></a></th><th><a href="#"><?=__('Full Name',locale)?></a></th><th><a href="#"><?=__('Year',locale)?></a></th></tr>
         </thead>
         <tbody class="scrollContent">
         <?var info = []; var x=0; for(var i in versions){ info = versions[i].split("|"); ?>
@@ -570,10 +580,12 @@ span.ui-checkboxradio-icon { display: none; }
         </tbody>
       </table>
     </div>        
-    <div style="clear:both;height:2px;"><hr /></div>
-    <div style="text-align:center;margin-top:16px;"><button id="updatedata"><?=__('UPDATE DATA FROM BIBLEGET SERVER',locale)?></button></div>
+    <div style="clear:both;text-align:center;margin-top:16px;"><button class="button" id="updatedata"><?=__('UPDATE DATA FROM BIBLEGET SERVER',locale)?></button></div>
+    <hr style="margin-top:16px;" />
+    <div style="text-align:center;margin-top:16px;"><button class="button" id="RESET_DEFAULT_USERPROPS"><?=__('RESET PREFERENCES TO DEFAULT OPTIONS',locale)?></button></div>
   </div>
   <!-- END TAB 3-->
+
 </div>
 <!-- -->
 
@@ -590,7 +602,7 @@ window.verseNumberStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:t
 window.verseTextStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:false,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#666666"};
 
 //this will be our global variable that holds the user preferences
-window.userProps = {BookChapterStyles:bookChapterStylesObj,BookChapterAlignment:"NORMAL",VerseNumberStyles:verseNumberStylesObj,VerseNumberAlignment:"SUPERSCRIPT",VerseTextStyles:verseTextStylesObj,VerseTextAlignment:"NORMAL",Interlinea:"1.5",FONT_FAMILY:"Times New Roman",LeftIndent:"0",NoVersionFormatting:false};
+window.userProps = {BookChapterStyles:bookChapterStylesObj,BookChapterAlignment:"NORMAL",VerseNumberStyles:verseNumberStylesObj,VerseNumberAlignment:"SUPERSCRIPT",VerseTextStyles:verseTextStylesObj,VerseTextAlignment:"NORMAL",Lineheight:"1.5",FONT_FAMILY:"Times New Roman",LeftIndent:"0",NoVersionFormatting:false};
 
 //function that will update the user preferences object if and when set by user
 window.updateUserProperties = function(propsobj){ 
@@ -639,11 +651,15 @@ jQuery(document).ready(function(){
     jQuery('#tabs').tabs({
       active: $('#activetab').val()
     });
-    jQuery('#updatedata').button();
-    jQuery('.buttonset').controlgroup({
+    
+    jQuery('#tab1 .buttonset').controlgroup();
+    
+    jQuery('#tab2 .buttonset').controlgroup({
       "direction": "vertical"
     });
     
+    jQuery('#tab3 .button').button();
+
     $('ul.nav li').click(function(){
       var divid = $(this).data("divid");
       
@@ -795,9 +811,9 @@ jQuery(document).ready(function(){
       
     });
     
-    $('#interlinea-quote').change(function(){
+    $('#Lineheight-quote').change(function(){
       $('.liveview-quote').css({"line-height":$(this).val()+"em"});
-      userProps.Interlinea = $(this).val();
+      userProps.Lineheight = $(this).val();
       saveUserProps(userProps);
     });
     

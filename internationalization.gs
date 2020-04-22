@@ -47,16 +47,16 @@ var __ = function(str,ling){
     },
     translatables = {
       //TEMPLATE: "":{"en":"","it":"","es":"","fr":"","de":""},
-      "Avvia":{"en":"Start","it":"Avvia","es":"Iniciar","fr":"Lancer","de":"Starten"},
-      "Istruzioni":{"en":"Instructions","it":"Istruzioni","es":"Instrucciones","fr":"Instructions","de":"Anleitung"},
-      "Impostazioni":{"en":"Settings","it":"Impostazioni","es":"Ajustes","fr":"Paramètres","de":"Einstellungen"},
-      "Invia Feedback":{"en":"Send Feedback","it":"Invia Feedback","es":"Enviar Comentarios","fr":"Envoyer des Commentaires","de":"Feedback Schicken"},
-      "Contribuisci":{"en":"Contribute","it":"Contribuisci","es":"Contribuir","fr":"Contribuer","de":"Beitragen"},
-      "Sostieni BibleGet I/O":{"en":"Support the BibleGet I/O Project","it":"Sostieni il Progetto BibleGet I/O","es":"Apoya el Proyecto BibleGet I/O","fr":"Soutenir le Projet BibleGet I/O","de":"Unterstützt das Projekt BibleGet I/O"},
+      "Start":{"en":"Start","it":"Avvia","es":"Iniciar","fr":"Lancer","de":"Starten"},
+      "Instructions":{"en":"Instructions","it":"Istruzioni","es":"Instrucciones","fr":"Instructions","de":"Anleitung"},
+      "Settings":{"en":"Settings","it":"Impostazioni","es":"Ajustes","fr":"Paramètres","de":"Einstellungen"},
+      "Send Feedback":{"en":"Send Feedback","it":"Invia Feedback","es":"Enviar Comentarios","fr":"Envoyer des Commentaires","de":"Feedback Schicken"},
+      "Contribute":{"en":"Contribute","it":"Contribuisci","es":"Contribuir","fr":"Contribuer","de":"Beitragen"},
+      "Support BibleGet I/O":{"en":"Support the BibleGet I/O Project","it":"Sostieni il Progetto BibleGet I/O","es":"Apoya el Proyecto BibleGet I/O","fr":"Soutenir le Projet BibleGet I/O","de":"Unterstützt das Projekt BibleGet I/O"},
       "Cannot insert text at this document location.":{"en":"Cannot insert text at this document location.","it":"Non è possibile inserire testo in questa posizione nel documento.","es":"No es posible insertar el texto en esa posición en el documento.","fr":"Il n'est pas possible d'insérer du texte à cet emplacement dans le document.","de":"Es ist nicht möglich, Text an dieser Stelle in das Dokument einzufügen."},
       "Get bible quotes":{"en":"Get bible quotes","it":"Ricerca citazioni bibliche","es":"Buscar citas biblicas","fr":"Obtenir citations bibliques","de":"Erhalten Bibelzitate"},
       "Please grant permissions":{"en":"Please grant permissions so that the BibleGet addon can communicate with the BibleGet server","it":"Devi autorizzare l'estensione di BibleGet a comunicare con il server di BibleGet","es":"Es necesario autorizar la extensión BibleGet para comunicarse con el servidor BibleGet","fr":"Vous devez autoriser l'extension BibleGet à communiquer avec le serveur BibleGet","de":"Sie müssen die BibleGet-Erweiterung autorisieren, um mit dem BibleGet-Server zu kommunizieren"},
-      "Formattazione":{"en":"Formatting","it":"Formattazione","es":"Formato","fr":"Formatage","de":"Formatierung"},
+      "Formatting":{"en":"Formatting","it":"Formattazione","es":"Formato","fr":"Formatage","de":"Formatierung"},
       "Set Font from current selected text":{"en":"Set Font from current selected text","it":"Imposta Carattere dal testo selezionato","es":"Configura fuente desde el texto seleccionado","fr":"Définir la police à partir du texte sélectionné","de":"Stellen Sie die Schriftart aus dem ausgewählten Text ein"},
       "Font for Bible Quotes":{"en":"Font for Bible Quotes","it":"Tipo Carattere per le Citazioni Bibliche","es":"Fuente para las Citas bíblicas","fr":"Police des Citations bibliques","de":"Schriftart für Bibel Zitate"},
       "Versions available:":{"en":"Versions available:","it":"Versioni disponibili:","es":"Versiones disponibles:","fr":"Versions disponibles:","de":"Versionen verfügbare:"},
@@ -67,14 +67,14 @@ var __ = function(str,ling){
       "Search":{"en":"Search","it":"Cerca","es":"Buscar","fr":"Rechercher","de":"Suchen"},
       "Get verses":{"en":"Get verses","it":"Richiedi i versetti","es":"Solicitar los versículos","fr":"Demander les versets","de":"Bitte um Bibelverse"},
       "There are Errors":{"en":"There are Errors","it":"Ci sono degli Errori","es":"Hay algunos Errores","fr":"Il y a des Erreurs","de":"Es gibt Fehler"},
-      "Risultato":{"en":"Result","it":"Risultato","es":"Resultado","fr":"Résultat","de":"Ergebnis"},
+      "Result":{"en":"Result","it":"Risultato","es":"Resultado","fr":"Résultat","de":"Ergebnis"}, //NOT USED?
       "Paragraph Styles":{"en":"Paragraph Styles","it":"Stili Paragrafo","es":"Estilos de Párrafo","fr":"Styles de Paragraphe","de":"Absatzstile"},
-      "Interlinea":{"en":"Linespacing","it":"Interlinea","es":"Interlínea","fr":"Interligne","de":"Zeilenabstand"},
-      "Rientro Sinistro":{"en":"Left Indent","it":"Rientro Sinistro","es":"Sangría Izquierda","fr":"Retrait gauche","de":"Linker Einzug"},
-      "Rientro Destro":{"en":"Right Indent","it":"Rientro Destro","es":"Sangría Derecha","fr":"Retrait à droite","de":"Richtiger Einzug"},
-      "Formato Libro / Capitolo":{"en":"Book / Chapter Format","it":"Formato Libro / Capitolo","es":"Formato Libro / Capítulo","fr":"Format Livre / Chapitre","de":"Buchformat und Kapitel-Format"},
-      "Formato Numero del Versetto":{"en":"Verse Number Format","it":"Formato Numero del Versetto","es":"Formato Número de Versículo","fr":"Format Numéro du Verset","de":"Format der Vers Nummer"},
-      "Formato Testo del Versetto":{"en":"Verse Text Format","it":"Formato Testo del Versetto","es":"Formato Texto de Versículo","fr":"Format Texte du Verset","de":"Format der Verse Text"},
+      "Lineheight":{"en":"Linespacing","it":"Interlinea","es":"Interlínea","fr":"Interligne","de":"Zeilenabstand"},
+      "Left Indent":{"en":"Left Indent","it":"Rientro Sinistro","es":"Sangría Izquierda","fr":"Retrait gauche","de":"Linker Einzug"},
+      "Right Indent":{"en":"Right Indent","it":"Rientro Destro","es":"Sangría Derecha","fr":"Retrait à droite","de":"Richtiger Einzug"},
+      "Book / Chapter Format":{"en":"Book / Chapter Format","it":"Formato Libro / Capitolo","es":"Formato Libro / Capítulo","fr":"Format Livre / Chapitre","de":"Buchformat und Kapitel-Format"},
+      "Verse Number Format":{"en":"Verse Number Format","it":"Formato Numero del Versetto","es":"Formato Número de Versículo","fr":"Format Numéro du Verset","de":"Format der Vers Nummer"},
+      "Verse Text Format":{"en":"Verse Text Format","it":"Formato Testo del Versetto","es":"Formato Texto de Versículo","fr":"Format Texte du Verset","de":"Format der Verse Text"},
       "Text Formatting":{"en":"Text Formatting","it":"Formattazione del Testo","es":"Formato del Texto","fr":"Format du Texte","de":"Textformat"},
       "Preferred Layout":{"en":"Preferred Layout","it":"Disposizione Preferita","es":"Disposición Preferida","fr":"Mise en Page Préférée","de":"Bevorzugte Seitenlayout"},
       "Bible version visibility":{"en":"Bible version visibility","it":"Visibilità della versione biblica","es":"","fr":"","de":""},
@@ -90,8 +90,8 @@ var __ = function(str,ling){
       "":{"en":"","it":"","es":"","fr":"","de":""},
       "":{"en":"","it":"","es":"","fr":"","de":""},
       "Versions and Languages":{"en":"Supported Versions and Languages","it":"Versioni e Lingue supportate","es":"Versiones y Idiomas compatibles","fr":"Versions et Idiomes compatibles","de":"Unterstützte Versionen und Sprachen"},
-      "Anteprima":{"en":"Preview","it":"Anteprima","es":"Pre estreno","fr":"Avant-première","de":"Vorschau"},
-      "Genesi":{"en":"Genesis","it":"Genesi","es":"Génesis","fr":"Genèse","de":"Genesis"},
+      "Preview":{"en":"Preview","it":"Anteprima","es":"Pre estreno","fr":"Avant-première","de":"Vorschau"},
+      "Genesis":{"en":"Genesis","it":"Genesi","es":"Génesis","fr":"Genèse","de":"Genesis"},
       "Gen1:1":{
         "en":"In the beginning, when God created the heavens and the earth—",
         "it":"In principio Dio creò il cielo e la terra.",
@@ -113,38 +113,38 @@ var __ = function(str,ling){
         "fr":"Dieu dit : Que la lumière soit et la lumière fut.",
         "de":"Gott sprach: Es werde Licht. Und es wurde Licht."
       },
-      "Inserisci nel Documento":{"en":"Insert into the Document","it":"Inserisci nel Documento","es":"Insertar en el Documento","fr":"Insérer dans le Document","de":"Legen Sie in das Dokument"},
-      "Scrivi le tue osservazioni su BibleGet I/O":{
+      "Insert into the Document":{"en":"Insert into the Document","it":"Inserisci nel Documento","es":"Insertar en el Documento","fr":"Insérer dans le Document","de":"Legen Sie in das Dokument"},
+      "Write your observations about BibleGet I/O":{
         "en":"Write your observations about BibleGet I/O",
         "it":"Scrivi le tue osservazioni su BibleGet I/O",
         "es":"Escríbe tus observaciones sobre BibleGet I/O",
         "fr":"Donnez vos commentaires sur BibleGet",
         "de":"Schreiben Sie Ihre Kommentare zu BibleGet I/O"
       },
-      "Invia Messaggio":{"en":"Send Message","it":"Invia Messaggio","es":"Enviar Mensaje","fr":"Envoyer Message","de":"Nachricht Senden"},
-      "Il tuo messaggio è stato inviato con successo. Grazie per averci contattato!":{
+      "Send Message":{"en":"Send Message","it":"Invia Messaggio","es":"Enviar Mensaje","fr":"Envoyer Message","de":"Nachricht Senden"},
+      "Your message was delivered successfully. Thank you for getting in touch with us!":{
         "en":"Your message was delivered successfully. Thank you for getting in touch with us!",
         "it":"Il tuo messaggio è stato inviato con successo. Grazie per averci contattato!",
         "es":"Tu mensaje se entregó correctamente. Gracias por ponerte en contacto con nosotros!",
         "fr":"Votre message a été livré avec succès. Merci de nous contacter!",
         "de":"Ihre Nachricht wurde erfolgreich übermittelt. Vielen Dank für Ihr Interesse!"
       },
-      "CHIUDI":{"en":"CLOSE","it":"CHIUDI","es":"CERRAR","fr":"FERMER","de":"SCHLIEßEN"},
-      "L'invio del messaggio non è andato a buon fine... Ritenta l'invio.":{
+      "CLOSE":{"en":"CLOSE","it":"CHIUDI","es":"CERRAR","fr":"FERMER","de":"SCHLIEßEN"},
+      "Your message was not delivered successfully... Please try to send again.":{
         "en":"Your message was not delivered successfully... Please try to send again.",
         "it":"L'invio del messaggio non è andato a buon fine... Ritenta l'invio.",
         "es":"Tu mensaje no se entregó correctamente... Por favor trate de enviar de nuevo.",
         "fr":"Votre message n'a pas remis correctement... Se il vous plaît essayer d'envoyer à nouveau.",
         "de":"Ihre Nachricht nicht korrekt zugestellt... Bitte versuchen Sie es noch einmal zu senden."  
       },
-      "Il progetto BibleGet I/O con il relativo server web":{
+      "The BibleGet I/O Project with it's server":{
         "en":"The BibleGet I/O Project with it's server, website, and applications were developed entirely by John R. D'Orazio, a priest of the Diocese of Rome, chaplain at the Third University of Rome. The project will survive only thanks to the offerings of those who appreciate and use this service. The server space and the domain name have annual costs. A contribution on your part, even if only €5, is a great help. Please help maintain this project!",
         "it":"Il progetto BibleGet I/O con il relativo server, sito web, e applicazioni sono stati sviluppati interamente da John R. D'Orazio, sacerdote della Diocesi di Roma, cappellano all'Università Roma Tre. Il progetto può sopravvivere soltanto grazie alle offerte di chi apprezza e utilizza questo servizio. Lo spazio server e il nome di dominio hanno dei costi annuali. Un tuo contributo, anche di soli €5, è di grande aiuto. Aiuta anche tu a mantenere vivo questo progetto!",
         "es":"El proyecto BibleGet I/O con sus servidor, sitio web, y aplicaciones se han desarrollado en su totalidad por John R. D'Orazio, sacerdote de la diócesis de Roma, capellán de la Tercera Universidad de Roma. El proyecto sólo puede sobrevivir gracias a las donaciones de aquellos que aprecian y utilizan este servicio. El espacio de el servidor y el nombre de dominio tienen costos anuales. Su contribución, aunque sea sólo €5, es una gran ayuda. Ayuda a mantener vivo este proyecto!",
         "fr":"Le projet BibleGet I/O avec son serveur, site web, et les applications ont été entièrement développé par John R. D'Orazio, prêtre du diocèse de Rome, aumônier de la Troisième Université de Rome. Le projet ne peut survivre que grâce aux dons de ceux qui apprécient et utilisent ce service. L'espace du serveur et le nom de domaine ont des coûts annuels. Sa contribution, même si seulement €5, est d'une grande aide. Aidez à garder ce projet en vie!",
         "de":"Das Projekt mit dem Server, Website und Anwendungen wurden vollständig von John R. D'Orazio entwickelt, priester der Diözese Rom, Kaplan der Dritten Universität von Rom. Das Projekt kann nur überleben dank der Spenden derer, die zu schätzen und nutzen diesen Service. Der Raum des Servers und der Domain-Namen haben jährlichen Kosten. Sein Beitrag, auch wenn nur €5, ist eine große Hilfe. Helfen Sie, dieses Projekt am Leben zu erhalten!"
       },
-      "Formulazione delle query bibliche":{
+      "Formulation of biblical queries":{
         "en":"Formulation of biblical queries",
         "it":"Formulazione delle query bibliche",
         "es":"Formulacion de las consultas biblicas",
@@ -235,28 +235,28 @@ var __ = function(str,ling){
         "fr":"Si vous trouvez une erreur d'opération dans l'extension &#8220;BibleGet I/O&#8221;, ou si vous avez des suggestions pour le faire fonctionner mieux, vous pouvez envoyer un message en utilisant l'option &#8220;Envoyer des commentaires&#8221; dans le menu de l'extension.",
         "de":"Wenn Sie einen Fehler in der Operation zum Erweiterung &#8220;BibleGet I/O&#8221; zu finden, oder wenn Sie Vorschläge haben, um es besser zu arbeiten, können Sie eine Nachricht über das Option &#8220;Feedback senden&#8221; in der Menü zu Erweiterung."
       },
-      "Formare una query":{
+      "Formulate a query":{
         "en":"Formulate a query",
         "it":"Formulare una query",
         "es":"Formular una consulta",
         "fr":"Formuler une requête",
         "de":"Formulieren Anfrage"
       },
-      "Libri / Abbreviazioni":{
+      "Books / Abbreviations":{
         "en":"Books / Abbreviations",
         "it":"Libri / Abbreviazioni",
         "es":"Libros / Abreviaturas",
         "fr":"Livres / Abréviations",
         "de":"Bücher / Abkürzungen"
       },
-      "LIBRO":{
+      "BOOK":{
         "en":"BOOK",
         "it":"LIBRO",
         "es":"LIBRO",
         "fr":"LIVRE",
         "de":"BUCH"
       },
-      "ABBREVIAZIONE":{
+      "ABBREVIATION":{
         "en":"ABBREVIATION",
         "it":"ABBREVIAZIONE",
         "es":"ABREVIATURA",
@@ -305,13 +305,6 @@ var __ = function(str,ling){
         "fr":"versions de la Bible sont actuellement supportées:",
         "de":"versionen der Bibel werden derzeit unterstützt:"
       },
-      "Currently in development":{
-        "en":"Currently in development",
-        "it":"Attualmente in via di sviluppo",
-        "es":"Actualmente en desarrollo",
-        "fr":"Actuellement en développement",
-        "de":"In Entwicklung"
-      },
       "Some Bible versions have their own formatting. This is left by default to keep the text as close as possible to the original. If however you need to have consistent formatting in your document, you may override the Bible version's own formatting.":{
         "en":"Some Bible versions have their own formatting. This is left by default to keep the text as close as possible to the original. If however you need to have consistent formatting in your document, you may override the Bible version's own formatting.",
         "it":"Alcune versioni bibliche hanno formattazione propria. Questa viene lasciata per impostazione predefinita per mantenere il testo il più vicino possibile all'originale. Se tuttavia hai bisogno di mantenere una formattazione coerente con il resto del documento, puoi spuntare qui per ignorare la formattazione propria del testo biblico.",
@@ -328,14 +321,14 @@ var __ = function(str,ling){
       }
     },
     errormessages = {
-      "Ci deve essere una valida indicazione di libro all'inizio della query.":{
+      "There must be a valid book indicator at the start of the query.":{
         "en":"There must be a valid book indicator at the start of the query.",
         "it":"Ci deve essere una valida indicazione di libro all'inizio della query.",
         "es":"Tiene que haber una indicación válida del libro en el inicio de la consulta.",
         "fr":"Il doit y avoir une indication valable de la livre au début de la requête.",
         "de":"Es muss eine gültige Anzeige des Buches zu Beginn der Abfrage sein."
       },
-      "Ogni indicazione di libro deve essere seguita da una valida indicazione di capitolo.":{
+      "Every book indicator must be followed by a valid chapter indicator.":{
         "en":"Every book indicator must be followed by a valid chapter indicator.",
         "it":"Ogni indicatore di libro deve essere seguito da un valido indicatore di capitolo.",
         "es":"Cada indicador de libro debe ser seguido por un indicador del capítulo válido.",
@@ -356,49 +349,49 @@ var __ = function(str,ling){
         "fr":"Une requête qui ne commence pas par un indicateur du livre doit cependant commencer avec un indicateur de chapitre valide!",
         "de":"Eine Abfrage, die nicht mit einem Buch-Anzeige wird anfangen müssen jedoch mit einer gültigen Kapitel Anzeige beginnen!"
       },
-      "Non puoi utilizzare un punto senza prima utilizzare una virgola.":{
+      "You cannot use a period if you haven't first used a comma.":{
         "en":"You cannot use a period if you haven't first used a comma.",
         "it":"Non puoi utilizzare un punto senza prima utilizzare una virgola.",
         "es":"No se puede utilizar un punto, si no se ha utilizado primeramente una coma.",
         "fr":"Vous ne pouvez pas utiliser un point, si vous ne avez pas utilisé d'abord une virgule.",
         "de":"Sie können nicht einen Punkt, wenn Sie nicht zuerst ein Komma verwendet haben."
       },
-      "Non si possono avere più virgole che punti.":{
+      "You cannot have more commas than you have periods.":{
         "en":"You cannot have more commas than you have periods.",
         "it":"Non si possono avere più virgole che punti.",
         "es":"No se puede tener más comas que puntos.",
         "fr":"Vous ne pouvez pas avoir plus de virgules que vous avez des points.",
         "de":"Sie können nicht mehr Kommas haben als Sie Punkten haben."
       },
-      "Ogni punto deve essere preceduto e seguito da un numero composto da una a tre cifre di cui la prima cifra non può essere 0.":{
+      "Every period must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.":{
         "en":"Every period must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.",
         "it":"Ogni punto deve essere preceduto e seguito da un numero composto da una a tre cifre di cui la prima cifra non può essere 0.",
         "es":"Cada punto debe estar precedido y seguido de un número que tiene de uno a tres dígitos de los cuales el primer dígito no puede ser 0.",
         "fr":"Chaque point doit être précédée et suivie d'un nombre ayant une à trois chiffres dont le premier chiffre ne peut pas être 0.",
         "de":"Jede Punkt ist durch eine Zahl mit einer bis drei Stellen, von denen die erste Ziffer nicht 0 sein kann vorausgehen und folgen."
       },
-      "Ogni virgola deve essere preceduta e seguita da un numero composto da una a tre cifre, di cui la prima cifra non può essere 0.":{
+      "Every comma must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.":{
         "en":"Every comma must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.",
         "it":"Ogni virgola deve essere preceduta e seguita da un numero composto da una a tre cifre di cui la prima cifra non può essere 0.",
         "es":"Cada coma debe estar precedida y seguida de un número que tiene de uno a tres dígitos de los cuales el primer dígito no puede ser 0.",
         "fr":"Chaque virgule doit être précédée et suivie d'un nombre ayant une à trois chiffres dont le premier chiffre ne peut pas être 0.",
         "de":"Jede Komma ist durch eine Zahl mit einer bis drei Stellen, von denen die erste Ziffer nicht 0 sein kann vorausgehen und folgen."
       },
-      "Non ci possono essere più trattini nella query se non ci sono almeno altrettanto punti meno uno.":{
+      "You cannot have more than one dash in the query if there are not at least as many commas minus one.":{
         "en":"You cannot have more than one dash in the query if there are not at least as many commas minus one.",
         "it":"Non puoi avere più di un trattino nella query se non ci sono almeno altrettanto punti meno uno.",
         "es":"No se puede tener más de un guión en la consulta si no hay al menos tantos puntos menos uno.",
         "fr":"Vous ne pouvez pas avoir plus d'un trait d'union dans la requête, si il n'y a pas au moins autant de points moins un.",
         "de":"Sie können nicht mehr als ein Bindestrich in der Abfrage, wenn es nicht mindestens so viele Punkten minus eins."
       },
-      "Ogni trattino deve essere preceduto e seguito da un numero composto da una a tre cifre, di cui la prima cifra non può essere 0.":{
+      "Every dash must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.":{
         "en":"Every dash must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.",
         "it":"Ogni trattino deve essere preceduto e seguito da un numero composto da una a tre cifre di cui la prima cifra non può essere 0.",
         "es":"Cada guión debe estar precedido y seguido de un número que tiene de uno a tres dígitos de los cuales el primer dígito no puede ser 0.",
         "fr":"Chaque trait d'unione doit être précédé et suivi d'un nombre ayant une à trois chiffres dont le premier chiffre ne peut pas être 0.",
         "de":"Jede Bindestrich ist durch eine Zahl mit einer bis drei Stellen, von denen die erste Ziffer nicht 0 sein kann vorausgehen und folgen."
       },
-      "Se un trattino è seguito da un costrutto con virgola, allora deve anche essere preceduto da un costrutto con virgola.":{
+      "If a dash is followed by a comma construct, then it must also be preceded by a comma construct.":{
         "en":"If a dash is followed by a comma construct, then it must also be preceded by a comma construct.",
         "it":"Se un trattino è seguito da un costrutto con virgola, allora deve anche essere preceduto da un costrutto con virgola.",
         "es":"Si un guión es seguido por una construcción de coma, entonces debe también estar precedido por una construcción de coma.",
@@ -433,7 +426,7 @@ var __ = function(str,ling){
         "fr":"Un verset de la requête ne est pas valide: il n'ya pas un verset <{0}> dans <{1}> chapitre <{2}> dans la Version sollicité <{3}>, le dernier verset qui est possible est {4}",
         "de":"Ein Vers der Abfrage ist ungültig: Es gibt nein Vers <{0}> in <{1}> Kapitel <{2}> zum der Version angefordert <{3}>, die letzte Strophe die ist möglich, ist <{4}>"
       },
-      "i valori concatenati dal punto devono essere consecutivi, invece {0} >= {1} nell'espressione <{2}>":{
+      "the values chained by the dot must be consecutive, instead {0} >= {1} in the expression <{2}>":{
         "en":"the values chained by the dot must be consecutive, instead {0} >= {1} in the expression <{2}>",
         "it":"i valori concatenati dal punto devono essere consecutivi, invece {0} >= {1} nell'espressione <{2}>",
         "es":"los valores encadenados por el punto deben ser consecutivos, mientras {0} >= {1} en la expresión <{2}>",

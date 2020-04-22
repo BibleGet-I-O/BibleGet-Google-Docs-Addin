@@ -93,7 +93,7 @@ function isValidBook(book){
   var userProperties = PropertiesService.getScriptProperties();
   if(userProperties.getProperty("biblebooks0")===null){
     //docLog('biblebooks not yet defined in script properties, now retrieving from server');
-    setProps();
+    setScriptProps();
   }
   var usrProps = userProperties.getProperties();
   for(let i=0;i<73;i++){
@@ -165,7 +165,7 @@ function processQueries(queries,versions){
   var locale = getUserLocale();  
   var scriptProperties = PropertiesService.getScriptProperties();
   if(scriptProperties.getProperty(versions[0]+"IDX")===null){
-    setProps();
+    setScriptProps();
   }
   var indexes = {};
   for(var l in versions){
@@ -178,7 +178,7 @@ function processQueries(queries,versions){
       var regex = /^[1-3]{0,1}((\p{L}\p{M}*)+)/;
       regex = hackRegex(regex);
       if(thisquery.match(regex) === null ){             
-        alertMe(_r("Ci deve essere una valida indicazione di libro all'inizio della query.",locale));
+        alertMe(_r("There must be a valid book indicator at the start of the query.",locale));
         return false;
       }
     }    
@@ -216,7 +216,7 @@ function checkQuery(thisquery,indexes,thisbook){
     //docLog("thisquery.match(regexA): "+thisquery.match(regexA)+"; thisquery.match(regexB): "+thisquery.match(regexB));
     if(thisquery.match(regexA) === null || thisquery.match(regexB).length != thisquery.match(regexA).length ){ 
       //docLog('either regexA match is null, or regexB match count not equal to regexA match count: '+thisquery.match(regexA).toString());
-      alertMe(_r("Ogni indicazione di libro deve essere seguita da una valida indicazione di capitolo.",locale));
+      alertMe(_r("Every book indicator must be followed by a valid chapter indicator.",locale));
     }
     var validBookIndex = parseInt(isValidBook(thisbook));
     //docLog(validBookIndex);
@@ -225,7 +225,7 @@ function checkQuery(thisquery,indexes,thisbook){
       thisquery = thisquery.replace(thisbook,'');
       if(thisquery.indexOf('.') != -1){
         if(thisquery.indexOf(',') == -1 || thisquery.indexOf(',') > thisquery.indexOf('.') ){ //if there is no comma, or the comma comes after the period
-          alertMe(_r("Non puoi utilizzare un punto senza prima utilizzare una virgola.",locale)+'<'+thisquery+'>');
+          alertMe(_r("You cannot use a period if you haven't first used a comma.",locale)+'<'+thisquery+'>');
           return false;
         }
         var count1 = 0;
@@ -233,11 +233,11 @@ function checkQuery(thisquery,indexes,thisbook){
         for(var i1=0; i1<thisquery.length; count1+=+(','===thisquery[i1++]));          
         for(var i2=0; i2<thisquery.length; count2+=+('.'===thisquery[i2++]));
         if(count1 > count2 ){ 
-          alertMe(_r("Non si possono avere più virgole che punti.",locale)+'<'+thisquery+'>');
+          alertMe(_r("You cannot have more commas than you have periods.",locale)+'<'+thisquery+'>');
           return false;
         }
         if(thisquery.match(/[^0-9](?=([1-9][0-9]{0,2}\.[1-9][0-9]{0,2}))/g) === null || thisquery.match(/[^0-9](?=([1-9][0-9]{0,2}\.[1-9][0-9]{0,2}))/g).length != thisquery.match(/\./g).length){ 
-          alertMe(_r("Ogni punto deve essere preceduto e seguito da un numero composto da una a tre cifre di cui la prima cifra non può essere 0.",locale)+'<'+thisquery+'>');
+          alertMe(_r("Every period must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.",locale)+'<'+thisquery+'>');
           return false;
         }
         var re = /[^0-9](?=([1-9][0-9]{0,2}\.[1-9][0-9]{0,2}))/g; 
@@ -250,7 +250,7 @@ function checkQuery(thisquery,indexes,thisbook){
           // eg m[0] etc.
           var ints = m[1].split('.');
           if(parseInt(ints[0]) >= parseInt(ints[1])){
-            var str = _r("i valori concatenati dal punto devono essere consecutivi, invece {0} >= {1} nell'espressione <{2}>");
+            var str = _r("the values chained by the dot must be consecutive, instead {0} >= {1} in the expression <{2}>");
             str = str.format(ints[0],ints[1],m[1]);
             alertMe("ERROR in query <"+thisquery+">: "+str);
           }          
@@ -259,7 +259,7 @@ function checkQuery(thisquery,indexes,thisbook){
       
       if(thisquery.indexOf(',') != -1){
         if(thisquery.match(/[1-9][0-9]{0,2}\,[1-9][0-9]{0,2}/g) === null || thisquery.match(/[1-9][0-9]{0,2}\,[1-9][0-9]{0,2}/g).length != thisquery.match(/\,/g).length){ 
-          alertMe(_r("Ogni virgola deve essere preceduta e seguita da un numero composto da una a tre cifre, di cui la prima cifra non può essere 0.",locale)+'<'+thisquery+'>');
+          alertMe(_r("Every comma must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.",locale)+'<'+thisquery+'>');
           return false;
         }
         else{ 
@@ -392,15 +392,15 @@ function checkQuery(thisquery,indexes,thisbook){
       
       if(thisquery.indexOf('-') != -1){
         if(thisquery.match(/\-/g).length > 1 && (thisquery.match(/\./) === null || thisquery.match(/\-/g).length-1 > thisquery.match(/\./g).length)){ 
-          alertMe(_r("Non ci possono essere più trattini nella query se non ci sono almeno altrettanto punti meno uno.",locale)+'<'+thisquery+'>');
+          alertMe(_r("You cannot have more than one dash in the query if there are not at least as many commas minus one.",locale)+'<'+thisquery+'>');
           return false;
         }
         if(thisquery.match(/[1-9][0-9]{0,2}\-[1-9][0-9]{0,2}/g) === null || thisquery.match(/[1-9][0-9]{0,2}\-[1-9][0-9]{0,2}/g).length != thisquery.match(/\-/g).length){ 
-          alertMe(_r("Ogni trattino deve essere preceduto e seguito da un numero composto da una a tre cifre, di cui la prima cifra non può essere 0.",locale)+'<'+thisquery+'>');
+          alertMe(_r("Every dash must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.",locale)+'<'+thisquery+'>');
           return false;
         }
         if(thisquery.match(/\-[1-9][0-9]{0,2}\,/) !== null && (thisquery.match(/\,[1-9][0-9]{0,2}\-/) === null || thisquery.match(/(?=\,[1-9][0-9]{0,2}\-)/g).length > thisquery.match(/(?=\-[1-9][0-9]{0,2}\,)/g).length ) ){ 
-          alertMe(_r("Se un trattino è seguito da un costrutto con virgola, allora deve anche essere preceduto da un costrutto con virgola.",locale)+'<'+thisquery+'>');
+          alertMe(_r("If a dash is followed by a comma construct, then it must also be preceded by a comma construct.",locale)+'<'+thisquery+'>');
           return false;
         }
       }      
@@ -423,12 +423,12 @@ function checkQuery(thisquery,indexes,thisbook){
 
 
 /* Seems like it's never actually used, but it might come in handy */
-function deleteProps(){
+function deleteScriptProps(){
   let scriptProperties = PropertiesService.getScriptProperties();
   scriptProperties.deleteAllProperties();
 }
 
-function setProps(){
+function setScriptProps(){
   let scriptProperties = PropertiesService.getScriptProperties();
   var props = {};      
   var metadata = getMetaData({"query":"biblebooks"});
@@ -479,7 +479,7 @@ function setProps(){
 }
 
 function refreshData(){
-  setProps();
+  setScriptProps();
   let locale = getUserLocale();
   //there is no way to test if modal window is open, so we're gonna pretend it's open and refresh it anyway
   let html1 = HtmlService.createTemplateFromFile('Sidebar');

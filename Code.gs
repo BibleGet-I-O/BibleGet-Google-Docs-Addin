@@ -36,8 +36,8 @@ const BGET = {
 
 
 function consoleLog(str){
-  Logger.log(str);
-  console.info(str);
+  Logger.log(str);   //internal log (not very efficient?)
+  console.info(str); //stackdriver logs
 }
 
 function onInstall(e){
@@ -56,23 +56,23 @@ function onOpen(e) {
   if (e && (e.authMode == ScriptApp.AuthMode.NONE)) {
     //User has not yet granted permissions, we will just make a basic menu to start workflow
     DocumentApp.getUi().createAddonMenu()
-    .addItem(__('Avvia',locale), 'openSimpleSidebar')
+    .addItem(__('Start',locale), 'openSimpleSidebar')
     .addSeparator()
-    .addItem(__('Istruzioni',locale), 'openHelpSidebar')
-    .addItem(__('Invia Feedback',locale), 'openSendFeedback')
-    .addItem(__('Contribuisci',locale), 'openContributionModal')
+    .addItem(__('Instructions',locale), 'openHelpSidebar')
+    .addItem(__('Send Feedback',locale), 'openSendFeedback')
+    .addItem(__('Contribute',locale), 'openContributionModal')
     .addToUi();
     //consoleLog('Permissions not yet granted');
   }
   else{ //(e && (e.authMode == ScriptApp.AuthMode.LIMITED || e.authMode == ScriptApp.AuthMode.FULL))
     // Initialize user preferences ONLY after user has granted permission to the Properties Service!
     DocumentApp.getUi().createAddonMenu()
-    .addItem(__('Avvia',locale), 'openMainSidebar')
+    .addItem(__('Start',locale), 'openMainSidebar')
     .addSeparator()
-    .addItem(__('Istruzioni',locale), 'openHelpSidebar')
-    .addItem(__('Impostazioni',locale), 'openSettings')
-    .addItem(__('Invia Feedback',locale), 'openSendFeedback')
-    .addItem(__('Contribuisci',locale), 'openContributionModal')
+    .addItem(__('Instructions',locale), 'openHelpSidebar')
+    .addItem(__('Settings',locale), 'openSettings')
+    .addItem(__('Send Feedback',locale), 'openSendFeedback')
+    .addItem(__('Contribute',locale), 'openContributionModal')
     .addToUi();
         
     // Check if preferences have been set yet, if not set defaults. 
@@ -106,7 +106,7 @@ function openSettings(){
       .setWidth(800)
       .setHeight(500)
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
-  DocumentApp.getUi().showModalDialog(evaluated, __('Impostazioni',locale));
+  DocumentApp.getUi().showModalDialog(evaluated, __('Settings',locale));
 }
 
 /** 
@@ -121,7 +121,7 @@ function openSendFeedback(){
       .setHeight(300)
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   DocumentApp.getUi() // Or DocumentApp or FormApp.
-      .showModalDialog(html, __('Invia Feedback',locale));
+      .showModalDialog(html, __('Send Feedback',locale));
 }
 
 
@@ -143,7 +143,7 @@ function openContributionModal(){
       .setHeight(300)
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   DocumentApp.getUi() // Or DocumentApp or FormApp.
-      .showModalDialog(html,__('Sostieni BibleGet I/O',locale));
+      .showModalDialog(html,__('Support BibleGet I/O',locale));
 }
 
 function openSimpleSidebar(){
@@ -161,7 +161,7 @@ function openMainSidebar(){
 function openHelpSidebar(){
   let locale = getUserLocale();
   let html = HtmlService.createTemplateFromFile('Help.html');
-  DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O - '+__('Istruzioni',locale)));
+  DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O - '+__('Instructions',locale)));
 }
 
 /***********************************************/
@@ -260,7 +260,7 @@ function getDefaultProperties(){
         VerseNumberAlignment:"SUPERSCRIPT",
         VerseTextStyles:verseTextStylesStr,
         VerseTextAlignment:"NORMAL",
-        Interlinea:1.5,
+        Lineheight:1.5,
         LeftIndent:0,
         RightIndent:0,
         FONT_FAMILY:"Times New Roman",
@@ -315,7 +315,7 @@ function getUserProperties(){
     //consoleLog("usrProperties.BookChapterStyles parsed!");
 
     currentProperties.VerseTextAlignment = usrProperties.VerseTextAlignment;
-    currentProperties.Interlinea = usrProperties.Interlinea;
+    currentProperties.Lineheight = usrProperties.Lineheight;
     currentProperties.LeftIndent = usrProperties.LeftIndent;
     currentProperties.RightIndent = usrProperties.RightIndent;
     currentProperties.FONT_FAMILY = usrProperties.FONT_FAMILY;
@@ -340,7 +340,7 @@ function setUserProperties(jsonobj){
   newProperties.VerseNumberAlignment = jsonobj.VerseNumberAlignment;
   newProperties.VerseTextStyles = JSON.stringify(jsonobj.VerseTextStyles);
   newProperties.VerseTextAlignment = jsonobj.VerseTextAlignment;
-  newProperties.Interlinea = jsonobj.Interlinea;
+  newProperties.Lineheight = jsonobj.Lineheight;
   newProperties.LeftIndent = jsonobj.LeftIndent;
   newProperties.RightIndent = jsonobj.RightIndent;
   newProperties.FONT_FAMILY = jsonobj.FONT_FAMILY;
@@ -364,6 +364,12 @@ function getUserProperty(propKey){
   var userProp = userProperties.getProperty(propKey);
   Logger.log(userProp);
   return userProp;
+}
+
+function resetUserProperties(){
+  let userProperties = PropertiesService.getScriptProperties();
+  userProperties.deleteAllProperties();
+  getUserProperties();
 }
 
 function fetchData(request){
@@ -452,7 +458,7 @@ function docInsert(json){
     //docLog("successfully created a new paragraph...");
     newPar.setAlignment(DocumentApp.HorizontalAlignment.JUSTIFY);
     newPar.setLineSpacing(BibleGetProperties.linespacing);
-    //DocumentApp.getUi().alert("rientro sinistro = "+LeftIndent+" >> "+leftindent+"pt");
+    //DocumentApp.getUi().alert("Left Indent = "+LeftIndent+" >> "+leftindent+"pt");
     newPar.setIndentFirstLine(BibleGetProperties.leftindent);
     newPar.setIndentStart(BibleGetProperties.leftindent);
     newPar.setIndentEnd(BibleGetProperties.rightindent);
@@ -569,7 +575,7 @@ function createNewPar(BibleGetGlb,linespacing,leftindent,rightindent,fontfamily)
   if(newPar = BibleGetGlb.body.insertParagraph(++BibleGetGlb.idx,"")){
     newPar.setAlignment(DocumentApp.HorizontalAlignment.JUSTIFY);
     newPar.setLineSpacing(linespacing);
-    //DocumentApp.getUi().alert("rientro sinistro = "+LeftIndent+" >> "+leftindent+"pt");
+    //DocumentApp.getUi().alert("Left Indent = "+LeftIndent+" >> "+leftindent+"pt");
     newPar.setIndentFirstLine(leftindent);
     newPar.setIndentStart(leftindent);
     newPar.setIndentEnd(rightindent);
@@ -814,7 +820,7 @@ function prepareProperties(){
   let bookchapteralignment = setAlignmentValue(userProperties.BookChapterAlignment);  
   let versenumberalignment = setAlignmentValue(userProperties.VerseNumberAlignment);  
   let versetextalignment = setAlignmentValue(userProperties.VerseTextAlignment);  
-  let linespacing = parseFloat(userProperties.Interlinea);
+  let linespacing = parseFloat(userProperties.Lineheight);
   let LeftIndent = parseFloat(userProperties.LeftIndent);
   let RightIndent = parseFloat(userProperties.RightIndent);
   

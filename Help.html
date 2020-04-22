@@ -4,7 +4,7 @@
   var userProperties = PropertiesService.getScriptProperties();
   if(userProperties.getProperty("biblebooks0")===null){
     //docLog('biblebooks not yet defined in script properties, now retrieving from server');
-    setProps();
+    setScriptProps();
   }
   var usrProps = userProperties.getProperties();
   var languages = JSON.parse(usrProps["languages"]);
@@ -120,7 +120,7 @@ span.internal-link:hover {
 
 
 <div class="sidebar-body active-tab" id="explan-div">
-<h3><?=__("Formulazione delle query bibliche",locale)?></h3>
+<h3><?=__("Formulation of biblical queries",locale)?></h3>
 <p><?!=__("p1",locale)?></p>
 <p><?=__("p2",locale)?></p>
 <ul>
@@ -141,7 +141,7 @@ span.internal-link:hover {
 
 <div class="sidebar-body inactive-tab" style="display:none;" id="bookabbrevs-div">
 <table>
-<tr><th><?=__("LIBRO",locale)?></th><th><?=__("ABBREVIAZIONE",locale)?></th></tr>
+<tr><th><?=__("BOOK",locale)?></th><th><?=__("ABBREVIATION",locale)?></th></tr>
 <? for(var i=0;i<73;i++){ ?>
 <tr><td><?!=biblebooks[i]?></td><td><?=abbreviations[i]?></td></tr>
 <? } ?>
@@ -151,7 +151,7 @@ span.internal-link:hover {
 </div>
 
 <div class="sidebar bottom">
-  <ul class="nav" id="tabs-ul"><li class="active" id="explan"><?=__("Formare una query",locale)?></li><li id="bookabbrevs"><?=__("Libri / Abbreviazioni",locale)?></li></ul>  
+  <ul class="nav" id="tabs-ul"><li class="active" id="explan"><?=__("Formulate a query",locale)?></li><li id="bookabbrevs"><?=__("Books / Abbreviations",locale)?></li></ul>  
   <div style="background:linear-gradient(white,gray,lightblue,black);color:White;font-weight:bold;text-shadow:3px 3px 3px Black;padding:1px;vertical-align:middle;"><a target="_blank" href="https://www.bibleget.io"><?!= include("BibleIcon_32"); ?></a><span style="position:relative;top:-9px;">BibleGet I/O for Google Docs</span></div>
 </div>
 
