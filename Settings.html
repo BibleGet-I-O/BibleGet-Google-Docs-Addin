@@ -3,17 +3,21 @@
   //WHEN OPENING THE SETTINGS DIALOG, ABOUT AN UNEXPEXTED 'u' CHARACTER???
   //ONLY SEEMS TO HAPPEN WITH THE BIBLEGET ACCOUNT AND NOT OTHER ACCOUNTS
   var userProperties = getUserProperties();
-  var lftindnt = Math.round(parseFloat(userProperties.RientroSinistro)*28.3464567);
-  var rgtindnt = Math.round(parseFloat(userProperties.RientroDestro)*28.3464567);
+  var lftindnt = Math.round(parseFloat(userProperties.LeftIndent)*28.3464567);
+  var rgtindnt = Math.round(parseFloat(userProperties.RightIndent)*28.3464567);
+  
   var locale = getUserLocale();
+  
   var scriptProperties = PropertiesService.getScriptProperties();
   if(scriptProperties.getProperty("languages")===null || scriptProperties.getProperty("versions")===null){
     //consoleLog('now setting properties from Settings.html');
     setProps();
   }
+  
   var propLangs = scriptProperties.getProperty("languages");
   //consoleLog(propLangs);
   languages = JSON.parse(propLangs);
+  
   var propVersions = scriptProperties.getProperty("versions");
   //consoleLog(propVersions);
   var versions = JSON.parse(propVersions);  
@@ -67,7 +71,7 @@ table, td, a {
 	font: normal normal 12px Verdana, Geneva, Arial, Helvetica, sans-serif
 }
 
-/* define height and width of scrollable area. Add 16px to width for scrollbar          */
+/* define height and width of scrollable area. Add 16px to width for scrollbar */
 div.tableContainer {
 	border: 1px solid #963;
 	height: <? if(Object.keys(versions).length > 3){ ?>108<? }else{ ?>85<? } ?>px;
@@ -196,10 +200,6 @@ html>body tbody.scrollContent td + td + td {
 	width: 105px
 }
 
-.indevelopment{
-  background-color: #333;
-}
-
 .custom-combobox {
   position: relative;
   display: inline-block;
@@ -227,8 +227,53 @@ html>body tbody.scrollContent td + td + td {
   justify-content: space-between;
 }
 
-.flexitem:nth-child(4) {
+.flexcontainer .flexitem:nth-child(4) {
   min-width: 215px;
+}
+
+.flexcontainerX {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.flexcontainerV {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px groove White;
+}
+.flexcontainerV:last-child {
+  border-right: none;
+}
+
+.flexcontainerB {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.flexitemB {
+  text-align: center;
+  font-size: .7em;
+  padding: 0 3px;
+}
+
+.ctrlGrpLbl {
+  font-weight: bold;
+}
+
+.centered {
+  text-align: center;
+  font-weight: bold;
+  height: 3em;
+}
+
+.flexitemB .ui-controlgroup-vertical .ui-controlgroup-item {
+  text-align: center;
+}
+
+#tab2 fieldset {
+  min-height: 200px;
 }
 
 ul.ui-autocomplete.ui-widget {
@@ -236,6 +281,7 @@ ul.ui-autocomplete.ui-widget {
   overflow-y: auto;
 }
 
+span.ui-checkboxradio-icon { display: none; }
 </style>
 </head>
 <body>
@@ -263,21 +309,21 @@ ul.ui-autocomplete.ui-widget {
           </select>
         </div>
         <div class="flexitem">
-          <label for="rientrosinistro-quote"><b><?!=__('Rientro Sinistro',locale)?></b></label><br />
-          <select id="rientrosinistro-quote" class="gapp-addon">
+          <label for="LeftIndent-quote"><b><?!=__('Rientro Sinistro',locale)?></b></label><br />
+          <select id="LeftIndent-quote" class="gapp-addon">
           <? var vals = ["0","0.25","0.5","0.75","1","1.25","1.5","1.75","2"]; 
           for(var n in vals){ ?>
-            <option value=<?=vals[n]?> <? if(userProperties.RientroSinistro==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
+            <option value=<?=vals[n]?> <? if(userProperties.LeftIndent==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
           <? }
           ?>    
           </select>
         </div>
         <div class="flexitem">
-          <label for="rientrodestro-quote"><b><?!=__('Rientro Destro',locale)?></b></label><br />
-          <select id="rientrodestro-quote" class="gapp-addon">
+          <label for="RightIndent-quote"><b><?!=__('Rientro Destro',locale)?></b></label><br />
+          <select id="RightIndent-quote" class="gapp-addon">
           <? var vals = ["0","0.25","0.5","0.75","1","1.25","1.5","1.75","2"]; 
           for(var n in vals){ ?>
-            <option value=<?=vals[n]?> <? if(userProperties.RientroDestro==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
+            <option value=<?=vals[n]?> <? if(userProperties.RightIndent==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
           <? }
           ?>    
           </select>
@@ -378,19 +424,119 @@ ul.ui-autocomplete.ui-widget {
   <!-- END TAB 1-->
   <!-- BEGIN TAB 2-->
   <div id="tab2">
-    <h2><i>(<?=__('Currently in development')?>)</i></h2>
-    <div class="indevelopment">
-    <h3><b>Version visibility / positioning</b></h3>
-    <label><input type="checkbox" />Show version</label><br />
-    <h3><b>Verse number visibility</b></h3>
-    <label><input type="checkbox" />Hide verse number</label><br />
-    <h3><b>Book / Chapter positioning in reference to verses</b></h3>
-    <label><input type="radio" name="bkchbfaf" />BEFORE</label><label><input type="radio" name="bkchbfaf" />AFTER</label><br />
-    <h3><b>Book / Chapter Alignment</b></h3>
-    <label><input type="radio" name="bkchalgn" />LEFT</label><label><input type="radio" name="bkchalgn" />CENTER</label><label><input type="radio" name="bkchalgn" />RIGHT</label><br />
-    <h3><b>Book / Chapter Display</b></h3>
-    <label><input type="radio" name="showbk" />Show original query string</label><label><input type="radio" name="shwbk" />Show formatted string</label><br />
-    <label>String format (allowed placeholders: {version},{bookfull},{bookabbr},{chapter},{querystring})<input type="text" value="{bookfull} {chapter}" /></label><button>Save string format</button><br />
+<!--
+        ShowBibleVersion: BGET.VISIBILITY.SHOW,
+        BibleVersionAlignment: BGET.ALIGN.LEFT,
+        BibleVersionPosition: BGET.POS.TOP,
+        BibleVersionWrap: BGET.WRAP.NONE,
+        BookChapterPosition: BGET.POS.INLINE,
+        BookChapterAlignment: BGET.ALIGN.LEFT,
+        BookChapterWrap: BGET.WRAP.NONE
+        ShowVerseNumbers: BGET.VISIBILITY.SHOW,
+-->
+    <div class="flexcontainerX">
+    
+    <div class="flexcontainerV">
+      <div class="centered"><?!=__('Bible version',locale)?></div>
+      <div class="flexcontainerB">
+    
+        <div class="flexitemB">
+          <span class="ctrlGrpLbl"><?!=__('Visibility',locale)?></span><br />
+          <span id="ShowBibleVersion" class="buttonset">
+            <label><input type="radio" name="ShowBibleVersion" value="<?!=BGET.VISIBILITY.SHOW?>" <? if(userProperties.LayoutPrefs.ShowBibleVersion == BGET.VISIBILITY.SHOW){ ?>CHECKED<? } ?> /><?!=__('Show',locale)?></label>
+            <label><input type="radio" name="ShowBibleVersion" value="<?!=BGET.VISIBILITY.HIDE?>" <? if(userProperties.LayoutPrefs.ShowBibleVersion == BGET.VISIBILITY.HIDE){ ?>CHECKED<? } ?> /><?!=__('Hide',locale)?></label>
+          </span>
+        </div>
+    
+        <div class="flexitemB">
+          <span class="ctrlGrpLbl"><?!=__('Wrap',locale)?></span><br />
+          <span id="BibleVersionWrap" class="buttonset">
+            <label><input type="radio" name="BibleVersionWrap" value="<?!=BGET.WRAP.NONE?>" <? if(userProperties.LayoutPrefs.BibleVersionWrap == BGET.WRAP.NONE){ ?>CHECKED<? } ?> /><?!=__('None',locale)?></label>
+            <label><input type="radio" name="BibleVersionWrap" value="<?!=BGET.WRAP.PARENTHESES?>" <? if(userProperties.LayoutPrefs.BibleVersionWrap == BGET.WRAP.PARENTHESES){ ?>CHECKED<? } ?> /><?!=__('Parentheses',locale)?></label>
+            <label><input type="radio" name="BibleVersionWrap" value="<?!=BGET.WRAP.BRACKETS?>" <? if(userProperties.LayoutPrefs.BibleVersionWrap == BGET.WRAP.BRACKETS){ ?>CHECKED<? } ?> /><?!=__('Brackets',locale)?></label>
+          </span>
+        </div>
+    
+        <div class="flexitemB">
+          <span class="ctrlGrpLbl"><?!=__('Alignment',locale)?></span><br />
+          <span id="BibleVersionAlignment" class="buttonset">
+            <label><input type="radio" name="BibleVersionAlignment" value="<?!=BGET.ALIGN.LEFT?>" <? if(userProperties.LayoutPrefs.BibleVersionAlignment == BGET.ALIGN.LEFT){ ?>CHECKED<? } ?> /><?!=__('Left',locale)?></label>
+            <label><input type="radio" name="BibleVersionAlignment" value="<?!=BGET.ALIGN.CENTER?>" <? if(userProperties.LayoutPrefs.BibleVersionAlignment == BGET.ALIGN.CENTER){ ?>CHECKED<? } ?> /><?!=__('Center',locale)?></label>
+            <label><input type="radio" name="BibleVersionAlignment" value="<?!=BGET.ALIGN.RIGHT?>" <? if(userProperties.LayoutPrefs.BibleVersionAlignment == BGET.ALIGN.RIGHT){ ?>CHECKED<? } ?> /><?!=__('Right',locale)?></label>
+          </span>
+        </div>
+
+        <div class="flexitemB">
+          <span class="ctrlGrpLbl"><?!=__('Positioning',locale)?></span><br />
+          <span id="BibleVersionPosition" class="buttonset">
+            <label><input type="radio" name="BibleVersionPosition" value="<?!=BGET.POS.TOP?>" <? if(userProperties.LayoutPrefs.BibleVersionPosition == BGET.POS.TOP){ ?>CHECKED<? } ?> /><?!=__('Top',locale)?></label>
+            <label><input type="radio" name="BibleVersionPosition" value="<?!=BGET.POS.BOTTOM?>" <? if(userProperties.LayoutPrefs.BibleVersionPosition == BGET.POS.BOTTOM){ ?>CHECKED<? } ?> /><?!=__('Bottom',locale)?></label>
+          </span>
+        </div>
+    
+      </div><!-- flexcontainerB END -->
+      
+    </div><!-- flexcontainerV END-->
+    
+    <div class="flexcontainerV">
+      <div class="centered"><?!=__('Book and Chapter',locale)?></div>
+      <div class="flexcontainerB">    
+    
+        <div class="flexitemB">
+          <span class="ctrlGrpLbl"><?!=__('Format',locale)?></span><br />
+          <span id="BookChapterFormat" class="buttonset">
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.BIBLELANG?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.BIBLELANG){ ?>CHECKED<? } ?> /><?!=__('Language of Bible version',locale)?></label>
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.USERLANG?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.USERLANG){ ?>CHECKED<? } ?> /><?!=__('Language of Docs interface',locale)?></label>
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.QUERY?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.QUERY){ ?>CHECKED<? } ?> /><?!=__('Show original query',locale)?></label>
+          </span>
+        </div>    
+    
+        <div class="flexitemB">
+          <span class="ctrlGrpLbl"><?!=__('Wrap',locale)?></span><br />
+          <span id="BookChapterWrap" class="buttonset">
+            <label><input type="radio" name="BookChapterWrap" value="<?!=BGET.WRAP.NONE?>" <? if(userProperties.LayoutPrefs.BookChapterWrap == BGET.WRAP.NONE){ ?>CHECKED<? } ?> /><?!=__('None',locale)?></label>
+            <label><input type="radio" name="BookChapterWrap" value="<?!=BGET.WRAP.PARENTHESES?>" <? if(userProperties.LayoutPrefs.BookChapterWrap == BGET.WRAP.PARENTHESES){ ?>CHECKED<? } ?> /><?!=__('Parentheses',locale)?></label>
+            <label><input type="radio" name="BookChapterWrap" value="<?!=BGET.WRAP.BRACKETS?>" <? if(userProperties.LayoutPrefs.BookChapterWrap == BGET.WRAP.BRACKETS){ ?>CHECKED<? } ?> /><?!=__('Brackets',locale)?></label>
+          </span>
+        </div>
+    
+        <div class="flexitemB">
+          <span class="ctrlGrpLbl"><?!=__('Alignment',locale)?></span><br />
+          <span id="BookChapterAlignment" class="buttonset">
+            <label><input type="radio" name="BookChapterAlignment" value="<?!=BGET.ALIGN.LEFT?>" <? if(userProperties.LayoutPrefs.BibleVersionAlignment == BGET.ALIGN.LEFT){ ?>CHECKED<? } ?> /><?!=__('Left',locale)?></label>
+            <label><input type="radio" name="BookChapterAlignment" value="<?!=BGET.ALIGN.CENTER?>" <? if(userProperties.LayoutPrefs.BibleVersionAlignment == BGET.ALIGN.CENTER){ ?>CHECKED<? } ?> /><?!=__('Center',locale)?></label>
+            <label><input type="radio" name="BookChapterAlignment" value="<?!=BGET.ALIGN.RIGHT?>" <? if(userProperties.LayoutPrefs.BibleVersionAlignment == BGET.ALIGN.RIGHT){ ?>CHECKED<? } ?> /><?!=__('Right',locale)?></label>
+          </span>
+        </div>
+      
+        <div class="flexitemB">
+          <span class="ctrlGrpLbl"><?!=__('Positioning',locale)?></span><br />
+          <span id="BookChapterPosition" class="buttonset">
+            <label><input type="radio" name="BookChapterPosition" value="<?!=BGET.POS.INLINE?>" <? if(userProperties.LayoutPrefs.BookChapterPosition == BGET.POS.INLINE){ ?>CHECKED<? } ?> /><?!=__('Inline',locale)?></label>
+            <label><input type="radio" name="BookChapterPosition" value="<?!=BGET.POS.BOTTOM?>" <? if(userProperties.LayoutPrefs.BookChapterPosition == BGET.POS.BOTTOM){ ?>CHECKED<? } ?> /><?!=__('Bottom',locale)?></label>
+          </span>
+        </div>
+    
+      </div><!-- flexcontainerB END -->
+    </div><!-- flexcontainerV END -->
+        
+    <div class="flexcontainerV">
+      <div class="centered"><?!=__('Verse number',locale)?></div>
+      <div class="flexcontainerB">
+    
+        <div class="flexitemB">
+          <span class="ctrlGrpLbl"><?!=__('Visibility',locale)?></span><br />
+          <span id="ShowVerseNumbers" class="buttonset">
+            <label><input type="radio" name="ShowVerseNumbers" value="<?!=BGET.VISIBILITY.SHOW?>" <? if(userProperties.LayoutPrefs.ShowVerseNumbers == BGET.VISIBILITY.SHOW){ ?>CHECKED<? } ?> /><?!=__('Show',locale)?></label>
+            <label><input type="radio" name="ShowVerseNumbers" value="<?!=BGET.VISIBILITY.HIDE?>" <? if(userProperties.LayoutPrefs.ShowVerseNumbers == BGET.VISIBILITY.HIDE){ ?>CHECKED<? } ?> /><?!=__('Hide',locale)?></label>
+          </span>
+        </div>
+    
+      </div><!-- flexcontainerB END -->
+    </div><!-- flexcontainerV END -->
+    
+    </div><!-- flexContainerX END -->
+    
     <fieldset class="fieldset-results">
       <legend><b><?!=__('Anteprima',locale)?></b></legend>
       <p class="bookchapter"><?!=__('Genesi',locale)?> 1</p>
@@ -400,9 +546,10 @@ ul.ui-autocomplete.ui-widget {
         <span class="versenumber">3</span><span class="versetext"><?!=__('Gen1:3',locale)?></span>
       </p>
     </fieldset>
-    </div>
+    
   </div>
   <!-- END TAB 2-->
+  
   <div id="tab3">
     <p style="text-align:justify;"><?=__('p7A',locale)?> <span style="color:Blue;"><?=languages.length?></span> <?=__('p7B',locale)?> <br />
       <? for(var i in languages){ 
@@ -431,8 +578,8 @@ ul.ui-autocomplete.ui-widget {
 <!-- -->
 
 <?!= include("FontListAutocomplete"); ?>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <?!= include("FontListCombobox"); ?>
 
 <script type="text/javascript">
@@ -443,7 +590,7 @@ window.verseNumberStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:t
 window.verseTextStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:false,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#666666"};
 
 //this will be our global variable that holds the user preferences
-window.userProps = {BookChapterStyles:bookChapterStylesObj,BookChapterAlignment:"NORMAL",VerseNumberStyles:verseNumberStylesObj,VerseNumberAlignment:"SUPERSCRIPT",VerseTextStyles:verseTextStylesObj,VerseTextAlignment:"NORMAL",Interlinea:"1.5",FONT_FAMILY:"Times New Roman",RientroSinistro:"0",NoVersionFormatting:false};
+window.userProps = {BookChapterStyles:bookChapterStylesObj,BookChapterAlignment:"NORMAL",VerseNumberStyles:verseNumberStylesObj,VerseNumberAlignment:"SUPERSCRIPT",VerseTextStyles:verseTextStylesObj,VerseTextAlignment:"NORMAL",Interlinea:"1.5",FONT_FAMILY:"Times New Roman",LeftIndent:"0",NoVersionFormatting:false};
 
 //function that will update the user preferences object if and when set by user
 window.updateUserProperties = function(propsobj){ 
@@ -476,23 +623,6 @@ window.updateUserProperties = function(propsobj){
 }
 
 
-/*
-window.addFontFamilyOptions = function(response){
-    var fontfamilies = (response.indexOf(',') != -1) ? response.split(",") : response;
-    $.each(fontfamilies, function(key, value) {   
-        $('select.fontfamilies')
-          .append($('<option>', { "value" : value })
-          .text(value)); 
-    });
-
-    $('#bookchapter-fontfamily option[value="'+userProps.BookChapterStyles.FONT_FAMILY+'"]').prop("selected",true);
-    $('#versenumber-fontfamily option[value="'+userProps.VerseNumberStyles.FONT_FAMILY+'"]').prop("selected",true);
-    $('#versetext-fontfamily option[value="'+userProps.VerseTextStyles.FONT_FAMILY+'"]').prop("selected",true);
-    
-    // our page should be pretty much ready now, we can hide the spinner
-    $('.spinner').fadeOut("fast");
-}
-*/
 window.saveUserProps = function(userprops){
   google.script.run.setUserProperties(userprops);
 }
@@ -501,15 +631,18 @@ window.saveUserProps = function(userprops){
 
 //Start our page manipulation and event handling
 jQuery(document).ready(function(){
-    //try to get stored user preferences if available
+    //try to get stored user preferences if available server side and make them available to client script (current javascript / jquery runtime)
     google.script.run.withSuccessHandler(updateUserProperties).getUserProperties();
 
+    //render interface with jquery ui and set events for ui
     jQuery('#accordion').accordion();
     jQuery('#tabs').tabs({
       active: $('#activetab').val()
     });
     jQuery('#updatedata').button();
-    jQuery('.buttonset').buttonset();
+    jQuery('.buttonset').controlgroup({
+      "direction": "vertical"
+    });
     
     $('ul.nav li').click(function(){
       var divid = $(this).data("divid");
@@ -523,23 +656,6 @@ jQuery(document).ready(function(){
     });
     
     
-    /*
-    $('#bibleget-font-family').addClass("ui-widget ui-widget-content ui-corner-all ui-button").css({"cursor":"text","text-align":"left"});
-    $('#bibleget-font-family').on('change',function(){
-      $(this).css({"border-color":"red"});
-      userProps.FONT_FAMILY = $(this).val();
-      saveUserProps(userProps);
-      google.script.run.consoleLog('received font-family input, now:'+$(this).val()+' >> text:'+$(this).text());
-    });
-    $('#bibleget-font-family').on('input',function(){
-      let currentColor = COLORARRAY[COLORSWITCH];
-      COLORSWITCH = ~COLORSWITCH;
-      $(this).css({"border-color":currentColor});
-      userProps.FONT_FAMILY = $(this).val();
-      saveUserProps(userProps);
-      google.script.run.consoleLog('received font-family input, now:'+$(this).val()+' >> text:'+$(this).text());
-    });
-    */
     $('span#bookchapterstyle input').change(function(){
       if($(this).is(':checked')){
         let thisstyle = $(this).attr('id').replace("bookchapter-","");
@@ -685,19 +801,19 @@ jQuery(document).ready(function(){
       saveUserProps(userProps);
     });
     
-    $('#rientrosinistro-quote').change(function(){
+    $('#LeftIndent-quote').change(function(){
       var leftindent = Math.round(parseFloat($(this).val()) * 28.3464567);
       $('.liveview-quote').css({"margin-left":leftindent+"pt"});
       $('.bookchapter').css({"margin-left":leftindent+"pt"});
-      userProps.RientroSinistro = $(this).val();
+      userProps.LeftIndent = $(this).val();
       saveUserProps(userProps);
     });
     
-    $('#rientrodestro-quote').change(function(){
+    $('#RightIndent-quote').change(function(){
       var rightindent = Math.round(parseFloat($(this).val()) * 28.3464567);
       $('.liveview-quote').css({"margin-right":rightindent+"pt"});
       $('.bookchapter').css({"margin-right":rightindent+"pt"});
-      userProps.RientroDestro = $(this).val();
+      userProps.RightIndent = $(this).val();
       saveUserProps(userProps);
     });
     //$('#no-version-formatting').checkbox();

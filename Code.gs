@@ -7,27 +7,33 @@ const REQUESTPARAMS = {'rettype':'json','appid':'googledocs'};
 const ENDPOINTURL = "https://query.bibleget.io/";
 const ENDPOINTURLMETADATA = "https://query.bibleget.io/metadata.php";
 
-const BGET_ALIGN = {
-  LEFT:   'left',
-  RIGHT:  'right',
-  CENTER: 'center'
+const BGET = {
+  ALIGN: {
+    LEFT:   'left',
+    RIGHT:  'right',
+    CENTER: 'center'
+  },
+  WRAP: {
+    NONE:        'none',
+    PARENTHESES: 'parentheses',
+    BRACKETS:    'brackets'
+  },
+  POS: {
+    TOP:    'top',
+    BOTTOM: 'bottom',
+    INLINE: 'inline'
+  },
+  FORMAT: {
+    QUERY: 'query',
+    USERLANG: 'userLang',
+    BIBLELANG: 'bibleLang'
+  },
+  VISIBILITY: {
+    SHOW: 'show',
+    HIDE: 'hide'
+  }
 };
 
-const BGET_WRAP = {
-  NONE:        'none',
-  PARENTHESES: 'parentheses',
-  BRACKETS:    'brackets'
-};
-
-const BGET_VSPOS = {
-  TOP:    'top',
-  BOTTOM: 'bottom'
-};
-
-const BGET_BCPOS = {
-  INLINE: 'inline',
-  BOTTOM: 'bottom'
-};
 
 function consoleLog(str){
   Logger.log(str);
@@ -77,7 +83,7 @@ function onOpen(e) {
     // Perhaps preferences that had already been set will be overwritten,
     // but it's not the end of the world, it's easy enough to set them again
     // Add-on needs to be republished anyways, so no big worry
-    if(userProperties.getProperty("FONT_FAMILY")==null || userProperties.getProperty("RientroDestro")==null ){      
+    if(userProperties.getProperty("FONT_FAMILY")==null || userProperties.getProperty("RightIndent")==null ){      
       //consoleLog("preferences have not been set, now setting defaults");      
       userProperties.setProperties(getDefaultProperties());
       //consoleLog('default font-family now set:'+newProperties.FONT_FAMILY);
@@ -218,21 +224,32 @@ function getDefaultProperties(){
       
       //consoleLog("prepared verseTextStylesStr");
       
-      //ShowBibleVersion: boolean
-      //BibleVersionPosition: possible vals 'top','bottom'. If BookChapterPosition is also bottom, then they will be placed next to each other. (Use ENUM, e.g. BGET_VSPOS.TOP)
-      //BibleVersionWrap: possible vals 'none', 'parentheses', 'brackets' (use ENUM, e.g. BGET_WRAP.NONE)
-      //ShowVerseNumbers: boolean
-      //BookChapterPosition: possible vals 'inline', 'bottom'. If 'bottom' then the original query will be shown. (Use ENUM, e.g. BGET_BCPOS.INLINE)
-      //BookChapterAlignment: possible vals 'left','center','right' (use ENUM, e.g. BGET_ALIGN.LEFT)
-      //BookChapterWrap: possible vals 'none', 'parentheses', 'brackets' (use ENUM, e.g. BGET_WRAP.NONE)
+      //ShowBibleVersion: possible vals 'show', 'hide' (use ENUM, e.g. BGET.VISIBILITY.SHOW)
+      //BibleVersionAlignment: possible vals 'left','center','right' (use ENUM, e.g. BGET.ALIGN.LEFT)
+      //BibleVersionPosition: possible vals 'top','bottom'. (Use ENUM, e.g. BGET.POS.TOP)
+      //  N.B. if BookChapterPosition is also bottom, then they will be placed next to each other and BibleVersionAlignment will have no effect, only BookChapterAlignment will
+      //BibleVersionWrap: possible vals 'none', 'parentheses', 'brackets' (use ENUM, e.g. BGET.WRAP.NONE)
+      
+      //BookChapterPosition: possible vals 'inline', 'bottom'. If 'bottom' then the original query will be shown. (Use ENUM, e.g. BGET.POS.INLINE)
+      //BookChapterAlignment: possible vals 'left','center','right' (use ENUM, e.g. BGET.ALIGN.LEFT)
+      //BookChapterWrap: possible vals 'none', 'parentheses', 'brackets' (use ENUM, e.g. BGET.WRAP.NONE)
+      //BookChapterFormat: possible vals 'query', 'userLang', 'bibleLang' (use ENUM, e.g. BGET.FORMAT.BIBLELANG
+      //  Meaning: 1) like the original query = if '1Jn4:7-8' was requested '1Jn4:7-8' will be shown
+      //           2) according to user lang = if Google Docs is used in chinese, the names of the books of the bible will be in chinese
+      //           3) according to bible lang = if you are quoting from a Latin Bible, the names of the books of the bible will be in latin
+      //  N.B. only holds when position = BGET.POS.BOTTOM
+      
+      //ShowVerseNumbers: possible vals 'show', 'hide' (use ENUM, e.g. BGET.VISIBILITY.SHOW)
       let layoutPrefsObj = {
-        ShowBibleVersion:true,
-        BibleVersionPosition: BGET_VSPOS.TOP,
-        BibleVersionWrap: BGET_WRAP.NONE,
-        ShowVerseNumbers:true,
-        BookChapterPosition: BGET_BCPOS.INLINE,
-        BookChapterAlignment: BGET_ALIGN.LEFT,
-        BookChapterWrap: BGET_WRAP.NONE
+        ShowBibleVersion: BGET.VISIBILITY.SHOW,
+        BibleVersionPosition: BGET.POS.TOP,
+        BibleVersionAlignment: BGET.ALIGN.LEFT,
+        BibleVersionWrap: BGET.WRAP.NONE,
+        BookChapterPosition: BGET.POS.INLINE,
+        BookChapterAlignment: BGET.ALIGN.LEFT,
+        BookChapterWrap: BGET.WRAP.NONE,
+        BookChapterFormat: BGET.FORMAT.BIBLELANG,
+        ShowVerseNumbers: BGET.VISIBILITY.SHOW
       };
       let layoutPrefsStr = JSON.stringify(layoutPrefsObj);
 
@@ -244,8 +261,8 @@ function getDefaultProperties(){
         VerseTextStyles:verseTextStylesStr,
         VerseTextAlignment:"NORMAL",
         Interlinea:1.5,
-        RientroSinistro:0,
-        RientroDestro:0,
+        LeftIndent:0,
+        RightIndent:0,
         FONT_FAMILY:"Times New Roman",
         NoVersionFormatting:false,
         RecentSelectedVersions:"[]",
@@ -299,11 +316,12 @@ function getUserProperties(){
 
     currentProperties.VerseTextAlignment = usrProperties.VerseTextAlignment;
     currentProperties.Interlinea = usrProperties.Interlinea;
-    currentProperties.RientroSinistro = usrProperties.RientroSinistro;
-    currentProperties.RientroDestro = usrProperties.RientroDestro;
+    currentProperties.LeftIndent = usrProperties.LeftIndent;
+    currentProperties.RightIndent = usrProperties.RightIndent;
     currentProperties.FONT_FAMILY = usrProperties.FONT_FAMILY;
     //consoleLog('FONT_FAMILY = '+currentProperties.FONT_FAMILY);
     currentProperties.NoVersionFormatting = usrProperties.NoVersionFormatting;
+    currentProperties.LayoutPrefs = JSON.parse(usrProperties.LayoutPrefs);
     //consoleLog("now returning preferences retrieved from properties service.");
     return currentProperties;
     
@@ -323,8 +341,8 @@ function setUserProperties(jsonobj){
   newProperties.VerseTextStyles = JSON.stringify(jsonobj.VerseTextStyles);
   newProperties.VerseTextAlignment = jsonobj.VerseTextAlignment;
   newProperties.Interlinea = jsonobj.Interlinea;
-  newProperties.RientroSinistro = jsonobj.RientroSinistro;
-  newProperties.RientroDestro = jsonobj.RientroDestro;
+  newProperties.LeftIndent = jsonobj.LeftIndent;
+  newProperties.RightIndent = jsonobj.RightIndent;
   newProperties.FONT_FAMILY = jsonobj.FONT_FAMILY;
   newProperties.NoVersionFormatting = jsonobj.NoVersionFormatting;
   newProperties.LayoutPrefs = JSON.stringify(jsonobj.LayoutPrefs);
@@ -434,7 +452,7 @@ function docInsert(json){
     //docLog("successfully created a new paragraph...");
     newPar.setAlignment(DocumentApp.HorizontalAlignment.JUSTIFY);
     newPar.setLineSpacing(BibleGetProperties.linespacing);
-    //DocumentApp.getUi().alert("rientro sinistro = "+rientrosinistro+" >> "+leftindent+"pt");
+    //DocumentApp.getUi().alert("rientro sinistro = "+LeftIndent+" >> "+leftindent+"pt");
     newPar.setIndentFirstLine(BibleGetProperties.leftindent);
     newPar.setIndentStart(BibleGetProperties.leftindent);
     newPar.setIndentEnd(BibleGetProperties.rightindent);
@@ -551,7 +569,7 @@ function createNewPar(BibleGetGlb,linespacing,leftindent,rightindent,fontfamily)
   if(newPar = BibleGetGlb.body.insertParagraph(++BibleGetGlb.idx,"")){
     newPar.setAlignment(DocumentApp.HorizontalAlignment.JUSTIFY);
     newPar.setLineSpacing(linespacing);
-    //DocumentApp.getUi().alert("rientro sinistro = "+rientrosinistro+" >> "+leftindent+"pt");
+    //DocumentApp.getUi().alert("rientro sinistro = "+LeftIndent+" >> "+leftindent+"pt");
     newPar.setIndentFirstLine(leftindent);
     newPar.setIndentStart(leftindent);
     newPar.setIndentEnd(rightindent);
@@ -797,8 +815,8 @@ function prepareProperties(){
   let versenumberalignment = setAlignmentValue(userProperties.VerseNumberAlignment);  
   let versetextalignment = setAlignmentValue(userProperties.VerseTextAlignment);  
   let linespacing = parseFloat(userProperties.Interlinea);
-  let rientrosinistro = parseFloat(userProperties.RientroSinistro);
-  let rientrodestro = parseFloat(userProperties.RientroDestro);
+  let LeftIndent = parseFloat(userProperties.LeftIndent);
+  let RightIndent = parseFloat(userProperties.RightIndent);
   
   let bcStyles = userProperties.BookChapterStyles;
   let vnStyles = userProperties.VerseNumberStyles;
@@ -808,11 +826,11 @@ function prepareProperties(){
   vnStyles.FONT_SIZE = parseInt(vnStyles.FONT_SIZE);
   vtStyles.FONT_SIZE = parseInt(vtStyles.FONT_SIZE);
 
-  //var leftindent = Math.round(rientrosinistro * 28.3464567); =centimeters to points conversion
-  let leftindent = Math.round(rientrosinistro * 72); //=inches to points conversion
-  let rightindent = Math.round(rientrodestro * 72); //=inches to points conversion
+  //var leftindent = Math.round(LeftIndent * 28.3464567); =centimeters to points conversion
+  let leftindent = Math.round(LeftIndent * 72); //=inches to points conversion
+  let rightindent = Math.round(RightIndent * 72); //=inches to points conversion
 
-  return {"bcStyles":bcStyles,"vnStyles":vnStyles,"vtStyles":vtStyles,"bookchapteralignment":bookchapteralignment,"versenumberalignment":versenumberalignment,"versetextalignment":versetextalignment,"linespacing":linespacing,"rientrosinistro":rientrosinistro,"rientrodestro":rientrodestro,"FONT_FAMILY":userProperties.FONT_FAMILY,"noVersionFormatting":noVersionFormatting,"leftindent":leftindent,"rightindent":rightindent};
+  return {"bcStyles":bcStyles,"vnStyles":vnStyles,"vtStyles":vtStyles,"bookchapteralignment":bookchapteralignment,"versenumberalignment":versenumberalignment,"versetextalignment":versetextalignment,"linespacing":linespacing,"LeftIndent":LeftIndent,"RightIndent":RightIndent,"FONT_FAMILY":userProperties.FONT_FAMILY,"noVersionFormatting":noVersionFormatting,"leftindent":leftindent,"rightindent":rightindent};
 }
 
 function getCursorIndex(){
