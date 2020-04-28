@@ -488,8 +488,8 @@ function refreshData(){
   let html2 = HtmlService.createTemplateFromFile('Settings');
   html2.activetab = 2;
   let evaluated = html2.evaluate()
-      .setWidth(800)
-      .setHeight(500)
+      .setWidth(SETTINGSWINDOW.WIDTH)
+      .setHeight(SETTINGSWINDOW.HEIGHT)
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   DocumentApp.getUi().showModalDialog(evaluated, __('Impostazioni',locale));
 }

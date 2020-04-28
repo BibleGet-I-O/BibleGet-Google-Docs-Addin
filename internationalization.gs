@@ -88,10 +88,9 @@ var __ = function(str,ling){
       "":{"en":"","it":"","es":"","fr":"","de":""},
       "":{"en":"","it":"","es":"","fr":"","de":""},
       "":{"en":"","it":"","es":"","fr":"","de":""},
-      "":{"en":"","it":"","es":"","fr":"","de":""},
       "Versions and Languages":{"en":"Supported Versions and Languages","it":"Versioni e Lingue supportate","es":"Versiones y Idiomas compatibles","fr":"Versions et Idiomes compatibles","de":"Unterstützte Versionen und Sprachen"},
       "Preview":{"en":"Preview","it":"Anteprima","es":"Pre estreno","fr":"Avant-première","de":"Vorschau"},
-      "Genesis":{"en":"Genesis","it":"Genesi","es":"Génesis","fr":"Genèse","de":"Genesis"},
+      "Genesis1:1-3":{"en":"Genesis 1:1-3","it":"Genesi 1,1-3","es":"Génesis 1,1-3","fr":"Genèse 1,1-3","de":"Genesis 1,1-3"},
       "Gen1:1":{
         "en":"In the beginning, when God created the heavens and the earth—",
         "it":"In principio Dio creò il cielo e la terra.",
@@ -112,6 +111,14 @@ var __ = function(str,ling){
         "es":"Dijo Dios: «Haya luz», y hubo luz.",
         "fr":"Dieu dit : Que la lumière soit et la lumière fut.",
         "de":"Gott sprach: Es werde Licht. Und es wurde Licht."
+      },
+      "Exodus19:5":{"en":"Exodus 19:5","it":"Esodo 19,5","es":"Éxodo 19,5","fr":"Exode 19,5","de":"Exodus 19,5"},
+      "Ex19:5":{
+        "en":"Now, if you obey me completely and keep my covenant, you will be my treasured possession among all peoples, though all the earth is mine.",
+        "it":"Ora, se darete ascolto alla mia voce e custodirete la mia alleanza, voi sarete per me una proprietà particolare tra tutti i popoli; mia infatti è tutta la terra!",
+        "es":"Ahora pues, si diereis oído á mi voz, y guardareis mi pacto, vosotros seréis mi especial tesoro sobre todos los pueblos; porque mía es toda la tierra.",
+        "fr":"Maintenant, si vous écoutez ma voix, et si vous gardez mon alliance, vous m'appartiendrez entre tous les peuples, car toute la terre est à moi;",
+        "de":"Werdet ihr nun meiner Stimme gehorchen und meinen Bund halten, so sollt ihr mein Eigentum sein vor allen Völkern; denn die ganze Erde ist mein."
       },
       "Insert into the Document":{"en":"Insert into the Document","it":"Inserisci nel Documento","es":"Insertar en el Documento","fr":"Insérer dans le Document","de":"Legen Sie in das Dokument"},
       "Write your observations about BibleGet I/O":{

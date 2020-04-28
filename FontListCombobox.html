@@ -90,7 +90,7 @@
               value: text,
               option: this
             };
-        }) );
+        }) ); //.slice(0, 15) applied to map() will limit results to 15
       },
  
       _removeIfInvalid: function( event, ui ) {
@@ -131,6 +131,9 @@
       _destroy: function() {
         this.wrapper.remove();
         this.element.show();
+      },
+      widget: function() {
+        return this.input;
       }
     });
 </script>

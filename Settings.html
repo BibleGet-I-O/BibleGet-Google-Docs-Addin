@@ -2,10 +2,7 @@
   //FOR WHATEVER STRANGE REASON, ON ONE GMAIL ACCOUNT I'M GETTING AN ERROR
   //WHEN OPENING THE SETTINGS DIALOG, ABOUT AN UNEXPEXTED 'u' CHARACTER???
   //ONLY SEEMS TO HAPPEN WITH THE BIBLEGET ACCOUNT AND NOT OTHER ACCOUNTS
-  var userProperties = getUserProperties();
-  var lftindnt = Math.round(parseFloat(userProperties.LeftIndent)*28.3464567);
-  var rgtindnt = Math.round(parseFloat(userProperties.RightIndent)*28.3464567);
-  
+    
   var locale = getUserLocale();
   
   var scriptProperties = PropertiesService.getScriptProperties();
@@ -20,51 +17,150 @@
   
   var propVersions = scriptProperties.getProperty("versions");
   //consoleLog(propVersions);
-  var versions = JSON.parse(propVersions);  
+  var versions = JSON.parse(propVersions);
+  
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('now running getUserProperties from within Settings.html');
+  }   
+  var userProperties = getUserProperties(true); //will be a pure JSON obj, without any stringified values (nostringify=true)
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('getUserProperties has been run from within Settings.html');
+  }   
+  var lftindnt = Math.round(parseFloat(userProperties.ParagraphStyles.LeftIndent)*28.3464567);
+  var rgtindnt = Math.round(parseFloat(userProperties.ParagraphStyles.RightIndent)*28.3464567);
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('left and right indent have been set based on userproperties in Settings.html');
+  }   
+
+  var nonUniqueStr = userProperties.ParagraphStyles.FONT_FAMILY;
+      nonUniqueStr += __('Genesis',locale);
+      nonUniqueStr += __('Gen1:1',locale);
+      nonUniqueStr += __('Gen1:2',locale);
+      nonUniqueStr += __('Gen1:3',locale);
+  //consoleLog(nonUniqueStr);
+  var UniqueStr = makeUnique(nonUniqueStr);
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('UniqueStr has been set based on pagraphstyles.font_family in Settings.html');
+  }   
+
+  var wrap1 = '', wrap2 = '', wrap3 = '', wrap4 = '';
+  switch(userProperties.LayoutPrefs.BibleVersionWrap){
+    case BGET.WRAP.PARENTHESES:
+      wrap1= '(';
+      wrap2 = ')';
+      break;
+    case BGET.WRAP.BRACKETS:
+      wrap1 = '[';
+      wrap2 = ']';
+      break;
+    case BGET.WRAP.NONE:
+      wrap1 = '';
+      wrap2 = '';
+      break;
+  } 
+  switch(userProperties.LayoutPrefs.BookChapterWrap){
+    case BGET.WRAP.PARENTHESES:
+      wrap3= '(';
+      wrap4 = ')';
+      break;
+    case BGET.WRAP.BRACKETS:
+      wrap3 = '[';
+      wrap4 = ']';
+      break;
+    case BGET.WRAP.NONE:
+      wrap3 = '';
+      wrap4 = '';
+      break;
+  } 
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('wraps have been prepared for bibleversion and bookchapter based on user preferences in Settings.html');
+  }   
+
+  var PreviewBox = '<fieldset class="fieldset-results"><legend><b>' + __('Preview',locale) + '</b></legend>';
+      PreviewBox += '<p class="bibleversion showtop" style="display:'+(userProperties.LayoutPrefs.ShowBibleVersion==BGET.VISIBILITY.SHOW && userProperties.LayoutPrefs.BibleVersionPosition==BGET.POS.TOP?'block':'none')+';"><span class="bcWrap">' + wrap1 + '</span>NABRE<span class="bcWrap">' + wrap2 + '</span></p>';
+      PreviewBox += '<div class="bookchapterWrapper">';
+      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.TOP) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span>' + __('Genesis1:1-3',locale) + '<span class="bcWrap">' + wrap4 + '</span></span>' : '';
+      PreviewBox += '<p class="liveview-quote" style="margin-top:-6px;padding-top:0px;">';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">1</span><span class="versetext">' + __('Gen1:1',locale) + '</span>';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">2</span><span class="versetext">' + __('Gen1:2',locale) + '</span>';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">3</span><span class="versetext">' + __('Gen1:3',locale) + '</span>';
+      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOMINLINE) ? '<span class="bookchapter" style="margin-left:6px;"><span class="bcWrap">' + wrap3 + '</span>' + __('Genesis1:1-3',locale) + '<span class="bcWrap">' + wrap4 + '</span></span>' : '';
+      PreviewBox += '</p>';
+      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOM) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span>' + __('Genesis1:1-3',locale) + '<span class="bcWrap">' + wrap4 + '</span></span>' : '';
+      PreviewBox += '</div>';
+      PreviewBox += '<div class="bookchapterWrapper">';
+      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.TOP) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span>' + __('Exodus19:5',locale) + '<span class="bcWrap">' + wrap4 + '</span></span>' : '';
+      PreviewBox += '<p class="liveview-quote" style="margin-top:-6px;padding-top:0px;">';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">5</span><span class="versetext">' + __('Ex19:5',locale) + '</span>';
+      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOMINLINE) ? '<span class="bookchapter" style="margin-left:6px;"><span class="bcWrap">' + wrap3 + '</span>' + __('Exodus19:5',locale) + '<span class="bcWrap">' + wrap4 + '</span></span>' : '';
+      PreviewBox += '</p>';
+      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOM) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span>' + __('Exodus19:5',locale) + '<span class="bcWrap">' + wrap4 + '</span></span>' : '';
+      PreviewBox += '</div>';
+      PreviewBox += '<p class="bibleversion showbottom" style="display:'+(userProperties.LayoutPrefs.ShowBibleVersion==BGET.VISIBILITY.SHOW && userProperties.LayoutPrefs.BibleVersionPosition==BGET.POS.BOTTOM?'block':'none')+';"><span class="bcWrap">' + wrap1 + '</span>NABRE<span class="bcWrap">' + wrap2 + '</span></p>';
+      PreviewBox += '</fieldset>';
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('starting HTML output in Settings.html');
+  }   
+
 ?>
 <!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
-
+  <link id="gfFontFamily" href="https://fonts.googleapis.com/css?family=<?!= userProperties.ParagraphStyles.FONT_FAMILY ?>&text=<?!= UniqueStr ?>" rel="stylesheet" />
 <?!= include("Stylesheet"); ?>
 <style>
 
-.liveview-quote {
-  line-height: <?= userProperties.Lineheight?>em;
-  text-align: justify;
-  margin-top: 3px;
-  margin-bottom: 3px;
-  margin-left: <?= lftindnt?>pt;
-  margin-right:<?= rgtindnt?>pt;
-  font-family: <?= userProperties.FONT_FAMILY ?>;
+.bookchapterWrapper {
+  margin: 6px 0px;
 }
 
-.bookchapter{
+.liveview-quote {
+  line-height: <?!= userProperties.ParagraphStyles.Lineheight?>em;
+  text-align: <?!=userProperties.ParagraphStyles.ParagraphAlign?>;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  margin-left: <?!= lftindnt?>pt;
+  margin-right:<?!= rgtindnt?>pt;
+  font-family: <?!= userProperties.ParagraphStyles.FONT_FAMILY ?>;
+}
+
+.bibleversion, .bookchapter {
   <? if(userProperties.BookChapterStyles.BOLD){ ?>font-weight: bold; <? } ?>
-  font-size: <?= userProperties.BookChapterStyles.FONT_SIZE ?>px;
-  color: <?= userProperties.BookChapterStyles.FOREGROUND_COLOR ?>;
-  background-color: <?= userProperties.BookChapterStyles.BACKGROUND_COLOR ?>;
+  font-size: <?!= userProperties.BookChapterStyles.FONT_SIZE ?>px;
+  color: <?!= userProperties.BookChapterStyles.FOREGROUND_COLOR ?>;
+  background-color: <?!= userProperties.BookChapterStyles.BACKGROUND_COLOR ?>;
   padding-top:0px;
   margin-bottom: 3px;
   margin-top: 0px;
-  margin-left: <?= lftindnt?>pt;
-  margin-right:<?= rgtindnt?>pt;
-  font-family: <?= userProperties.FONT_FAMILY ?>;
+  margin-left: <?!= lftindnt?>pt;
+  margin-right:<?!= rgtindnt?>pt;
+  font-family: <?!= userProperties.ParagraphStyles.FONT_FAMILY ?>;
+  position: relative;
+}
+.bibleversion{
+  text-align: <?!=userProperties.BibleVersionAlignment?>;
+}
+.bookchapter {
+  text-align: <?!=userProperties.LayoutPrefs.BookChapterAlignment?>;
+  top: <?!= userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.NORMAL ? 0 : (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.SUPERSCRIPT ? -4 : 4) ?>px;
 }
 .versenumber{
   <? if(userProperties.VerseNumberStyles.BOLD){ ?>font-weight: bold; <? } ?>
-  font-size: <?= userProperties.VerseNumberStyles.FONT_SIZE ?>px;
-  color: <?= userProperties.VerseNumberStyles.FOREGROUND_COLOR ?>;
-  background-color: <?= userProperties.VerseNumberStyles.BACKGROUND_COLOR ?>;
+  font-size: <?!= userProperties.VerseNumberStyles.FONT_SIZE ?>px;
+  color: <?!= userProperties.VerseNumberStyles.FOREGROUND_COLOR ?>;
+  background-color: <?!= userProperties.VerseNumberStyles.BACKGROUND_COLOR ?>;
   position: relative;
-  top: -4px;
+  top: <?!= userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.NORMAL ? 0 : (userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.SUPERSCRIPT ? -4 : 4) ?>px;
 }
 .versetext{
   <? if(userProperties.VerseTextStyles.BOLD){ ?>font-weight: bold; <? } ?>
-  font-size: <?= userProperties.VerseTextStyles.FONT_SIZE ?>px;
-  color: <?= userProperties.VerseTextStyles.FOREGROUND_COLOR ?>;
-  background-color: <?= userProperties.VerseTextStyles.BACKGROUND_COLOR ?>;
+  font-size: <?!= userProperties.VerseTextStyles.FONT_SIZE ?>px;
+  color: <?!= userProperties.VerseTextStyles.FOREGROUND_COLOR ?>;
+  background-color: <?!= userProperties.VerseTextStyles.BACKGROUND_COLOR ?>;
+  position: relative;
+  top: <?!= userProperties.VerseTextStyles.VALIGN==BGET.VALIGN.NORMAL ? 0 : (userProperties.VerseTextStyles.VALIGN==BGET.VALIGN.SUPERSCRIPT ? -4 : 4) ?>px;
 }
+
 
 table, td, a {
 	color: #000;
@@ -227,7 +323,7 @@ html>body tbody.scrollContent td + td + td {
   justify-content: space-between;
 }
 
-.flexcontainer .flexitem:nth-child(4) {
+.flexcontainer .flexitem.bibleget-font-family {
   min-width: 215px;
 }
 
@@ -280,7 +376,8 @@ html>body tbody.scrollContent td + td + td {
 
 ul.ui-autocomplete.ui-widget {
   max-height: 300px;
-  overflow-y: auto;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 span.ui-checkboxradio-icon { display: none; }
@@ -292,12 +389,22 @@ span.ui-checkboxradio-icon { display: none; }
 
 .ui-button.ui-widget.ui-checkboxradio-radio-label.ui-checkboxradio-checked.ui-state-active.ui-checkboxradio-label.ui-controlgroup-item { position:relative; top: .3px; }
 
+.ui-selectmenu-menu.ui-front.ui-selectmenu-open li.ui-menu-item div.ui-menu-item-wrapper.ui-state-active {
+  background-image: none;
+  background-color: #1a73e8;
+  color: White;
+}
+<?
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('styles in head of document have been set in Settings.html');
+  }   
+?>
 </style>
 </head>
 <body>
 <div class="spinner lds-ring" id="spinner-gif"><div></div><div></div><div></div><div></div></div>
 <div class="spinner" id="spinner-bg"></div>
-<input type="hidden" id="activetab" value="<?=activetab?>" />
+<input type="hidden" id="activetab" value="<?!=activetab?>" />
 <div id="tabs">
   <ul>
     <li><a href="#tab1"><?=__('Text Formatting',locale)?></a></li>
@@ -310,20 +417,28 @@ span.ui-checkboxradio-icon { display: none; }
       <h3><b><?=__('Paragraph Styles',locale)?></b></h3>
       <div class="toolbar ui-widget-header ui-corner-bottom flexcontainer">
         <div class="flexitem">
-          <label for="Lineheight-quote" class="gapp-addon"><b><?=__('Lineheight',locale)?></b></label><br />
-          <select id="Lineheight-quote" class="gapp-addon">
-            <option value="1.0"<? if(userProperties.Lineheight=="1.0"){ ?> SELECTED<? } ?>>Single 1.0</option>
-            <option value="1.15"<? if(userProperties.Lineheight=="1.15"){ ?> SELECTED<? } ?>>1.15</option>
-            <option value="1.5"<? if(userProperties.Lineheight=="1.5"){ ?> SELECTED<? } ?>>1&#189;</option>
-            <option value="2.0"<? if(userProperties.Lineheight=="2.0"){ ?> SELECTED<? } ?>>Double 2.0</option>
+          <span id="paragraphalign" class="buttonset">
+            <input type="radio" id="paragraphalign-left" value="<?!=BGET.ALIGN.LEFT?>" name="paragraphalign" <? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.LEFT) { ?>CHECKED<? } ?>><label for="paragraphalign-left"><i class="material-icons md-18">format_align_left</i></label>
+            <input type="radio" id="paragraphalign-center" value="<?!=BGET.ALIGN.CENTER?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.CENTER) { ?>CHECKED<? } ?>><label for="paragraphalign-center"><i class="material-icons md-18">format_align_center</i></label>
+            <input type="radio" id="paragraphalign-right" value="<?!=BGET.ALIGN.RIGHT?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.RIGHT) { ?>CHECKED<? } ?>><label for="paragraphalign-right"><i class="material-icons md-18">format_align_right</i></label>
+            <input type="radio" id="paragraphalign-justify" value="<?!=BGET.ALIGN.JUSTIFY?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.JUSTIFY) { ?>CHECKED<? } ?>><label for="paragraphalign-justify"><i class="material-icons md-18">format_align_justify</i></label>
+          </span>          
+        </div>
+        <div class="flexitem">
+          <span id="lineheightBtn" class="ui-button"><i class="material-icons md-18">format_line_spacing</i></span><br />
+          <select id="Lineheight-quote" class="selectmenu">
+            <option value="1.0"<? if(userProperties.ParagraphStyles.Lineheight=="1.0"){ ?> SELECTED<? } ?>>Single 1.0</option>
+            <option value="1.15"<? if(userProperties.ParagraphStyles.Lineheight=="1.15"){ ?> SELECTED<? } ?>>1.15</option>
+            <option value="1.5"<? if(userProperties.ParagraphStyles.Lineheight=="1.5"){ ?> SELECTED<? } ?>>1&#189;</option>
+            <option value="2.0"<? if(userProperties.ParagraphStyles.Lineheight=="2.0"){ ?> SELECTED<? } ?>>Double 2.0</option>
           </select>
         </div>
         <div class="flexitem">
           <label for="LeftIndent-quote"><b><?!=__('Left Indent',locale)?></b></label><br />
           <select id="LeftIndent-quote" class="gapp-addon">
-          <? var vals = ["0","0.25","0.5","0.75","1","1.25","1.5","1.75","2"]; 
+          <? var vals = ["0.0","0.25","0.5","0.75","1.0","1.25","1.5","1.75","2.0"]; 
           for(var n in vals){ ?>
-            <option value=<?=vals[n]?> <? if(userProperties.LeftIndent==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
+            <option value=<?!=vals[n]?> <? if(userProperties.ParagraphStyles.LeftIndent==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
           <? }
           ?>    
           </select>
@@ -331,14 +446,14 @@ span.ui-checkboxradio-icon { display: none; }
         <div class="flexitem">
           <label for="RightIndent-quote"><b><?!=__('Right Indent',locale)?></b></label><br />
           <select id="RightIndent-quote" class="gapp-addon">
-          <? var vals = ["0","0.25","0.5","0.75","1","1.25","1.5","1.75","2"]; 
+          <? var vals = ["0.0","0.25","0.5","0.75","1.0","1.25","1.5","1.75","2.0"]; 
           for(var n in vals){ ?>
-            <option value=<?=vals[n]?> <? if(userProperties.RightIndent==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
+            <option value=<?!=vals[n]?> <? if(userProperties.ParagraphStyles.RightIndent==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
           <? }
           ?>    
           </select>
         </div>
-        <div class="flexitem">
+        <div class="flexitem bibleget-font-family">
           <label for="bibleget-font-family"><?=__('Font for Bible Quotes',locale)?></label><br />
           <select id="bibleget-font-family"></select>
         </div>
@@ -348,87 +463,78 @@ span.ui-checkboxradio-icon { display: none; }
       <div class="toolbar ui-widget-header ui-corner-bottom">
         <div>
           <span id="bookchapterstyle" class="buttonset">
-            <input type="checkbox" id="bookchapter-bold" name="bookchapterstyle" <? if (userProperties.BookChapterStyles.BOLD) { ?>CHECKED<? } ?>><label for="bookchapter-bold"><b><span title="GRASSETTO">G</span></b></label>
-            <input type="checkbox" id="bookchapter-italic" name="bookchapterstyle" <? if (userProperties.BookChapterStyles.ITALIC) { ?>CHECKED<? } ?>><label for="bookchapter-italic"><b><i><span title="CORSIVO">C</span></i></b></label>
-            <input type="checkbox" id="bookchapter-underline" name="bookchapterstyle" <? if (userProperties.BookChapterStyles.UNDERLINE) { ?>CHECKED<? } ?>><label for="bookchapter-underline"><b><u><span title="SOTTOLINEATO">S</span></u></b></label>
+            <input type="checkbox" id="bookchapter-bold" value="bold" name="bookchapterstyle" <? if (userProperties.BookChapterStyles.BOLD) { ?>CHECKED<? } ?>><label for="bookchapter-bold"><b><span title="GRASSETTO">G</span></b></label>
+            <input type="checkbox" id="bookchapter-italic" value="italic" name="bookchapterstyle" <? if (userProperties.BookChapterStyles.ITALIC) { ?>CHECKED<? } ?>><label for="bookchapter-italic"><b><i><span title="CORSIVO">C</span></i></b></label>
+            <input type="checkbox" id="bookchapter-underline" value="underline" name="bookchapterstyle" <? if (userProperties.BookChapterStyles.UNDERLINE) { ?>CHECKED<? } ?>><label for="bookchapter-underline"><b><u><span title="SOTTOLINEATO">S</span></u></b></label>
           </span>      
           <span id="bookchapteralignment" class="buttonset">
-            <input type="radio" id="bookchapter-normal" name="bookchapteralignment" <? if (userProperties.BookChapterAlignment=="NORMAL") { ?>CHECKED<? } ?>><label for="bookchapter-normal"><span title="NORMAL"><b>A</b></span></label>
-            <input type="radio" id="bookchapter-superscript" name="bookchapteralignment"<? if (userProperties.BookChapterAlignment=="SUPERSCRIPT") { ?>CHECKED<? } ?>><label for="bookchapter-superscript"><span title="SUPERSCRIPT"><b style="position: relative; top: -0.5em; font-size: 80%;">A</b></span></label>
-            <input type="radio" id="bookchapter-subscript" name="bookchapteralignment"<? if (userProperties.BookChapterAlignment=="SUBSCRIPT") { ?>CHECKED<? } ?>><label for="bookchapter-subscript"><span title="SUBSCRIPT"><b style="position: relative; top: 0.5em; font-size: 80%;">A</b></span></label>
+            <input type="radio" id="bookchapter-normal" value="<?!=BGET.VALIGN.NORMAL?>" name="bookchapteralignment" <? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.NORMAL) { ?>CHECKED<? } ?>><label for="bookchapter-normal"><span title="NORMAL"><b>A</b></span></label>
+            <input type="radio" id="bookchapter-superscript" value="<?!=BGET.VALIGN.SUPERSCRIPT?>" name="bookchapteralignment"<? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.SUPERSCRIPT) { ?>CHECKED<? } ?>><label for="bookchapter-superscript"><span title="SUPERSCRIPT"><b style="position: relative; top: -0.5em; font-size: 80%;">A</b></span></label>
+            <input type="radio" id="bookchapter-subscript" value="<?!=BGET.VALIGN.SUBSCRIPT?>" name="bookchapteralignment"<? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.SUBSCRIPT) { ?>CHECKED<? } ?>><label for="bookchapter-subscript"><span title="SUBSCRIPT"><b style="position: relative; top: 0.5em; font-size: 80%;">A</b></span></label>
           </span>
           <select id="bookchapter-fontsize" name="bookchapter-fontsize" class="fontsizes gapp-addon">
           <? var ops=[8,9,10,11,12,14,18,24,30,36,48,60,72,96]; 
              for(var i=0;i<ops.length;i++){ ?>
-             <option value=<?= ops[i] ?><? if(userProperties.BookChapterStyles.FONT_SIZE == ops[i]){ ?> SELECTED<? } ?>><?= ops[i] ?></option>
+             <option value=<?!= ops[i] ?><? if(userProperties.BookChapterStyles.FONT_SIZE == ops[i]){ ?> SELECTED<? } ?>><?= ops[i] ?></option>
           <? } ?>
           </select>
-          <input type="color" id="bookchapter-color" value="<?= userProperties.BookChapterStyles.FOREGROUND_COLOR ?>" />
-          <input type="color" id="bookchapter-bgcolor" value="<?= userProperties.BookChapterStyles.BACKGROUND_COLOR ?>" />
+          <input type="color" id="bookchapter-color" value="<?!= userProperties.BookChapterStyles.FOREGROUND_COLOR ?>" />
+          <input type="color" id="bookchapter-bgcolor" value="<?!= userProperties.BookChapterStyles.BACKGROUND_COLOR ?>" />
         </div>
       </div>    
 
-    <h3><b><?!=__('Verse Number Format',locale)?></b></h3>
-    <div class="toolbar ui-widget-header ui-corner-bottom">
-      <div>
-        <span id="versenumberstyle" class="buttonset">
-          <input type="checkbox" id="versenumber-bold" name="versenumberstyle" <? if(userProperties.VerseNumberStyles.BOLD){ ?>CHECKED<? } ?>><label for="versenumber-bold"><b><span>G</span></b></label>
-          <input type="checkbox" id="versenumber-italic" name="versenumberstyle" <? if(userProperties.VerseNumberStyles.ITALIC){ ?>CHECKED<? } ?>><label for="versenumber-italic"><i><span>C</span></i></label>
-          <input type="checkbox" id="versenumber-underline" name="versenumberstyle" <? if(userProperties.VerseNumberStyles.UNDERLINE){ ?>CHECKED<? } ?>><label for="versenumber-underline"><u><span>S</span></u></label>
-        </span>
-        <span id="versenumberalignment" class="buttonset">
-          <input type="radio" id="versenumber-normal" name="versenumberalignment" <? if(userProperties.VerseNumberAlignment=="NORMAL"){ ?>CHECKED<? } ?>><label for="versenumber-normal"><span title="NORMAL"><b>A</b></span></label>
-          <input type="radio" id="versenumber-superscript" name="versenumberalignment"  <? if(userProperties.VerseNumberAlignment=="SUPERSCRIPT"){ ?>CHECKED<? } ?>><label for="versenumber-superscript"><span title="SUPERSCRIPT"><b style="position: relative; top: -0.5em; font-size: 80%;">A</b></span></label>
-          <input type="radio" id="versenumber-subscript" name="versenumberalignment" <? if(userProperties.VerseNumberAlignment=="SUBSCRIPT"){ ?>CHECKED<? } ?>><label for="versenumber-subscript"><span title="SUBSCRIPT"><b style="position: relative; top: 0.5em; font-size: 80%;">A</b></span></label>
-        </span>
-        <select id="versenumber-fontsize" name="versenumber-fontsize" class="fontsizes gapp-addon">
+      <h3><b><?!=__('Verse Number Format',locale)?></b></h3>
+      <div class="toolbar ui-widget-header ui-corner-bottom">
+        <div>
+          <span id="versenumberstyle" class="buttonset">
+            <input type="checkbox" id="versenumber-bold" name="versenumberstyle" <? if(userProperties.VerseNumberStyles.BOLD){ ?>CHECKED<? } ?>><label for="versenumber-bold"><b><span>G</span></b></label>
+            <input type="checkbox" id="versenumber-italic" name="versenumberstyle" <? if(userProperties.VerseNumberStyles.ITALIC){ ?>CHECKED<? } ?>><label for="versenumber-italic"><i><span>C</span></i></label>
+            <input type="checkbox" id="versenumber-underline" name="versenumberstyle" <? if(userProperties.VerseNumberStyles.UNDERLINE){ ?>CHECKED<? } ?>><label for="versenumber-underline"><u><span>S</span></u></label>
+          </span>
+          <span id="versenumberalignment" class="buttonset">
+            <input type="radio" id="versenumber-normal" value="<?!=BGET.VALIGN.NORMAL?>" name="versenumberalignment" <? if(userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.NORMAL){ ?>CHECKED<? } ?>><label for="versenumber-normal"><span title="NORMAL"><b>A</b></span></label>
+            <input type="radio" id="versenumber-superscript" value="<?!=BGET.VALIGN.SUPERSCRIPT?>" name="versenumberalignment"  <? if(userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.SUPERSCRIPT){ ?>CHECKED<? } ?>><label for="versenumber-superscript"><span title="SUPERSCRIPT"><b style="position: relative; top: -0.5em; font-size: 80%;">A</b></span></label>
+            <input type="radio" id="versenumber-subscript" value="<?!=BGET.VALIGN.SUBSCRIPT?>" name="versenumberalignment" <? if(userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.SUBSCRIPT){ ?>CHECKED<? } ?>><label for="versenumber-subscript"><span title="SUBSCRIPT"><b style="position: relative; top: 0.5em; font-size: 80%;">A</b></span></label>
+          </span>
+          <select id="versenumber-fontsize" name="versenumber-fontsize" class="fontsizes gapp-addon">
           <? var ops=[8,9,10,11,12,14,18,24,30,36,48,60,72,96]; 
              for(var i=0;i<ops.length;i++){ ?>
              <option value=<?= ops[i] ?><? if(userProperties.VerseNumberStyles.FONT_SIZE == ops[i]){ ?> SELECTED<? } ?>><?= ops[i] ?></option>
           <? } ?>
-        </select>
-        <input type="color" id="versenumber-color" value="<?= userProperties.VerseNumberStyles.FOREGROUND_COLOR ?>" />
-        <input type="color" id="versenumber-bgcolor" value="<?= userProperties.VerseNumberStyles.BACKGROUND_COLOR ?>" />
-      </div>
-    </div>    
+          </select>
+          <input type="color" id="versenumber-color" value="<?!= userProperties.VerseNumberStyles.FOREGROUND_COLOR ?>" />
+          <input type="color" id="versenumber-bgcolor" value="<?!= userProperties.VerseNumberStyles.BACKGROUND_COLOR ?>" />
+        </div>
+      </div>    
 
-    <h3><b><?!=__('Verse Text Format',locale)?></b></h3>
-    <div class="toolbar ui-widget-header ui-corner-bottom">
-      <div>
-        <span id="versetextstyle" class="buttonset">
-          <input type="checkbox" id="versetext-bold" name="versetextstyle" <? if(userProperties.VerseTextStyles.BOLD){ ?>CHECKED<? } ?>><label for="versetext-bold"><b><span>G</span></b></label>
-          <input type="checkbox" id="versetext-italic" name="versetextstyle" <? if(userProperties.VerseTextStyles.ITALIC){ ?>CHECKED<? } ?>><label for="versetext-italic"><b><i><span>C</span></i></b></label>
-          <input type="checkbox" id="versetext-underline" name="versetextstyle" <? if(userProperties.VerseTextStyles.UNDERLINE){ ?>CHECKED<? } ?>><label for="versetext-underline"><b><u><span>S</span></u></b></label>
-        </span>      
-        <span id="versetextalignment" class="buttonset">
-          <input type="radio" id="versetext-normal" name="versetextalignment" <? if(userProperties.VerseTextAlignment == "NORMAL"){ ?>CHECKED<? } ?>><label for="versetext-normal"><span title="NORMAL"><b>A</b></span></label>
-          <input type="radio" id="versetext-superscript" name="versetextalignment" <? if(userProperties.VerseTextAlignment == "SUPERSCRIPT"){ ?>CHECKED<? } ?>><label for="versetext-superscript"><span title="SUPERSCRIPT"><b style="position: relative; top: -0.5em; font-size: 80%;">A</b></span></label>
-          <input type="radio" id="versetext-subscript" name="versetextalignment" <? if(userProperties.VerseTextAlignment == "SUBSCRIPT"){ ?>CHECKED<? } ?>><label for="versetext-subscript"><span title="SUBSCRIPT"><b style="position: relative; top: 0.5em; font-size: 80%;">A</b></span></label>
-        </span>
+      <h3><b><?!=__('Verse Text Format',locale)?></b></h3>
+      <div class="toolbar ui-widget-header ui-corner-bottom">
+        <div>
+          <span id="versetextstyle" class="buttonset">
+            <input type="checkbox" id="versetext-bold" name="versetext-bold" <? if(userProperties.VerseTextStyles.BOLD){ ?>CHECKED<? } ?>><label for="versetext-bold"><b><span>G</span></b></label>
+            <input type="checkbox" id="versetext-italic" name="versetext-italic" <? if(userProperties.VerseTextStyles.ITALIC){ ?>CHECKED<? } ?>><label for="versetext-italic"><b><i><span>C</span></i></b></label>
+            <input type="checkbox" id="versetext-underline" name="versetext-underline" <? if(userProperties.VerseTextStyles.UNDERLINE){ ?>CHECKED<? } ?>><label for="versetext-underline"><b><u><span>S</span></u></b></label>
+          </span>      
+          <span id="versetextalignment" class="buttonset">
+            <input type="radio" id="versetext-normal" name="versetextalignment" value="<?!=BGET.VALIGN.NORMAL?>" <? if(userProperties.VerseTextStyles.VALIGN == BGET.VALIGN.NORMAL){ ?>CHECKED<? } ?>><label for="versetext-normal"><span title="NORMAL"><b>A</b></span></label>
+            <input type="radio" id="versetext-superscript" name="versetextalignment" value="<?!=BGET.VALIGN.SUPERSCRIPT?>" <? if(userProperties.VerseTextStyles.VALIGN == BGET.VALIGN.SUPERSCRIPT){ ?>CHECKED<? } ?>><label for="versetext-superscript"><span title="SUPERSCRIPT"><b style="position: relative; top: -0.5em; font-size: 80%;">A</b></span></label>
+            <input type="radio" id="versetext-subscript" name="versetextalignment" value="<?!=BGET.VALIGN.SUBSCRIPT?>" <? if(userProperties.VerseTextStyles.VALIGN == BGET.VALIGN.SUBSCRIPT){ ?>CHECKED<? } ?>><label for="versetext-subscript"><span title="SUBSCRIPT"><b style="position: relative; top: 0.5em; font-size: 80%;">A</b></span></label>
+          </span>
           <select id="versetext-fontsize" name="versetext-fontsize" class="fontsizes gapp-addon">
             <? var ops=[8,9,10,11,12,14,18,24,30,36,48,60,72,96]; 
             for(var i=0;i<ops.length;i++){ ?>
-            <option value=<?= ops[i] ?><? if(userProperties.VerseTextStyles.FONT_SIZE == ops[i]){ ?> SELECTED<? } ?>><?= ops[i] ?></option>
+            <option value=<?!= ops[i] ?><? if(userProperties.VerseTextStyles.FONT_SIZE == ops[i]){ ?> SELECTED<? } ?>><?= ops[i] ?></option>
             <? } ?>
           </select>
-          <input type="color" id="versetext-color" value="<?= userProperties.VerseTextStyles.FOREGROUND_COLOR ?>" />
-          <input type="color" id="versetext-bgcolor" value="<?= userProperties.VerseTextStyles.BACKGROUND_COLOR ?>" />
+          <input type="color" id="versetext-color" value="<?!= userProperties.VerseTextStyles.FOREGROUND_COLOR ?>" />
+          <input type="color" id="versetext-bgcolor" value="<?!= userProperties.VerseTextStyles.BACKGROUND_COLOR ?>" />
         </div>
-      </div> <!-- END WIDGET -->    
+      </div> <!-- END TOOLBAR WIDGET -->    
     </div> <!-- END ACCORDION  -->
-
-    <fieldset class="fieldset-results">
-      <legend><b><?!=__('Preview',locale)?></b></legend>
-      <p class="bookchapter"><?!=__('Genesis',locale)?> 1</p>
-      <p class="liveview-quote" style="margin-top:-6px;padding-top:0px;">
-        <span class="versenumber">1</span><span class="versetext"><?!=__('Gen1:1',locale)?></span>
-        <span class="versenumber">2</span><span class="versetext"><?!=__('Gen1:2',locale)?></span>
-        <span class="versenumber">3</span><span class="versetext"><?!=__('Gen1:3',locale)?></span>
-      </p>
-    </fieldset>
+    <?!= PreviewBox ?>
     <div>
       <p><?!=__("Some Bible versions have their own formatting. This is left by default to keep the text as close as possible to the original. If however you need to have consistent formatting in your document, you may override the Bible version's own formatting.",locale)?></p>
-      <input type="checkbox" id="no-version-formatting" name="no-version-formatting" <? if(JSON.parse(userProperties.NoVersionFormatting)){ ?>CHECKED<? } ?>><label for="noversionformatting"><?!=__("Override Bible version formatting",locale)?></label>
+      <input type="checkbox" id="no-version-formatting" name="no-version-formatting" <? if(JSON.parse(userProperties.ParagraphStyles.NoVersionFormatting)){ ?>CHECKED<? } ?>><label for="noversionformatting"><?!=__("Override Bible version formatting",locale)?></label>
     </div>
   </div>  
   <!-- END TAB 1-->
@@ -513,17 +619,18 @@ span.ui-checkboxradio-icon { display: none; }
         <div class="flexitemB">
           <span class="ctrlGrpLbl"><?!=__('Alignment',locale)?></span><br />
           <span id="BookChapterAlignment" class="buttonset">
-            <label><input type="radio" name="BookChapterAlignment" value="<?!=BGET.ALIGN.LEFT?>" <? if(userProperties.LayoutPrefs.BibleVersionAlignment == BGET.ALIGN.LEFT){ ?>CHECKED<? } ?> /><?!=__('Left',locale)?></label>
-            <label><input type="radio" name="BookChapterAlignment" value="<?!=BGET.ALIGN.CENTER?>" <? if(userProperties.LayoutPrefs.BibleVersionAlignment == BGET.ALIGN.CENTER){ ?>CHECKED<? } ?> /><?!=__('Center',locale)?></label>
-            <label><input type="radio" name="BookChapterAlignment" value="<?!=BGET.ALIGN.RIGHT?>" <? if(userProperties.LayoutPrefs.BibleVersionAlignment == BGET.ALIGN.RIGHT){ ?>CHECKED<? } ?> /><?!=__('Right',locale)?></label>
+            <label><input type="radio" name="BookChapterAlignment" value="<?!=BGET.ALIGN.LEFT?>" <? if(userProperties.LayoutPrefs.BookChapterAlignment == BGET.ALIGN.LEFT){ ?>CHECKED<? } ?> /><?!=__('Left',locale)?></label>
+            <label><input type="radio" name="BookChapterAlignment" value="<?!=BGET.ALIGN.CENTER?>" <? if(userProperties.LayoutPrefs.BookChapterAlignment == BGET.ALIGN.CENTER){ ?>CHECKED<? } ?> /><?!=__('Center',locale)?></label>
+            <label><input type="radio" name="BookChapterAlignment" value="<?!=BGET.ALIGN.RIGHT?>" <? if(userProperties.LayoutPrefs.BookChapterAlignment == BGET.ALIGN.RIGHT){ ?>CHECKED<? } ?> /><?!=__('Right',locale)?></label>
           </span>
         </div>
       
         <div class="flexitemB">
           <span class="ctrlGrpLbl"><?!=__('Positioning',locale)?></span><br />
           <span id="BookChapterPosition" class="buttonset">
-            <label><input type="radio" name="BookChapterPosition" value="<?!=BGET.POS.INLINE?>" <? if(userProperties.LayoutPrefs.BookChapterPosition == BGET.POS.INLINE){ ?>CHECKED<? } ?> /><?!=__('Inline',locale)?></label>
+            <label><input type="radio" name="BookChapterPosition" value="<?!=BGET.POS.TOP?>" <? if(userProperties.LayoutPrefs.BookChapterPosition == BGET.POS.TOP){ ?>CHECKED<? } ?> /><?!=__('Top',locale)?></label>
             <label><input type="radio" name="BookChapterPosition" value="<?!=BGET.POS.BOTTOM?>" <? if(userProperties.LayoutPrefs.BookChapterPosition == BGET.POS.BOTTOM){ ?>CHECKED<? } ?> /><?!=__('Bottom',locale)?></label>
+            <label><input type="radio" name="BookChapterPosition" value="<?!=BGET.POS.BOTTOMINLINE?>" <? if(userProperties.LayoutPrefs.BookChapterPosition == BGET.POS.BOTTOMINLINE){ ?>CHECKED<? } ?> /><?!=__('Bottom Inline',locale)?></label>
           </span>
         </div>
     
@@ -546,17 +653,29 @@ span.ui-checkboxradio-icon { display: none; }
     </div><!-- flexcontainerV END -->
     
     </div><!-- flexContainerX END -->
-    
-    <fieldset class="fieldset-results">
-      <legend><b><?!=__('Preview',locale)?></b></legend>
-      <p class="bookchapter"><?!=__('Genesis',locale)?> 1</p>
-      <p class="liveview-quote" style="margin-top:-6px;padding-top:0px;">
-        <span class="versenumber">1</span><span class="versetext"><?!=__('Gen1:1',locale)?></span>
-        <span class="versenumber">2</span><span class="versetext"><?!=__('Gen1:2',locale)?></span>
-        <span class="versenumber">3</span><span class="versetext"><?!=__('Gen1:3',locale)?></span>
-      </p>
+    <?!= PreviewBox ?>
+    <? if(CURRENTSTATE==ADDONSTATE.DEVELOPMENT){ ?>
+    <fieldset style="font-size:.5em;">
+      <legend>Debug: userProps and updateUserProps</legend>
+      <div style="display:flex;flex-direction: row;justify-content: space-between;">
+      <div>
+        <p><b>userPropsFromServer</b></p>
+        <ol id="userPropsFromServer">
+        </ol>
+      </div>
+      <div>
+        <p><b>userPropsAfterUpdate</b></p>
+        <ol id="userPropsAfterUpdate">
+        </ol>
+      </div>
+      <div>
+        <p><b>userPropsClientJSAfterUpdate</b></p>
+        <ol id="userPropsClientJSAfterUpdate">
+        </ol>
+      </div>
+      </div>
     </fieldset>
-    
+    <? } ?>
   </div>
   <!-- END TAB 2-->
   
@@ -588,6 +707,11 @@ span.ui-checkboxradio-icon { display: none; }
 
 </div>
 <!-- -->
+<?
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('body html complete, now preparing scripts in footer of document in Settings.html');
+  }   
+?>
 
 <?!= include("FontListAutocomplete"); ?>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -596,56 +720,104 @@ span.ui-checkboxradio-icon { display: none; }
 
 <script type="text/javascript">
 
-// Initialize user preferences populating initially with default values
-window.bookChapterStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#000044"};
-window.verseNumberStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:true,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#AA0000"};
-window.verseTextStylesObj = {UNDERLINE:false,LINK_URL:null,ITALIC:false,BOLD:false,BACKGROUND_COLOR:"#FFFFFF",FONT_SIZE:10,STRIKETHROUGH:false,FOREGROUND_COLOR:"#666666"};
+//this will be our global variable that holds the user preferences, which should be a pure JSON obj without stringified values (nostringify=true)
+window.userProps = {};
+userProps.populated = false;
+window.domopscomplete = false;
 
-//this will be our global variable that holds the user preferences
-window.userProps = {BookChapterStyles:bookChapterStylesObj,BookChapterAlignment:"NORMAL",VerseNumberStyles:verseNumberStylesObj,VerseNumberAlignment:"SUPERSCRIPT",VerseTextStyles:verseTextStylesObj,VerseTextAlignment:"NORMAL",Lineheight:"1.5",FONT_FAMILY:"Times New Roman",LeftIndent:"0",NoVersionFormatting:false};
-
-//function that will update the user preferences object if and when set by user
-window.updateUserProperties = function(propsobj){ 
-  userProps = propsobj; 
-  userProps.NoVersionFormatting = JSON.parse(propsobj.NoVersionFormatting);
-  //google.script.run.consoleLog("Getting property NoVersionFormatting with value: "+propsobj.NoVersionFormatting+" of type "+typeof propsobj.NoVersionFormatting); 
-  //$("#no-version-formatting").prop("checked",propsobj.NoVersionFormatting);
-
-    for(var i in ffAutoComplete){
-      //let selcd = (ffAutoComplete[i] == userProps.FONT_FAMILY);
-      $('#bibleget-font-family').append(jQuery('<option>',{value:ffAutoComplete[i],text:ffAutoComplete[i]})); //,selected:selcd
-      if(i == ffAutoComplete.length-1){
-        if(jQuery('#bibleget-font-family').find('option[value="'+userProps.FONT_FAMILY+'"]').length > 0){
-          jQuery('#bibleget-font-family').val(userProps.FONT_FAMILY);
+//We can't save the userProps obj unless we have all the user Properties in this object, this is why we need the object,
+//and need it fully populated, not only available to populate one at a time
+var passUserPropertiesServer2Client = function(propsobj){ 
+    userProps.populated = true;
+    userProps = propsobj;
+    <? if(CURRENTSTATE==ADDONSTATE.DEVELOPMENT){ ?>
+    for (let [key, value] of Object.entries(propsobj).sort() ) {
+      if(typeof value === 'object'){
+        let $li = jQuery('<li>',{text: key});
+        let $ol = jQuery('<ol>');
+        for(let [keyB, valueB] of Object.entries(value).sort()){
+          $ol.append('<li>'+keyB+' : '+valueB+'</li>')
         }
-        //jQuery('#bibleget-font-family').find('option[val="'+userProps.FONT_FAMILY+'"]').prop('selected',true);
-        $('#bibleget-font-family').combobox();
-        //$('#btnSetFont').button();
-        jQuery('#bibleget-font-family').on('change',function(){
-          //let myUI = jQuery(this).val();
-          //jQuery('<span>',{text:myUI}).insertAfter('#tabs');
-          userProps.FONT_FAMILY = $(this).val();
-          saveUserProps(userProps);
-          $('p.bookchapter').add('p.liveview-quote').css({'font-family':userProps.FONT_FAMILY});
-        });
-        $('.spinner').fadeOut("fast");
+        jQuery($li).append($ol);
+        jQuery('#userPropsFromServer').append($li);
+      }
+      else{
+        jQuery('#userPropsFromServer').append('<li>'+key+' : '+value+'</li>');
       }
     }
-
+    <? } ?>
+    
+    //spinner will disappear only when both jquery's dom manipulations are complete
+    //and userprops are loaded from the server
+    if(domopscomplete){ 
+      $('.spinner').fadeOut("fast"); 
+      // $('#tab1').append('<p>spinner was faded after properties populated</p>');
+      // ^^^ THIS IS ALWAYS THE CASE, PROPERTIES UPDATE TAKES LONGER THAN JQUERY DOM MANIPULATION ^^^ //
+    }
 }
-
 
 window.saveUserProps = function(userprops){
-  google.script.run.setUserProperties(userprops);
+  $('.spinner').fadeIn("fast");
+  delete userProps.populated;
+  google.script.run.withSuccessHandler(userPropsUpdateSuccess).setUserProperties(userprops);
 }
+
+window.makeUnique = function(str) {
+  return String.prototype.concat(...new Set(str));
+}
+
+window.userPropsUpdateSuccess = function(updatedProps){
+  //redefine userProps.populated which we deleted upon saving userProps,
+  //to avoid it being saved to Apps Script UserProperties
+  userProps.populated = true;
+  <? if(CURRENTSTATE==ADDONSTATE.DEVELOPMENT){ ?>
+  jQuery('#userPropsAfterUpdate').empty();
+  //updatedProps will have stringified values
+  for (let [key, value] of Object.entries(updatedProps).sort()) {
+    if(typeof value === 'string'){
+      value = JSON.parse(value);
+    }
+    if(typeof value === 'object'){
+      let $li = jQuery('<li>',{text: key});
+      let $ol = jQuery('<ol>');
+      for(let [keyB, valueB] of Object.entries(value).sort()){
+        $ol.append('<li>'+keyB+' : '+valueB+'</li>')
+      }
+      jQuery($li).append($ol);
+      jQuery('#userPropsAfterUpdate').append($li);
+    }
+    else{
+      jQuery('#userPropsAfterUpdate').append('<li>'+key+' : '+value+'</li>');
+    }
+  }
+  //now let's compare userProps with updatedPropsUnstringified, they should be the same!
+  jQuery('#userPropsClientJSAfterUpdate').empty();
+  for (let [key, value] of Object.entries(userProps).sort()) {
+    if(typeof value === 'object'){
+      let $li = jQuery('<li>',{text: key});
+      let $ol = jQuery('<ol>');
+      for(let [keyB, valueB] of Object.entries(value).sort()){
+        $ol.append('<li>'+keyB+' : '+valueB+'</li>')
+      }
+      jQuery($li).append($ol);
+      jQuery('#userPropsClientJSAfterUpdate').append($li);
+    }
+    else{
+      jQuery('#userPropsClientJSAfterUpdate').append('<li>'+key+' : '+value+'</li>');
+    }
+  }
+  <? } ?>
+  $('.spinner').fadeOut("fast");
+}
+
 //window.COLORSWITCH = 0;
 //window.COLORARRAY = ["blue","green"];
 
 //Start our page manipulation and event handling
 jQuery(document).ready(function(){
-    //try to get stored user preferences if available server side and make them available to client script (current javascript / jquery runtime)
-    google.script.run.withSuccessHandler(updateUserProperties).getUserProperties();
-
+    //we will try to get a pure JSON obj, so we don't need to parse every value
+    google.script.run.withSuccessHandler(passUserPropertiesServer2Client).getUserProperties(true); 
+    
     //render interface with jquery ui and set events for ui
     jQuery('#accordion').accordion();
     jQuery('#tabs').tabs({
@@ -658,8 +830,7 @@ jQuery(document).ready(function(){
       "direction": "vertical"
     });
     
-    jQuery('#tab3 .button').button();
-
+    
     $('ul.nav li').click(function(){
       var divid = $(this).data("divid");
       
@@ -671,30 +842,106 @@ jQuery(document).ready(function(){
       $(this).addClass('active');
     });
     
-    
-    $('span#bookchapterstyle input').change(function(){
-      if($(this).is(':checked')){
-        let thisstyle = $(this).attr('id').replace("bookchapter-","");
-        if(thisstyle=="bold"){ $('p.bookchapter').css({"font-weight":"bold"}); userProps.BookChapterStyles.BOLD = true; saveUserProps(userProps); }
-        if(thisstyle=="italic"){ $('p.bookchapter').css({"font-style":"italic"}); userProps.BookChapterStyles.ITALIC = true; saveUserProps(userProps); }
-        if(thisstyle=="underline"){ $('p.bookchapter').css({"text-decoration":"underline"}); userProps.BookChapterStyles.UNDERLINE = true; saveUserProps(userProps); }
-        
-      }
-      else{
-        let thisstyle = $(this).attr('id').replace("bookchapter-","");
-        if(thisstyle=="bold"){ $('p.bookchapter').css({"font-weight":"normal"}); userProps.BookChapterStyles.BOLD = false; saveUserProps(userProps); }
-        if(thisstyle=="italic"){ $('p.bookchapter').css({"font-style":"normal"}); userProps.BookChapterStyles.ITALIC = false; saveUserProps(userProps); }
-        if(thisstyle=="underline"){ $('p.bookchapter').css({"text-decoration":"none"}); userProps.BookChapterStyles.UNDERLINE = false; saveUserProps(userProps); }
+    $('#paragraphalign input[type=radio]').on('change',function(){
+      if(this.checked){
+        $('.liveview-quote').css({"text-align":this.value});
+        userProps.ParagraphStyles.ParagraphAlign = this.value;
+        saveUserProps(userProps);
       }
     });
     
-    $('span#bookchapteralignment input').change(function(){
-      if($(this).is(':checked')){
-        let thisstyle = $(this).attr('id').replace("chapterbook-","");
-        if(thisstyle=="normal"){ $('p.bookchapter').css({"position":"relative","top":"0px"}); userProps.BookChapterAlignment = "NORMAL"; saveUserProps(userProps); }
-        if(thisstyle=="superscript"){ $('p.bookchapter').css({"position":"relative","top":"-4px"}); userProps.BookChapterAlignment = "SUPERSCRIPT"; saveUserProps(userProps); }
-        if(thisstyle=="subscript"){ $('p.bookchapter').css({"position":"relative","top":"4px"}); userProps.BookChapterAlignment = "SUBSCRIPT"; saveUserProps(userProps); }
+    let $pos = $('#lineheightBtn').offset();
+    let $hgt = $('#lineheightBtn').height();
+    $('#Lineheight-quote').selectmenu({width:'auto',change:function(event,ui){
+      $('.liveview-quote').css({"line-height":this.value+"em"});
+      userProps.ParagraphStyles.Lineheight = this.value;
+      saveUserProps(userProps);
+      } }).selectmenu("widget").css({"visibility": "hidden","position":"absolute","top":$pos.top,"left":$pos.left});
+    $('#lineheightBtn').on('click',function(){
+      $('#Lineheight-quote').selectmenu('open');
+    });
+    
+    $('#LeftIndent-quote').change(function(){
+      var leftindent = Math.round(parseFloat(this.value) * 28.3464567);
+      $('.liveview-quote').css({"margin-left":leftindent+"pt"});
+      $('.bookchapter').css({"margin-left":leftindent+"pt"});
+      $('.bibleversion').css({"margin-left":leftindent+"pt"});
+      userProps.ParagraphStyles.LeftIndent = parseFloat(this.value);
+      saveUserProps(userProps);
+    });
+    
+    $('#RightIndent-quote').change(function(){
+      var rightindent = Math.round(parseFloat(this.value) * 28.3464567);
+      $('.liveview-quote').css({"margin-right":rightindent+"pt"});
+      $('.bookchapter').css({"margin-right":rightindent+"pt"});
+      $('.bibleversion').css({"margin-right":rightindent+"pt"});
+      userProps.ParagraphStyles.RightIndent = parseFloat(this.value);
+      saveUserProps(userProps);
+    });
+    //$('#no-version-formatting').checkbox();
+    
+    $('span#bookchapterstyle input').change(function(){
+      if(this.checked){
+        switch(this.value){
+          case '<?!=BGET.TEXTSTYLE.BOLD?>':
+            $('p.bookchapter').css({"font-weight":"bold"}); 
+            userProps.BookChapterStyles.BOLD = true;
+            break;
+          case '<?!=BGET.TEXTSTYLE.ITALIC?>':
+            $('p.bookchapter').css({"font-style":"italic"}); 
+            userProps.BookChapterStyles.ITALIC = true; 
+            break;
+          case '<?!=BGET.TEXTSTYLE.UNDERLINE?>':
+            $('p.bookchapter').css({"text-decoration":"underline"+(userProps.BookChapterStyles.STRIKETHROUGH ? ' line-through' : '')}); 
+            userProps.BookChapterStyles.UNDERLINE = true;
+            break;
+          case '<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>':
+            $('p.bookchapter').css({"text-decoration":"line-through"+(userProps.BookChapterStyles.UNDERLINE ? ' underline' : '')}); 
+            userProps.BookChapterStyles.STRIKETHROUGH = true;
+            break;
+        }
       }
+      else{
+        let thisstyle = $(this).attr('id').replace("bookchapter-","");
+        switch(thisstyle){
+          case '<?!=BGET.TEXTSTYLE.BOLD?>':
+            $('p.bookchapter').css({"font-weight":"normal"}); 
+            userProps.BookChapterStyles.BOLD = false;
+            break;
+          case '<?!=BGET.TEXTSTYLE.ITALIC?>':
+            $('p.bookchapter').css({"font-style":"normal"}); 
+            userProps.BookChapterStyles.ITALIC = false; 
+            break;
+          case '<?!=BGET.TEXTSTYLE.UNDERLINE?>':
+            $('p.bookchapter').css({"text-decoration":(usrProps.BookChapterStyles.STRIKETHROUGH) ? ' line-through' : 'none'}); 
+            userProps.BookChapterStyles.UNDERLINE = false;
+            break;
+          case '<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>':
+            $('p.bookchapter').css({"text-decoration":(usrProps.BookChapterStyles.UNDERLINE) ? ' underline' : 'none'}); 
+            userProps.BookChapterStyles.STRIKETHROUGH = false;
+            break;
+        }
+      }
+      saveUserProps(userProps);
+    });
+    
+    $('span#bookchapteralignment input').change(function(){
+      if(this.checked){
+        switch(this.value){
+          case '<?!=BGET.VALIGN.NORMAL?>': 
+            $('p.bookchapter').css({"position":"relative","top":"0px"});
+            break;
+          case '<?!=BGET.VALIGN.SUPERSCRIPT?>':
+            $('p.bookchapter').css({"position":"relative","top":"-4px"});
+            break;
+          case '<?!=BGET.VALIGN.SUBSCRIPT?>':
+            $('p.bookchapter').css({"position":"relative","top":"4px"});
+            break;
+        }
+        userProps.BookChapterStyles.VALIGN = this.value; 
+        saveUserProps(userProps);      
+      }
+      
     });
 /*    
     $('select#bookchapter-fontfamily').change(function(){
@@ -727,11 +974,20 @@ jQuery(document).ready(function(){
     });
     
     $('span#versenumberalignment input').change(function(){
-      if($(this).is(':checked')){
-        var thisstyle = $(this).attr('id').replace("versenumber-","");
-        if(thisstyle=="normal"){ $('span.versenumber').css({"position":"relative","top":"0px"}); userProps.VerseNumberAlignment = "NORMAL"; saveUserProps(userProps); }
-        if(thisstyle=="superscript"){ $('span.versenumber').css({"position":"relative","top":"-4px"}); userProps.VerseNumberAlignment = "SUPERSCRIPT"; saveUserProps(userProps); }
-        if(thisstyle=="subscript"){ $('span.versenumber').css({"position":"relative","top":"4px"}); userProps.VerseNumberAlignment = "SUBSCRIPT"; saveUserProps(userProps); }
+      if(this.checked){
+        switch(this.value){
+          case '<?!=BGET.VALIGN.NORMAL?>': 
+            $('span.versenumber').css({"position":"relative","top":"0px"});
+            break;
+          case '<?!=BGET.VALIGN.SUPERSCRIPT?>':
+            $('span.versenumber').css({"position":"relative","top":"-4px"});
+            break;
+          case '<?!=BGET.VALIGN.SUBSCRIPT?>':
+            $('span.versenumber').css({"position":"relative","top":"4px"});
+            break;
+        }
+        userProps.VerseNumberStyles.VALIGN = this.value; 
+        saveUserProps(userProps);      
       }
     });
 /*    
@@ -749,11 +1005,11 @@ jQuery(document).ready(function(){
       saveUserProps(userProps);
     });
 
-    $('.indevelopment input').prop('disabled',true);
+    //$('.indevelopment input').prop('disabled',true);
     
 
     $('span#versetextstyle input').change(function(){
-      if($(this).is(':checked')){
+      if(this.checked){
         var thisstyle = $(this).attr('id').replace("versetext-","");
         if(thisstyle=="bold"){ $('span.versetext').css({"font-weight":"bold"}); userProps.VerseTextStyles.BOLD = true; saveUserProps(userProps); }
         if(thisstyle=="italic"){ $('span.versetext').css({"font-style":"italic"}); userProps.VerseTextStyles.ITALIC = true; saveUserProps(userProps); }
@@ -768,11 +1024,21 @@ jQuery(document).ready(function(){
     });
     
     $('span#versetextalignment input').change(function(){
-      if($(this).is(':checked')){
-        var thisstyle = $(this).attr('id').replace("versetext-","");
-        if(thisstyle=="normal"){ $('span.versetext').css({"position":"relative","top":"0px"}); userProps.VerseTextAlignment = "NORMAL"; saveUserProps(userProps); }
-        if(thisstyle=="superscript"){ $('span.versetext').css({"position":"relative","top":"-4px"}); userProps.VerseTextAlignment = "SUPERSCRIPT"; saveUserProps(userProps); }
-        if(thisstyle=="subscript"){ $('span.versetext').css({"position":"relative","top":"4px"}); userProps.VerseTextAlignment = "SUBSCRIPT"; saveUserProps(userProps); }
+      if(this.checked){
+        //var thisstyle = $(this).attr('id').replace("versetext-","");
+        switch(this.value){
+          case '<?!=BGET.VALIGN.NORMAL?>': 
+            $('span.versetext').css({"position":"relative","top":"0px"});
+            break;
+          case '<?!=BGET.VALIGN.SUPERSCRIPT?>':
+            $('span.versetext').css({"position":"relative","top":"-4px"});
+            break;
+          case '<?!=BGET.VALIGN.SUBSCRIPT?>':
+            $('span.versetext').css({"position":"relative","top":"4px"});
+            break;
+        }
+        userProps.VerseTextStyles.VALIGN = this.value; 
+        saveUserProps(userProps);
       }
     });
 /*    
@@ -792,7 +1058,7 @@ jQuery(document).ready(function(){
 
     $('input[type="color"]').change(function(){
       //alert($(this).val());
-      var thisval = $(this).val();
+      var thisval = this.value;
       var thisid = $(this).attr('id').split('-');
       //alert("thisval = "+thisval+", thisid[0] = "+thisid[0]+", thisid[1] = "+thisid[1]);
       if(thisid[1]=='color'){
@@ -811,32 +1077,10 @@ jQuery(document).ready(function(){
       
     });
     
-    $('#Lineheight-quote').change(function(){
-      $('.liveview-quote').css({"line-height":$(this).val()+"em"});
-      userProps.Lineheight = $(this).val();
-      saveUserProps(userProps);
-    });
-    
-    $('#LeftIndent-quote').change(function(){
-      var leftindent = Math.round(parseFloat($(this).val()) * 28.3464567);
-      $('.liveview-quote').css({"margin-left":leftindent+"pt"});
-      $('.bookchapter').css({"margin-left":leftindent+"pt"});
-      userProps.LeftIndent = $(this).val();
-      saveUserProps(userProps);
-    });
-    
-    $('#RightIndent-quote').change(function(){
-      var rightindent = Math.round(parseFloat($(this).val()) * 28.3464567);
-      $('.liveview-quote').css({"margin-right":rightindent+"pt"});
-      $('.bookchapter').css({"margin-right":rightindent+"pt"});
-      userProps.RightIndent = $(this).val();
-      saveUserProps(userProps);
-    });
-    //$('#no-version-formatting').checkbox();
     
     $('#no-version-formatting').change(function(){
       //google.script.run.consoleLog("checkbox was checked, current value is: "+$(this).prop("checked"));
-      userProps.NoVersionFormatting = $(this).prop("checked");
+      userProps.ParagraphStyles.NoVersionFormatting = $(this).prop("checked");
       saveUserProps(userProps);
     });
     
@@ -844,8 +1088,166 @@ jQuery(document).ready(function(){
       $('.spinner').show();
       google.script.run.refreshData();
     });
+
+    jQuery('#tab3 .button').button();
+    jQuery('#tab3 #RESET_DEFAULT_USERPROPS').on('click',function(){
+      $('.spinner').show();
+      google.script.run.resetUserProperties();
+    });
+
+    for(var i in ffAutoComplete){
+      //let selcd = (ffAutoComplete[i] == userProps.FONT_FAMILY);
+      $('#bibleget-font-family').append(jQuery('<option>',{value:ffAutoComplete[i],text:ffAutoComplete[i]})); //,selected:selcd
+      if(i == ffAutoComplete.length-1){
+        if(jQuery('#bibleget-font-family').find('option[value="<?!=userProperties.ParagraphStyles.FONT_FAMILY ?>"]').length > 0){
+          jQuery('#bibleget-font-family').val('<?!=userProperties.ParagraphStyles.FONT_FAMILY ?>');
+        }
+        //jQuery('#bibleget-font-family').find('option[val="'+userProps.FONT_FAMILY+'"]').prop('selected',true);
+        $('#bibleget-font-family').combobox()
+        .combobox("widget").css({"font-family":"<?!=userProperties.ParagraphStyles.FONT_FAMILY ?>"});
+        //$('#btnSetFont').button();
+        jQuery('#bibleget-font-family').on('change',function(){
+          //let myUI = jQuery(this).val();
+          //jQuery('<span>',{text:myUI}).insertAfter('#tabs');
+          userProps.FONT_FAMILY = $(this).val();
+          saveUserProps(userProps);
+          $('#gfFontFamily').attr("href","https://fonts.googleapis.com/css?family="+userProps.FONT_FAMILY+"&text=<?!= UniqueStr ?>"+makeUnique(userProps.FONT_FAMILY));
+          $('p.bookchapter').add('p.liveview-quote').css({'font-family':userProps.FONT_FAMILY});
+          $('#bibleget-font-family').combobox("widget").css({"font-family":userProps.FONT_FAMILY});
+        });
+        domopscomplete = true;
+        if(userProps.populated){ $('.spinner').fadeOut("fast"); } //$('#tab1').append('<p>spinner was faded after domops completed</p>');
+      }
+    }
+    
+    $('#tab2').on('change','input[type=radio]', function(){
+      if(this.checked){ 
+        $('.spinner').fadeIn("fast");
+        //alert(this.name + ' : ' + this.value);
+        switch(this.name){
+          case "ShowBibleVersion":
+            switch(this.value){
+              case '<?!=BGET.VISIBILITY.SHOW?>':
+                jQuery('.fieldset-results').each(function(){
+                  if(userProps.LayoutPrefs.BibleVersionPosition=='<?!=BGET.POS.TOP?>'){
+                    $(this).find('p.bibleversion.showtop').show();
+                    $(this).find('p.bibleversion.showbottom').hide();
+                  }
+                  else if(userProps.LayoutPrefs.BibleVersionPosition=='<?!=BGET.POS.BOTTOM?>'){
+                    $(this).find('p.bibleversion.showtop').hide();
+                    $(this).find('p.bibleversion.showbottom').show();
+                  }
+                });
+                break;
+              case '<?!=BGET.VISIBILITY.HIDE?>':
+                jQuery('.fieldset-results').each(function(){
+                  $(this).find('p.bibleversion').hide();
+                });
+                break;
+            }
+            break;
+          case "BibleVersionWrap":
+            var wrap1='';
+            var wrap2='';
+            switch(this.value){
+              case '<?!=BGET.WRAP.PARENTHESES?>':
+              wrap1= '(';
+              wrap2 = ')';
+              break;
+            case '<?!=BGET.WRAP.BRACKETS?>':
+              wrap1 = '[';
+              wrap2 = ']';
+              break;
+            }
+            jQuery('p.bibleversion').each(function(){
+              $(this).find('span.bcWrap').first().text(wrap1);
+              $(this).find('span.bcWrap').last().text(wrap2);
+            });
+            break;
+          case "BibleVersionAlignment":
+            jQuery('p.bibleversion').css({'text-align':this.value});
+            break;
+          case "BibleVersionPosition":
+            switch(this.value){
+              case '<?!=BGET.POS.TOP?>':
+                jQuery('.fieldset-results').each(function(){
+                  $(this).find('p.bibleversion.showtop').show();
+                  $(this).find('p.bibleversion.showbottom').hide();
+                });
+                break;
+              case '<?!=BGET.POS.BOTTOM?>':
+                jQuery('.fieldset-results').each(function(){
+                  $(this).find('p.bibleversion.showbottom').show();
+                  $(this).find('p.bibleversion.showtop').hide();
+                });
+                break;
+            }
+            break;
+          case "BookChapterFormat":
+            //BGET.FORMAT.BIBLELANG,
+            break;
+          case "BookChapterWrap":
+            var wrap1='';
+            var wrap2='';
+            switch(this.value){
+              case '<?!=BGET.WRAP.PARENTHESES?>':
+              wrap1= '(';
+              wrap2 = ')';
+              break;
+            case '<?!=BGET.WRAP.BRACKETS?>':
+              wrap1 = '[';
+              wrap2 = ']';
+              break;
+            }
+            jQuery('.bookchapter').each(function(){
+              $(this).find('span.bcWrap').first().text(wrap1);
+              $(this).find('span.bcWrap').last().text(wrap2);
+            });
+            break;
+          case "BookChapterAlignment":
+            jQuery('.bookchapter').css({'text-align':this.value});
+            break;
+          case "BookChapterPosition":
+            switch(this.value){
+              case '<?!=BGET.POS.TOP?>':
+                jQuery('div.bookchapterWrapper').each(function(){
+                  $(this).find('.bookchapter').css({'display':'block'}).prependTo(this);
+                });
+                break;
+              case '<?!=BGET.POS.BOTTOM?>':
+                jQuery('div.bookchapterWrapper').each(function(){
+                  $(this).find('.bookchapter').css({'display':'block'}).appendTo(this);
+                });
+                break;
+              case '<?!=BGET.POS.BOTTOMINLINE?>':
+                jQuery('div.bookchapterWrapper').each(function(){
+                  $(this).find('.bookchapter').css({'display':'inline','margin-left':'6px'}).appendTo($(this).find('p.liveview-quote'));
+                });
+                break;
+            }
+            break;
+          case "ShowVerseNumbers":
+            switch(this.value){
+              case '<?!=BGET.VISIBILITY.SHOW?>':
+                jQuery('span.versenumber').show();
+                break;
+              case '<?!=BGET.VISIBILITY.HIDE?>':
+                jQuery('span.versenumber').hide();
+                break;
+            }
+            break;          
+        }
+        userProps.LayoutPrefs[this.name] = this.value;        
+        saveUserProps(userProps);
+      }
+    });
         
 });
 
 </script>
 </body>
+<?
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('document body complete in Settings.html');
+  }   
+?>

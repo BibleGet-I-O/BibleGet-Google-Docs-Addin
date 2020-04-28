@@ -3,42 +3,119 @@
  */
 
 const VERSION = 21; //corresponds with version in the store; local version is -1!
-const REQUESTPARAMS = {'rettype':'json','appid':'googledocs'};
+const ADDONSTATE = {
+  PRODUCTION: "production",
+  DEVELOPMENT: "development"
+};
+
+const CURRENTSTATE = ADDONSTATE.DEVELOPMENT;
+//const CURRENTSTATE = ADDONSTATE.PRODUCTION;
+
+const REQUESTPARAMS = {"rettype":"json","appid":"googledocs"};
 const ENDPOINTURL = "https://query.bibleget.io/";
 const ENDPOINTURLMETADATA = "https://query.bibleget.io/metadata.php";
+const SETTINGSWINDOW = {
+  HEIGHT: 540,
+  WIDTH: 800
+}
 
 const BGET = {
   ALIGN: {
-    LEFT:   'left',
-    RIGHT:  'right',
-    CENTER: 'center'
+    LEFT:   "left",
+    RIGHT:  "right",
+    CENTER: "center",
+    JUSTIFY: "justify"
+  },
+  VALIGN: {
+    SUPERSCRIPT: "superscript",
+    SUBSCRIPT: "subscript",
+    NORMAL: "normal"
   },
   WRAP: {
-    NONE:        'none',
-    PARENTHESES: 'parentheses',
-    BRACKETS:    'brackets'
+    NONE:        "none",
+    PARENTHESES: "parentheses",
+    BRACKETS:    "brackets"
   },
   POS: {
-    TOP:    'top',
-    BOTTOM: 'bottom',
-    INLINE: 'inline'
+    TOP:    "top",
+    BOTTOM: "bottom",
+    BOTTOMINLINE: "inline"
   },
   FORMAT: {
-    QUERY: 'query',
-    USERLANG: 'userLang',
-    BIBLELANG: 'bibleLang'
+    QUERY: "query",
+    USERLANG: "userLang",
+    BIBLELANG: "bibleLang"
   },
   VISIBILITY: {
-    SHOW: 'show',
-    HIDE: 'hide'
+    SHOW: "show",
+    HIDE: "hide"
+  },
+  TEXTSTYLE: {
+    BOLD: 'bold',
+    ITALIC: 'italic',
+    UNDERLINE: 'underline',
+    STRIKETHROUGH: 'strikethrough'
   }
 };
 
+const DefaultUserProperties = {
+  BookChapterStyles: {
+    BOLD:true,
+    ITALIC:false,
+    UNDERLINE:false,
+    STRIKETHROUGH:false,
+    FOREGROUND_COLOR:"#000044",
+    BACKGROUND_COLOR:"#FFFFFF",
+    FONT_SIZE:10,
+    VALIGN:BGET.VALIGN.NORMAL
+  },
+  VerseNumberStyles: {
+    BOLD:true,
+    ITALIC:false,
+    UNDERLINE:false,
+    STRIKETHROUGH:false,
+    FOREGROUND_COLOR:"#AA0000",
+    BACKGROUND_COLOR:"#FFFFFF",
+    FONT_SIZE:10,
+    VALIGN:BGET.VALIGN.SUPERSCRIPT  
+  },
+  VerseTextStyles: {
+    BOLD:false,
+    ITALIC:false,
+    UNDERLINE:false,
+    STRIKETHROUGH:false,
+    FOREGROUND_COLOR:"#666666",
+    BACKGROUND_COLOR:"#FFFFFF",
+    FONT_SIZE:10,
+    VALIGN:BGET.VALIGN.NORMAL
+  },
+  ParagraphStyles:{
+    Lineheight:1.5,
+    LeftIndent:0.0,
+    RightIndent:0.0,
+    FONT_FAMILY:"Times New Roman",
+    ParagraphAlign: BGET.ALIGN.JUSTIFY,
+    NoVersionFormatting:false
+  },  
+  LayoutPrefs: {
+    ShowBibleVersion: BGET.VISIBILITY.SHOW, //ShowBibleVersion: possible vals 'show', 'hide' (use ENUM, e.g. BGET.VISIBILITY.SHOW)
+    BibleVersionAlignment: BGET.ALIGN.LEFT, //BibleVersionAlignment: possible vals 'left','center','right' (use ENUM, e.g. BGET.ALIGN.LEFT)
+    BibleVersionPosition: BGET.POS.TOP,     //BibleVersionPosition: possible vals 'top','bottom'. (Use ENUM, e.g. BGET.POS.TOP)
+                                            //N.B. if BookChapterPosition is also bottom, then they will be placed next to each other and BibleVersionAlignment will have no effect, only BookChapterAlignment will
+    BibleVersionWrap: BGET.WRAP.NONE,       //BibleVersionWrap: possible vals 'none', 'parentheses', 'brackets' (use ENUM, e.g. BGET.WRAP.NONE)
+    BookChapterAlignment: BGET.ALIGN.LEFT,  //BookChapterAlignment: possible vals 'left','center','right' (use ENUM, e.g. BGET.ALIGN.LEFT)
+    BookChapterPosition: BGET.POS.TOP,      //BookChapterPosition: possible vals 'top', 'bottom', 'bottominline'.  (Use ENUM, e.g. BGET.POS.BOTTOMINLINE)
+    BookChapterWrap: BGET.WRAP.NONE,        //BookChapterWrap: possible vals 'none', 'parentheses', 'brackets' (use ENUM, e.g. BGET.WRAP.NONE)
+    BookChapterFormat: BGET.FORMAT.BIBLELANG,//BookChapterFormat: possible vals 'query', 'userLang', 'bibleLang' (use ENUM, e.g. BGET.FORMAT.BIBLELANG
+    //  Meaning: 1) like the original query = if '1Jn4:7-8' was requested '1Jn4:7-8' will be shown
+    //           2) according to user lang = if Google Docs is used in chinese, the names of the books of the bible will be in chinese
+    //           3) according to bible lang = if you are quoting from a Latin Bible, the names of the books of the bible will be in latin
+    //  N.B. only holds when position = BGET.POS.BOTTOM
+    ShowVerseNumbers: BGET.VISIBILITY.SHOW  //ShowVerseNumbers: possible vals 'show', 'hide' (use ENUM, e.g. BGET.VISIBILITY.SHOW)
+  },
+  RecentSelectedVersions:"[]"
+};
 
-function consoleLog(str){
-  Logger.log(str);   //internal log (not very efficient?)
-  console.info(str); //stackdriver logs
-}
 
 function onInstall(e){
 
@@ -59,7 +136,6 @@ function onOpen(e) {
     .addItem(__('Start',locale), 'openSimpleSidebar')
     .addSeparator()
     .addItem(__('Instructions',locale), 'openHelpSidebar')
-    .addItem(__('Send Feedback',locale), 'openSendFeedback')
     .addItem(__('Contribute',locale), 'openContributionModal')
     .addToUi();
     //consoleLog('Permissions not yet granted');
@@ -74,24 +150,11 @@ function onOpen(e) {
     .addItem(__('Send Feedback',locale), 'openSendFeedback')
     .addItem(__('Contribute',locale), 'openContributionModal')
     .addToUi();
-        
-    // Check if preferences have been set yet, if not set defaults. 
-    var userProperties = PropertiesService.getUserProperties();
-    //consoleLog("getting properties service");
-    // Seeing that some properties have been added in VERSION 22,
-    // we will check for the existence of these properties
-    // Perhaps preferences that had already been set will be overwritten,
-    // but it's not the end of the world, it's easy enough to set them again
-    // Add-on needs to be republished anyways, so no big worry
-    if(userProperties.getProperty("FONT_FAMILY")==null || userProperties.getProperty("RightIndent")==null ){      
-      //consoleLog("preferences have not been set, now setting defaults");      
-      userProperties.setProperties(getDefaultProperties());
-      //consoleLog('default font-family now set:'+newProperties.FONT_FAMILY);
-      //consoleLog("default preferences now set in properties service");      
-    }
-    else{
-      //consoleLog('Seems we already have preferences set, no need to override. VERSION = '+VERSION);
-    }
+    if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+      consoleLog('about to run setDefaultProperties from onOpen');
+    }   
+    // Check if preferences have been set, if not set defaults (check will be done one by one against default prefs)
+    setDefaultUserProperties();
   }
 }
 
@@ -103,8 +166,8 @@ function openSettings(){
   let html = HtmlService.createTemplateFromFile('Settings');
   html.activetab = 0;
   let evaluated = html.evaluate()
-      .setWidth(800)
-      .setHeight(500)
+      .setWidth(SETTINGSWINDOW.WIDTH)
+      .setHeight(SETTINGSWINDOW.HEIGHT)
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   DocumentApp.getUi().showModalDialog(evaluated, __('Settings',locale));
 }
@@ -137,7 +200,7 @@ function sendMail(txt) {
 
 function openContributionModal(){
   let locale = getUserLocale();
-  let html = HtmlService.createTemplateFromFile('Contributo')
+  let html = HtmlService.createTemplateFromFile('Contribute')
       .evaluate()
       .setWidth(400)
       .setHeight(300)
@@ -178,198 +241,184 @@ function alertMe(str){
   DocumentApp.getUi().alert(str);
 }
 
-function getDefaultProperties(){
-  
-  //consoleLog("returning default properties");
-  
-      let bookChapterStylesObj = {
-        UNDERLINE:false,
-        LINK_URL:null,
-        ITALIC:false,
-        BOLD:true,
-        BACKGROUND_COLOR:"#FFFFFF",
-        FONT_SIZE:10,
-        STRIKETHROUGH:false,
-        FOREGROUND_COLOR:"#000044"
-      };
-      let bookChapterStylesStr = JSON.stringify(bookChapterStylesObj);
-      
-      //consoleLog("prepared bookChapterStylesStr");
-      
-      let verseNumberStylesObj = {
-        UNDERLINE:false,
-        LINK_URL:null,
-        ITALIC:false,
-        BOLD:true,
-        BACKGROUND_COLOR:"#FFFFFF",
-        FONT_SIZE:10,
-        STRIKETHROUGH:false,
-        FOREGROUND_COLOR:"#AA0000"
-      };
-      let verseNumberStylesStr = JSON.stringify(verseNumberStylesObj);
 
-      //consoleLog("prepared verseNumberStylesStr");
-      
-      let verseTextStylesObj = {
-        UNDERLINE:false,
-        LINK_URL:null,
-        ITALIC:false,
-        BOLD:false,
-        BACKGROUND_COLOR:"#FFFFFF",
-        FONT_SIZE:10,
-        STRIKETHROUGH:false,
-        FOREGROUND_COLOR:"#666666"
-      };
-      let verseTextStylesStr = JSON.stringify(verseTextStylesObj);
-      
-      //consoleLog("prepared verseTextStylesStr");
-      
-      //ShowBibleVersion: possible vals 'show', 'hide' (use ENUM, e.g. BGET.VISIBILITY.SHOW)
-      //BibleVersionAlignment: possible vals 'left','center','right' (use ENUM, e.g. BGET.ALIGN.LEFT)
-      //BibleVersionPosition: possible vals 'top','bottom'. (Use ENUM, e.g. BGET.POS.TOP)
-      //  N.B. if BookChapterPosition is also bottom, then they will be placed next to each other and BibleVersionAlignment will have no effect, only BookChapterAlignment will
-      //BibleVersionWrap: possible vals 'none', 'parentheses', 'brackets' (use ENUM, e.g. BGET.WRAP.NONE)
-      
-      //BookChapterPosition: possible vals 'inline', 'bottom'. If 'bottom' then the original query will be shown. (Use ENUM, e.g. BGET.POS.INLINE)
-      //BookChapterAlignment: possible vals 'left','center','right' (use ENUM, e.g. BGET.ALIGN.LEFT)
-      //BookChapterWrap: possible vals 'none', 'parentheses', 'brackets' (use ENUM, e.g. BGET.WRAP.NONE)
-      //BookChapterFormat: possible vals 'query', 'userLang', 'bibleLang' (use ENUM, e.g. BGET.FORMAT.BIBLELANG
-      //  Meaning: 1) like the original query = if '1Jn4:7-8' was requested '1Jn4:7-8' will be shown
-      //           2) according to user lang = if Google Docs is used in chinese, the names of the books of the bible will be in chinese
-      //           3) according to bible lang = if you are quoting from a Latin Bible, the names of the books of the bible will be in latin
-      //  N.B. only holds when position = BGET.POS.BOTTOM
-      
-      //ShowVerseNumbers: possible vals 'show', 'hide' (use ENUM, e.g. BGET.VISIBILITY.SHOW)
-      let layoutPrefsObj = {
-        ShowBibleVersion: BGET.VISIBILITY.SHOW,
-        BibleVersionPosition: BGET.POS.TOP,
-        BibleVersionAlignment: BGET.ALIGN.LEFT,
-        BibleVersionWrap: BGET.WRAP.NONE,
-        BookChapterPosition: BGET.POS.INLINE,
-        BookChapterAlignment: BGET.ALIGN.LEFT,
-        BookChapterWrap: BGET.WRAP.NONE,
-        BookChapterFormat: BGET.FORMAT.BIBLELANG,
-        ShowVerseNumbers: BGET.VISIBILITY.SHOW
-      };
-      let layoutPrefsStr = JSON.stringify(layoutPrefsObj);
-
-      let defaultProperties = {
-        BookChapterStyles:bookChapterStylesStr,
-        BookChapterAlignment:"NORMAL",
-        VerseNumberStyles:verseNumberStylesStr,
-        VerseNumberAlignment:"SUPERSCRIPT",
-        VerseTextStyles:verseTextStylesStr,
-        VerseTextAlignment:"NORMAL",
-        Lineheight:1.5,
-        LeftIndent:0,
-        RightIndent:0,
-        FONT_FAMILY:"Times New Roman",
-        NoVersionFormatting:false,
-        RecentSelectedVersions:"[]",
-        LayoutPrefs:layoutPrefsStr
-      };
-  
-  return defaultProperties;
-}
-
-function getUserProperties(){
-
-  //consoleLog("getting user preferences.");
-  
+/**
+  * FUNCTION setDefaultUserProperties
+  * checks current user properties against default user properties
+  * if a current property is missing compared to the default properties, the default will be defined
+  * otherwise current will be preserved
+  */
+function setDefaultUserProperties(){
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('running function setDefaultUserProperties');
+  }   
   let userProperties = PropertiesService.getUserProperties();
-  
-  consoleLog("first trying properties service:");
-  
-  //if for any reason defaults have not been set, let's return an object with default values
-  if(userProperties.getProperty("FONT_FAMILY")===null){
-    
-    consoleLog("preferences not yet set in properties service, will get default preferences...");
-    
-    let defaultProperties = getDefaultProperties();
-    return defaultProperties;
-    
+  if(VERSION>20){
+    userProperties.deleteAllProperties();
   }
   
-  //otherwise we will retrieve the user preferences set in the properties service
-  else{
-    
-    //consoleLog("preferences have been set in properties service, retrieving now...");
-    
-    let usrProperties = userProperties.getProperties();
-    let currentProperties = {};
-    
-    consoleLog("will now parse json strings from properties service");
-    
-    //consoleLog(usrProperties.BookChapterStyles);
-    currentProperties.BookChapterStyles = JSON.parse(usrProperties.BookChapterStyles);    
-    //consoleLog("usrProperties.BookChapterStyles parsed!");
-    
-    currentProperties.BookChapterAlignment = usrProperties.BookChapterAlignment;
-
-    currentProperties.VerseNumberStyles = JSON.parse(usrProperties.VerseNumberStyles);
-    //consoleLog("usrProperties.BookChapterStyles parsed!");
-
-    currentProperties.VerseNumberAlignment = usrProperties.VerseNumberAlignment;
-
-    currentProperties.VerseTextStyles = JSON.parse(usrProperties.VerseTextStyles);
-    //consoleLog("usrProperties.BookChapterStyles parsed!");
-
-    currentProperties.VerseTextAlignment = usrProperties.VerseTextAlignment;
-    currentProperties.Lineheight = usrProperties.Lineheight;
-    currentProperties.LeftIndent = usrProperties.LeftIndent;
-    currentProperties.RightIndent = usrProperties.RightIndent;
-    currentProperties.FONT_FAMILY = usrProperties.FONT_FAMILY;
-    //consoleLog('FONT_FAMILY = '+currentProperties.FONT_FAMILY);
-    currentProperties.NoVersionFormatting = usrProperties.NoVersionFormatting;
-    currentProperties.LayoutPrefs = JSON.parse(usrProperties.LayoutPrefs);
-    //consoleLog("now returning preferences retrieved from properties service.");
-    return currentProperties;
-    
-  }
-
+  let usrProperties = userProperties.getProperties();
+  let checkedUserProperties = {};
+  
+  for(let [key,value] of Object.entries(DefaultUserProperties)){      
+    if(!usrProperties.hasOwnProperty(key)){
+      if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+        consoleLog(key+'property not set, now getting from DefaultUserProperties');
+      }   
+      checkedUserProperties[key] = JSON.stringify(value);
+    }
+    else if(key=="RecentSelectedVersions"){
+      if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+        consoleLog(key+'property will be set based on current usrProperties else DefaultUserProperties');
+      }   
+      checkedUserProperties[key] = (usrProperties[key] != DefaultUserProperties[key] ? usrProperties[key] : DefaultUserProperties[key]);
+    }
+    else{
+      if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+        consoleLog(key+'property will be JSON parsed and the obj value will be checked key by key');
+      }   
+      let decodedUserProperties = JSON.parse(usrProperties[key]);
+      let propsObj = {};
+      for(let [key1,value1] of Object.entries(DefaultUserProperties[key])){
+        if(!decodedUserProperties.hasOwnProperty(key1) || decodedUserProperties[key1] === null || decodedUserProperties[key1] == ""){ propsObj[key1] = value1; }
+        else{ propsObj[key1] = decodedUserProperties[key1]; }
+      }
+      checkedUserProperties[key] = JSON.stringify(propsObj);
+    }
+  }    
+  userProperties.setProperties(checkedUserProperties); 
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('userProperties have now been set with the newly populated object between saved user preferences and default user preferences');
+  }   
 }
 
-function setUserProperties(jsonobj){
+/*
+ * FUNCTION getDefaultUserProperties
+ * returns a JSON obj in which all values are JSON stringified
+ * unless "true" is passed in, in which case a pure JSON obj will be returned
+*/
+function getDefaultUserProperties(nostringify=false){
+  let defltUserProperties = {
+    BookChapterStyles: (nostringify ? DefaultUserProperties.BookChapterStyles : JSON.stringify(DefaultUserProperties.BookChapterStyles)),
+    VerseNumberStyles: (nostringify ? DefaultUserProperties.VerseNumberStyles : JSON.stringify(DefaultUserProperties.VerseNumberStyles)),
+    VerseTextStyles: (nostringify ? DefaultUserProperties.VerseTextStyles : JSON.stringify(DefaultUserProperties.VerseTextStyles)),
+    PararaphStyles: (nostringify ? DefaultUserProperties.ParagraphStyles : JSON.stringify(DefaultUserProperties.ParagraphStyles)),
+    LayoutPrefs: (nostringify ? DefaultUserProperties.LayoutPrefs : JSON.stringify(DefaultUserProperties.LayoutPrefs)),
+    RecentSelectedVersions: (nostringify ? DefaultUserProperties.RecentSelectedVersions : JSON.stringify(DefaultUserProperties.RecentSelectedVersions))
+  };  
+  return defltUserProperties;
+}
 
-  //consoleLog("setting preferences in properties service");
+
+
+/*
+ * FUNCTION getUserProperties
+ * returns a JSON obj in which all values are JSON stringified
+ * unless "true" is passed in, in which case a pure JSON obj will be returned
+ * and all values will be returned as true booleans, ints, floats...
+*/
+function getUserProperties(nostringify=false){
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('function getUserProperties starting with nostringify = ' + nostringify.toString());
+  }   
+  let userProperties = PropertiesService.getUserProperties();
+  let usrProperties = userProperties.getProperties();
+  let currentProperties = {};
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
+    for(let [key,value] of Object.entries(usrProperties)){
+      consoleLog('function getUserProperties will parse = ' + key + ' from saved user properties, with '+ (typeof value) +' value: ' +value);
+    } 
+  }   
   
+  currentProperties.BookChapterStyles =  (nostringify ? JSON.parse(usrProperties.BookChapterStyles) : usrProperties.BookChapterStyles);    
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
+    consoleLog('BookChapterStyles parsed, result : '+currentProperties.BookChapterStyles);
+  }
+  currentProperties.VerseNumberStyles = (nostringify ? JSON.parse(usrProperties.VerseNumberStyles) : usrProperties.VerseNumberStyles);
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
+    consoleLog('VerseNumberStyles parsed, result : '+currentProperties.VerseNumberStyles);
+  }
+  currentProperties.VerseTextStyles = (nostringify ? JSON.parse(usrProperties.VerseTextStyles) : usrProperties.VerseTextStyles);
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
+    consoleLog('VerseTextStyles parsed, result : '+currentProperties.VerseTextStyles);
+  }
+  currentProperties.ParagraphStyles = (nostringify ? JSON.parse(usrProperties.ParagraphStyles) : usrProperties.ParagraphStyles);  
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
+    consoleLog('ParagraphStyles parsed, result : '+currentProperties.ParagraphStyles);
+  }
+  currentProperties.LayoutPrefs = (nostringify ? JSON.parse(usrProperties.LayoutPrefs) : usrProperties.LayoutPrefs);
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
+    consoleLog('LayoutPrefs parsed, result : '+currentProperties.LayoutPrefs);
+  }
+  currentProperties.RecentSelectedVersions = (nostringify ? JSON.parse(usrProperties.RecentSelectedVersions) : usrProperties.RecentSelectedVersions);
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
+    consoleLog('RecentSelectedVersions parsed, result : '+currentProperties.RecentSelectedVersions);
+  }
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('function getUserProperties ending');
+  }   
+  return currentProperties;
+}
+
+
+/**
+  * Function setUserProperties
+  *
+  * Set User Properties based on a JSON obj
+  * stringify each one of the values that is an obj
+  */
+function setUserProperties(jsonobj){
+  //consoleLog("setting preferences in properties service");
   let newProperties = {};
-  newProperties.BookChapterStyles = JSON.stringify(jsonobj.BookChapterStyles);
-  newProperties.BookChapterAlignment = jsonobj.BookChapterAlignment;
-  newProperties.VerseNumberStyles = JSON.stringify(jsonobj.VerseNumberStyles);
-  newProperties.VerseNumberAlignment = jsonobj.VerseNumberAlignment;
-  newProperties.VerseTextStyles = JSON.stringify(jsonobj.VerseTextStyles);
-  newProperties.VerseTextAlignment = jsonobj.VerseTextAlignment;
-  newProperties.Lineheight = jsonobj.Lineheight;
-  newProperties.LeftIndent = jsonobj.LeftIndent;
-  newProperties.RightIndent = jsonobj.RightIndent;
-  newProperties.FONT_FAMILY = jsonobj.FONT_FAMILY;
-  newProperties.NoVersionFormatting = jsonobj.NoVersionFormatting;
-  newProperties.LayoutPrefs = JSON.stringify(jsonobj.LayoutPrefs);
-  //Logger.log("saving property NoVersionFormatting with value: "+jsonobj.NoVersionFormatting);
+  for (let [key, value] of Object.entries(jsonobj)) {
+    newProperties[key] = JSON.stringify(value);
+  }
   let userProperties = PropertiesService.getUserProperties();
   userProperties.setProperties(newProperties);
-  
-  //consoleLog("preferences now set in properties service, userProperties.FONT_FAMILY = "+newProperties.FONT_FAMILY);
+  return newProperties;
 }
 
+/**
+  * Function setUserProperty
+  * (I believe this function is never actually used, we just set all the properties each time there is a change)
+  * Set User Properties based on a stringified JSON obj
+  * stringify each one of the values that is an obj
+  */
 function setUserProperty(propKey,propVal){
   let userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperty(propKey, propVal);
+  if(typeof propVal === 'object'){
+    userProperties.setProperty(propKey, JSON.stringify(propVal));
+  }
+  else { userProperties.setProperty(propKey, propVal); }
 }
 
-function getUserProperty(propKey){
+/**
+  * Function getUserProperty
+  * (I believe this function is never actually used, we just get all the properties at once as one big object)
+  * Get User Property choosing whether to return a string or an object
+  */
+function getUserProperty(propKey,nostringify=false){
   let userProperties = PropertiesService.getUserProperties();
-  Logger.log("getting user property: "+propKey);
-  var userProp = userProperties.getProperty(propKey);
-  Logger.log(userProp);
+  let userProp = (nostringify ? JSON.parse(userProperties.getProperty(propKey)) : userProperties.getProperty(propKey));
+  //Logger.log(userProp);
   return userProp;
 }
 
-function resetUserProperties(){
-  let userProperties = PropertiesService.getScriptProperties();
+function resetUserProperties(nostringify=false){
+  let locale = getUserLocale();
+  let userProperties = PropertiesService.getUserProperties();
   userProperties.deleteAllProperties();
-  getUserProperties();
+  //when we set the properties in the properties service, they must be stringified
+  //so here we don't pass in any nostringify boolean, it must be false (or empty)
+  //nostringify=false = stringify=true, values that are obj's will be stringified
+  userProperties.setProperties(getDefaultUserProperties());
+  let html2 = HtmlService.createTemplateFromFile('Settings');
+  html2.activetab = 2;
+  let evaluated = html2.evaluate()
+      .setWidth(SETTINGSWINDOW.WIDTH)
+      .setHeight(SETTINGSWINDOW.HEIGHT)
+      .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+  DocumentApp.getUi().showModalDialog(evaluated, __('Impostazioni',locale));
 }
 
 function fetchData(request){
@@ -440,8 +489,7 @@ function docInsert(json){
   var biblequote = "";
   
   var newelement = {"thisversion":"","newversion":false,"thisbook":"","newbook":false,"thischapter":0,"newchapter":false,"thisverse":0,"newverse":false};
-  var BibleGetProperties = prepareProperties();
-  //docLog("got results from server, now preparing to elaborate... BibleGetProperties object = "+JSON.stringify(BibleGetProperties));
+  var BibleGetProperties = preparePropertiesForDocInjection();
 
   var BibleGetGlobal = {"iterateNewPar":false,"currentPar":null};
   BibleGetGlobal.body = DocumentApp.getActiveDocument().getBody();
@@ -457,13 +505,13 @@ function docInsert(json){
   if(newPar = BibleGetGlobal.body.insertParagraph(BibleGetGlobal.idx,"")){ // we'll be inserting our paragraph below the current position because we've had to choose the parent element...      
     //docLog("successfully created a new paragraph...");
     newPar.setAlignment(DocumentApp.HorizontalAlignment.JUSTIFY);
-    newPar.setLineSpacing(BibleGetProperties.linespacing);
+    newPar.setLineSpacing(BibleGetProperties.ParagraphStyles.Lineheight);
     //DocumentApp.getUi().alert("Left Indent = "+LeftIndent+" >> "+leftindent+"pt");
-    newPar.setIndentFirstLine(BibleGetProperties.leftindent);
-    newPar.setIndentStart(BibleGetProperties.leftindent);
-    newPar.setIndentEnd(BibleGetProperties.rightindent);
+    newPar.setIndentFirstLine(BibleGetProperties.ParagraphStyles.LeftIndent);
+    newPar.setIndentStart(BibleGetProperties.ParagraphStyles.LeftIndent);
+    newPar.setIndentEnd(BibleGetProperties.ParagraphStyles.RightIndent);
     let ffStyle = {};
-    ffStyle[DocumentApp.Attribute.FONT_FAMILY] = BibleGetProperties.FONT_FAMILY;
+    ffStyle[DocumentApp.Attribute.FONT_FAMILY] = BibleGetProperties.ParagraphStyles.FONT_FAMILY;
     newPar.setAttributes(ffStyle);
     BibleGetGlobal.currentPar = newPar;
   } else {
@@ -484,10 +532,10 @@ function docInsert(json){
       var versionpargr;
       if(i==0){ versionpargr = BibleGetGlobal.currentPar.appendText(verses[i].version); }
       else { 
-        BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties.linespacing,BibleGetProperties.leftindent,BibleGetProperties.rightindent,BibleGetProperties.FONT_FAMILY);
+        BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
         versionpargr = BibleGetGlobal.currentPar.appendText(verses[i].version); 
       }
-      setVerseStyles(versionpargr,BibleGetProperties.bcStyles,BibleGetProperties.bookchapteralignment,BibleGetProperties.FONT_FAMILY);
+      setVerseStyles(versionpargr,BibleGetProperties.BookChapterStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
       BibleGetGlobal.firstFmtVerse = false;
     }
     //docLog("so far so good");
@@ -495,10 +543,10 @@ function docInsert(json){
     if(newelement.newbook || newelement.newchapter){
       //if(i==0 || newversion){ var bookpargr = currentPar.appendText(verses[i].book + " " + verses[i].chapter); }
       //else{ 
-      BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties.linespacing,BibleGetProperties.leftindent,BibleGetProperties.rightindent,BibleGetProperties.FONT_FAMILY);
+      BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
       var bookpargr = BibleGetGlobal.currentPar.appendText(verses[i].book + " " + verses[i].chapter); 
       //}
-      setVerseStyles(bookpargr,BibleGetProperties.bcStyles,BibleGetProperties.bookchapteralignment,BibleGetProperties.FONT_FAMILY);
+      setVerseStyles(bookpargr,BibleGetProperties.BookChapterStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
       BibleGetGlobal.firstFmtVerse = false;
     }
     //docLog("so far so good");
@@ -506,10 +554,10 @@ function docInsert(json){
     if(newelement.newverse){
       if(BibleGetGlobal.iterateNewPar || newelement.newchapter){
         BibleGetGlobal.iterateNewPar = false;
-        BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties.linespacing,BibleGetProperties.leftindent,BibleGetProperties.rightindent,BibleGetProperties.FONT_FAMILY);
+        BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
       }
       versenum = BibleGetGlobal.currentPar.appendText(" " + verses[i].verse + " ");
-      setVerseStyles(versenum,BibleGetProperties.vnStyles,BibleGetProperties.versenumberalignment,BibleGetProperties.FONT_FAMILY);
+      setVerseStyles(versenum,BibleGetProperties.VerseNumberStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
     }
     //docLog("so far so good");
     
@@ -523,12 +571,12 @@ function docInsert(json){
       
       verses[i].text = verses[i].text.replace(/(\n|\r)/gm,"");
       //we have special formatting to deal with
-      if(BibleGetProperties.noVersionFormatting){
+      if(BibleGetProperties.ParagraphStyles.NoVersionFormatting){
         //if user preferences ask to override version formatting, we just need to remove the formatting tags from the text
         verses[i].text = verses[i].text.replace(/<[\/]{0,1}(?:po|speaker)[f|l|s|i]{0,1}[f|l]{0,1}>/g," "); 
         verses[i].text = verses[i].text.replace(/<[\/]{0,1}sm>/g,""); 
         var versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
-        setVerseStyles(versetext,BibleGetProperties.vtStyles,BibleGetProperties.versetextalignment,BibleGetProperties.FONT_FAMILY);
+        setVerseStyles(versetext,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
         //Logger.log(verses[i].text);
       }else{
         BibleGetGlobal = formatSections(verses[i].text,BibleGetProperties,newelement,BibleGetGlobal);
@@ -538,7 +586,7 @@ function docInsert(json){
     else{
       BibleGetGlobal.firstFmtVerse = true;
       var versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
-      setVerseStyles(versetext,BibleGetProperties.vtStyles,BibleGetProperties.versetextalignment,BibleGetProperties.FONT_FAMILY);
+      setVerseStyles(versetext,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
     }
   
   }            
@@ -549,46 +597,46 @@ function getUserLocale(){
   return Session.getActiveUserLocale();
 }
 
-function doNestedTagStuff(speakerTagBefore,speakerTagContents,speakerTagAfter,thisPar,vtStyles,versetextalignment){
+function doNestedTagStuff(speakerTagBefore,speakerTagContents,speakerTagAfter,thisPar,vtStyles,fontfamily){
   //Logger.log("We have a nested tag, and we should have extracted it's parts: ");
   //Logger.log("speakerTagBefore = {"+speakerTagBefore+"}, speakerTagContents = {"+speakerTagContents+"}, speakerTagAfter = {"+speakerTagAfter+"}");
   var nabreStyleText;
   if(speakerTagBefore != ""){
     nabreStyleText = thisPar.appendText(speakerTagBefore);
     //Logger.log("we have now appended speakerTagBefore");
-    setVerseStyles(nabreStyleText,vtStyles,versetextalignment);
+    setVerseStyles(nabreStyleText,vtStyles,fontfamily);
   }
   
   nabreStyleText = thisPar.appendText(" "+speakerTagContents+" ");
   //Logger.log("we have now appended speakerTagContents");
-  nabreStyleText.setBold(true).setItalic(false).setUnderline(false).setStrikethrough(false).setFontSize(vtStyles["FONT_SIZE"]).setForegroundColor("#000000").setBackgroundColor("#9A9A9A").setTextAlignment(versetextalignment);
+  nabreStyleText.setBold(true).setItalic(false).setUnderline(false).setStrikethrough(false).setFontSize(vtStyles.FONT_SIZE).setForegroundColor("#000000").setBackgroundColor("#9A9A9A").setTextAlignment(vtStyles.ALIGN);
   
   if(speakerTagAfter != ""){
     nabreStyleText = thisPar.appendText(speakerTagAfter);
     //Logger.log("we have now appended speakerTagAfter");
-    setVerseStyles(nabreStyleText,vtStyles,versetextalignment);
+    setVerseStyles(nabreStyleText,vtStyles,fontfamily);
   } 
 }
 
-function createNewPar(BibleGetGlb,linespacing,leftindent,rightindent,fontfamily){
+function createNewPar(BibleGetGlb,BibleGetProps){ 
   var newPar;
   if(newPar = BibleGetGlb.body.insertParagraph(++BibleGetGlb.idx,"")){
-    newPar.setAlignment(DocumentApp.HorizontalAlignment.JUSTIFY);
-    newPar.setLineSpacing(linespacing);
+    newPar.setAlignment(BibleGetProps.ParagraphStyles.ParagraphAlign);
+    newPar.setLineSpacing(BibleGetProps.ParagraphStyles.Lineheight);
     //DocumentApp.getUi().alert("Left Indent = "+LeftIndent+" >> "+leftindent+"pt");
-    newPar.setIndentFirstLine(leftindent);
-    newPar.setIndentStart(leftindent);
-    newPar.setIndentEnd(rightindent);
+    newPar.setIndentFirstLine(BibleGetProps.ParagraphStyles.LeftIndent);
+    newPar.setIndentStart(BibleGetProps.ParagraphStyles.LeftIndent);
+    newPar.setIndentEnd(BibleGetProps.ParagraphStyles.RightIndent);
     let ffStyle = {};
-    ffStyle[DocumentApp.Attribute.FONT_FAMILY] = fontfamily;
+    ffStyle[DocumentApp.Attribute.FONT_FAMILY] = BibleGetProps.ParagraphStyles.FONT_FAMILY;
     newPar.setAttributes(ffStyle);
     BibleGetGlb.currentPar = newPar;
   }
   return BibleGetGlb;
 }
 
-function setVerseStyles(versetext,styles,alignment,fontfamily){
-  versetext.setBold(styles["BOLD"]).setItalic(styles["ITALIC"]).setUnderline(styles["UNDERLINE"]).setStrikethrough(styles["STRIKETHROUGH"]).setFontSize(styles["FONT_SIZE"]).setForegroundColor(styles["FOREGROUND_COLOR"]).setBackgroundColor(styles["BACKGROUND_COLOR"]).setTextAlignment(alignment).setFontFamily(fontfamily);
+function setVerseStyles(versetext,styles,fontfamily){
+  versetext.setBold(styles.BOLD).setItalic(styles.ITALIC).setUnderline(styles.UNDERLINE).setStrikethrough(styles.STRIKETHROUGH).setFontSize(styles.FONT_SIZE).setForegroundColor(styles.FOREGROUND_COLOR).setBackgroundColor(styles.BACKGROUND_COLOR).setTextAlignment(styles.ALIGN).setFontFamily(fontfamily);
 }
 
 function doSpeakerTagThing(formattingTagContents){
@@ -685,11 +733,11 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
       Logger.log("We have some normal text before special formatted text in this verse: {" + NABREfmtMatch[1] + "}");
       //this is normal text!
       var versetext = BibleGetGlobal.currentPar.appendText(NABREfmtMatch[1]);
-      setVerseStyles(versetext,BibleGetProperties.vtStyles,BibleGetProperties.versetextalignment);
+      setVerseStyles(versetext,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
       remainingText = remainingText.replace(NABREfmtMatch[1],"");
       
       if(NABREfmtMatch[2] != "sm"){
-        BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties.linespacing,BibleGetProperties.leftindent,BibleGetProperties.rightindent,BibleGetProperties.FONT_FAMILY);
+        BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
       }
     }
     if(NABREfmtMatch[4] != null && NABREfmtMatch[4] != ""){
@@ -715,7 +763,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           if(!newelement.newverse || ((NABREfmtMatch[1] == "" || NABREfmtMatch[1] == null) && BibleGetGlobal.firstFmtVerse)){ // 
             if(!newelement.newverse){Logger.log("case pof|pos|po|pol and not the start of a new verse... creating paragraph... <"+formattingTagContents+">");}
             else{Logger.log("case pof|pos|po|pol and is start of a new verse but is also the first verse with special formatting... creating paragraph... <"+formattingTagContents+">");}
-            BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties.linespacing,BibleGetProperties.leftindent+(7.2*2),BibleGetProperties.rightindent,BibleGetProperties.FONT_FAMILY);                    
+            BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
             
             if(BibleGetGlobal.firstFmtVerse){
               BibleGetGlobal.firstFmtVerse = false;
@@ -724,18 +772,18 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           }
           // because if it is the start of a new verse, we probably already have a new paragraph
           else{
-            BibleGetGlobal.currentPar.setIndentStart(BibleGetProperties.leftindent+(7.2*2));
+            BibleGetGlobal.currentPar.setIndentStart(BibleGetProperties.ParagraphStyles.LeftIndent+(7.2*2));
             BibleGetGlobal.currentPar.appendText("\t");
             newelement.newverse = false;
           }
           
           if(nestedTag){
-            doNestedTagStuff(speakerTag.Before,speakerTag.Contents,speakerTag.After,BibleGetGlobal.currentPar,BibleGetProperties.vtStyles,BibleGetProperties.versetextalignment);
+            doNestedTagStuff(speakerTag.Before,speakerTag.Contents,speakerTag.After,BibleGetGlobal.currentPar,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
             nestedTag = false;
           }
           else{
             nabreStyleText = BibleGetGlobal.currentPar.appendText(formattingTagContents);
-            setVerseStyles(nabreStyleText,BibleGetProperties.vtStyles,BibleGetProperties.versetextalignment,BibleGetProperties.FONT_FAMILY);
+            setVerseStyles(nabreStyleText,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
           }
           break;
         case "poif":
@@ -745,21 +793,21 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           // create a new paragraph only if it's not the start of a new verse
           if(!newelement.newverse){
             Logger.log("not the start of a new verse, so creating a new paragraph... <"+formattingTagContents+">");
-            BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties.linespacing,BibleGetProperties.leftindent+(7.2*3),BibleGetProperties.rightindent,BibleGetProperties.FONT_FAMILY);
+            BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
           }
           // because if it is the start of a new verse we probably already have a new paragraph
           else{
-            BibleGetGlobal.currentPar.setIndentStart(BibleGetProperties.leftindent+(7.2*3));
+            BibleGetGlobal.currentPar.setIndentStart(BibleGetProperties.ParagraphStyles.LeftIndent+(7.2*3));
             BibleGetGlobal.currentPar.appendText("\t");
             newelement.newverse = false;
           }                      
           if(nestedTag){
-            doNestedTagStuff(speakerTag.Before,speakerTag.Contents,speakerTag.After,BibleGetGlobal.currentPar,BibleGetProperties.vtStyles,BibleGetProperties.versetextalignment);
+            doNestedTagStuff(speakerTag.Before,speakerTag.Contents,speakerTag.After,BibleGetGlobal.currentPar,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
             nestedTag = false;
           }
           else{
             nabreStyleText = BibleGetGlobal.currentPar.appendText(formattingTagContents);
-            setVerseStyles(nabreStyleText,BibleGetProperties.vtStyles,BibleGetProperties.versetextalignment,BibleGetProperties.FONT_FAMILY);
+            setVerseStyles(nabreStyleText,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
           }                    
           break;
         case "sm":
@@ -769,7 +817,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           //}else{
           //  var smText = newPar.appendText(formattingTagContents);
           //}
-          var smallCapsFontSize = Math.round(BibleGetProperties.vtStyles["FONT_SIZE"] - (BibleGetProperties.vtStyles["FONT_SIZE"] * .15));
+          var smallCapsFontSize = Math.round(BibleGetProperties.VerseTextStyles.FONT_SIZE - (BibleGetProperties.VerseTextStyles.FONT_SIZE * .15));
           smText.setFontSize(smallCapsFontSize);
           break;
         case "speaker":
@@ -779,7 +827,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           //}else{
           //  var smText = newPar.appendText(formattingTagContents);
           //}
-          smText.setBackgroundColor("#6A6A6A").setTextAlignment(BibleGetProperties.versetextalignment);
+          smText.setBackgroundColor("#6A6A6A").setTextAlignment(BibleGetProperties.VerseTextStyles.ALIGN);
       }
       remainingText = remainingText.replace("<"+NABREfmtMatch[2]+">"+NABREfmtMatch[4]+"</"+NABREfmtMatch[2]+">", ""); 
       Logger.log("remainingText: {"+remainingText+"}");
@@ -802,41 +850,64 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
   
   if(remainingText != ""){ //lastNABREfmtMatch[2]=="sm" && 
     var lastText = BibleGetGlobal.currentPar.appendText(remainingText);
-    setVerseStyles(lastText,BibleGetProperties.vtStyles,BibleGetProperties.versetextalignment,BibleGetProperties.FONT_FAMILY);
+    setVerseStyles(lastText,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
   }
   
   return BibleGetGlobal;
 }
 
-function setAlignmentValue(alignmentvalue){
-  var returnalignmentvalue = (alignmentvalue == "NORMAL" ? DocumentApp.TextAlignment.NORMAL : (alignmentvalue == "SUPERSCRIPT" ? DocumentApp.TextAlignment.SUPERSCRIPT : DocumentApp.TextAlignment.SUBSCRIPT));
-  return returnalignmentvalue;
-}
 
-function prepareProperties(){
-  let userProperties = getUserProperties();
-  
-  let noVersionFormatting = JSON.parse(userProperties.NoVersionFormatting);  
-  let bookchapteralignment = setAlignmentValue(userProperties.BookChapterAlignment);  
-  let versenumberalignment = setAlignmentValue(userProperties.VerseNumberAlignment);  
-  let versetextalignment = setAlignmentValue(userProperties.VerseTextAlignment);  
-  let linespacing = parseFloat(userProperties.Lineheight);
-  let LeftIndent = parseFloat(userProperties.LeftIndent);
-  let RightIndent = parseFloat(userProperties.RightIndent);
-  
-  let bcStyles = userProperties.BookChapterStyles;
-  let vnStyles = userProperties.VerseNumberStyles;
-  let vtStyles = userProperties.VerseTextStyles;
-  
-  bcStyles.FONT_SIZE = parseInt(bcStyles.FONT_SIZE);
-  vnStyles.FONT_SIZE = parseInt(vnStyles.FONT_SIZE);
-  vtStyles.FONT_SIZE = parseInt(vtStyles.FONT_SIZE);
-
-  //var leftindent = Math.round(LeftIndent * 28.3464567); =centimeters to points conversion
-  let leftindent = Math.round(LeftIndent * 72); //=inches to points conversion
-  let rightindent = Math.round(RightIndent * 72); //=inches to points conversion
-
-  return {"bcStyles":bcStyles,"vnStyles":vnStyles,"vtStyles":vtStyles,"bookchapteralignment":bookchapteralignment,"versenumberalignment":versenumberalignment,"versetextalignment":versetextalignment,"linespacing":linespacing,"LeftIndent":LeftIndent,"RightIndent":RightIndent,"FONT_FAMILY":userProperties.FONT_FAMILY,"noVersionFormatting":noVersionFormatting,"leftindent":leftindent,"rightindent":rightindent};
+function preparePropertiesForDocInjection(){
+  let userProperties = getUserProperties(true); //will get a pure JSON obj, all stringified values parsed
+  //Let's make sure we have the right typecasting for each value
+  for(let [key,value] of Object.entries(userProperties)){
+    for(let [key1,value1] of Object.entries(userProperties[key]) ){
+      if(key1 == 'BOLD' || key1 == 'ITALIC' || key1 == 'UNDERLINE' || key1 == 'STRIKETHROUGH' || key1 == 'NoVersionFormatting'){
+        if(typeof value1 !== 'boolean'){ userProperties[key][key1] = JSON.parse(value1); }
+      }
+      else if(key1 == 'Lineheight'){
+        if(typeof value1 !== 'float'){ userProperties[key][key1] = ParseFloat(value1); }
+      }
+      else if(key1 == 'LeftIndent' || key1 == 'RightIndent'){
+        if(typeof value1 !== 'float'){ userProperties[key][key1] = Math.round(ParseFloat(value1) * 72); } //=inches to points conversion (while * 28.3464567 = centimeters to points conversion)
+      }
+      else if(key1 == 'FONT_SIZE'){
+        if(typeof value1 !== 'int'){ userProperties[key][key1] = ParseInt(value1); }
+      }
+      else if(key1 == 'VALIGN'){
+        switch(value1){
+          case BGET.VALIGN.NORMAL:
+            userProperties[key][key1] = DocumentApp.TextAlignment.NORMAL;
+            break;
+          case BGET.VALIGN.SUPERSCRIPT:
+            userProperties[key][key1] = DocumentApp.TextAlignment.SUPERSCRIPT;
+            break;
+          case BGET.VALIGN.SUBSCRIPT:
+            userProperties[key][key1] = DocumentApp.TextAlignment.SUBSCRIPT;
+            break;            
+        }
+      }
+      else if(key1 == 'ParagraphAlign'){
+        switch(value1){
+          case BGET.ALIGN.LEFT:
+            userProperties[key][key1] = DocumentApp.HorizontalAlignment.LEFT;
+            break;
+          case BGET.ALIGN.CENTER:
+            userProperties[key][key1] = DocumentApp.HorizontalAlignment.CENTER;
+            break;
+          case BGET.ALIGN.RIGHT:
+            userProperties[key][key1] = DocumentApp.HorizontalAlignment.RIGHT;
+            break;
+          case BGET.ALIGN.JUSTIFY:
+            userProperties[key][key1] = DocumentApp.HorizontalAlignment.JUSTIFY;
+            break;
+          default:
+            userProperties[key][key1] = DocumentApp.HorizontalAlignment.JUSTIFY;
+        }
+      }
+    }
+  }
+  return userProperties;
 }
 
 function getCursorIndex(){
@@ -873,3 +944,13 @@ function getCursorIndex(){
   
   return idx;
 }
+
+function makeUnique(str) {
+  return String.prototype.concat(...new Set(str));
+}
+
+function consoleLog(str){
+  Logger.log(str);   //internal log (not very efficient?)
+  console.info(str); //stackdriver logs
+}
+
