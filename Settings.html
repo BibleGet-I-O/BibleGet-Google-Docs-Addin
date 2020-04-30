@@ -34,17 +34,6 @@
     consoleLog('left and right indent have been set based on userproperties in Settings.html');
   }   
 
-  var nonUniqueStr = userProperties.ParagraphStyles.FONT_FAMILY;
-      nonUniqueStr += __('Genesis',locale);
-      nonUniqueStr += __('Gen1:1',locale);
-      nonUniqueStr += __('Gen1:2',locale);
-      nonUniqueStr += __('Gen1:3',locale);
-  //consoleLog(nonUniqueStr);
-  var UniqueStr = makeUnique(nonUniqueStr);
-  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
-    consoleLog('UniqueStr has been set based on pagraphstyles.font_family in Settings.html');
-  }   
-
   var wrap1 = '', wrap2 = '', wrap3 = '', wrap4 = '';
   switch(userProperties.LayoutPrefs.BibleVersionWrap){
     case BGET.WRAP.PARENTHESES:
@@ -77,28 +66,74 @@
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
     consoleLog('wraps have been prepared for bibleversion and bookchapter based on user preferences in Settings.html');
   }   
+  
+  var bkChptr1Sam213 = '';
+  var bkChptrPs11412 = '';
+  switch(userProperties.LayoutPrefs.BookChapterFormat){
+    case BGET.FORMAT.BIBLELANG:
+      bkChptr1Sam213 = "I Samuelis 2";
+      bkChptrPs11412 = "Psalmorum 114";
+      break;
+    case BGET.FORMAT.BIBLELANGABBREV:
+      bkChptr1Sam213 = "ISam 2";
+      bkChptrPs11412 = "Ps 114";
+      break;
+    case BGET.FORMAT.USERLANG: 
+      bkChptr1Sam213 = __('ISamuelis2',locale);
+      bkChptrPs11412 = __('Psalmorum114',locale);
+      break;
+    case BGET.FORMAT.USERLANGABBREV:
+      bkChptr1Sam213 = __('ISam2',locale);
+      bkChptrPs11412 = __('Ps114',locale);
+      break;
+  }
+  if(JSON.parse(userProperties.LayoutPrefs.BookChapterFullQuery)){
+    bkChptr1Sam213 += ((locale=='en' ? ':' : ',') + '1-3');
+    bkChptrPs11412 += ((locale=='en' ? ':' : ',') + '1-2');
+  }
+  
+  let ISam2_1 = 'Et oravit Anna et ait: Exsultavit cor meum in Domino, exaltatum est cornu meum in Deo meo; dilatatum est os meum super inimicos meos, quoniam laetata sum in salutari tuo.';
+  let ISam2_2 = 'Non est sanctus ut est Dominus; neque enim est alius extra te, et non est fortis sicut Deus noster.';
+  let ISam2_3 = 'Nolite multiplicare loqui sublimia gloriantes. Recedant superba de ore vestro, quia Deus scientiarum Dominus est, et ab eo ponderantur actiones.';
+  let Ps114_1 = 'In exitu Israel de Aegypto, domus Iacob de populo barbaro,';
+  let Ps114_2 = 'factus est Iuda sanctuarium eius, Israel potestas eius.';
+  
+  var nonUniqueStr = userProperties.ParagraphStyles.FONT_FAMILY;
+      nonUniqueStr += bkChptr1Sam213;
+      nonUniqueStr += bkChptrPs11412;
+      nonUniqueStr += ISam2_1;
+      nonUniqueStr += ISam2_2;
+      nonUniqueStr += ISam2_3;
+      nonUniqueStr += Ps114_1;
+      nonUniqueStr += Ps114_2;
+  //consoleLog(nonUniqueStr);
+  var UniqueStr = makeUnique(nonUniqueStr);
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+    consoleLog('UniqueStr has been set based on pagraphstyles.font_family in Settings.html');
+  }   
 
   var PreviewBox = '<fieldset class="fieldset-results"><legend><b>' + __('Preview',locale) + '</b></legend>';
-      PreviewBox += '<p class="bibleversion showtop" style="display:'+(userProperties.LayoutPrefs.ShowBibleVersion==BGET.VISIBILITY.SHOW && userProperties.LayoutPrefs.BibleVersionPosition==BGET.POS.TOP?'block':'none')+';"><span class="bcWrap">' + wrap1 + '</span>NABRE<span class="bcWrap">' + wrap2 + '</span></p>';
+      PreviewBox += '<p class="bibleversion showtop" style="display:'+(userProperties.LayoutPrefs.ShowBibleVersion==BGET.VISIBILITY.SHOW && userProperties.LayoutPrefs.BibleVersionPosition==BGET.POS.TOP?'block':'none')+';"><span class="bcWrap">' + wrap1 + '</span>NVBSE<span class="bcWrap">' + wrap2 + '</span></p>';
       PreviewBox += '<div class="bookchapterWrapper">';
-      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.TOP) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span>' + __('Genesis1:1-3',locale) + '<span class="bcWrap">' + wrap4 + '</span></span>' : '';
+      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.TOP) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span><span class="bcText1Sam">' + bkChptr1Sam213 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '<p class="liveview-quote" style="margin-top:-6px;padding-top:0px;">';
-      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">1</span><span class="versetext">' + __('Gen1:1',locale) + '</span>';
-      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">2</span><span class="versetext">' + __('Gen1:2',locale) + '</span>';
-      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">3</span><span class="versetext">' + __('Gen1:3',locale) + '</span>';
-      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOMINLINE) ? '<span class="bookchapter" style="margin-left:6px;"><span class="bcWrap">' + wrap3 + '</span>' + __('Genesis1:1-3',locale) + '<span class="bcWrap">' + wrap4 + '</span></span>' : '';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">1</span><span class="versetext">'+ ISam2_1 +'</span>';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">2</span><span class="versetext">'+ ISam2_2 +'</span>';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">3</span><span class="versetext">'+ ISam2_3 +'</span>';
+      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOMINLINE) ? '<span class="bookchapter" style="margin-left:6px;"><span class="bcWrap">' + wrap3 + '</span><span class="bcText1Sam">' + bkChptr1Sam213 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '</p>';
-      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOM) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span>' + __('Genesis1:1-3',locale) + '<span class="bcWrap">' + wrap4 + '</span></span>' : '';
+      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOM) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span><span class="bcText1Sam">' + bkChptr1Sam213 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '</div>';
       PreviewBox += '<div class="bookchapterWrapper">';
-      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.TOP) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span>' + __('Exodus19:5',locale) + '<span class="bcWrap">' + wrap4 + '</span></span>' : '';
+      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.TOP) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span><span class="bcTextPs">' + bkChptrPs11412 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '<p class="liveview-quote" style="margin-top:-6px;padding-top:0px;">';
-      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">5</span><span class="versetext">' + __('Ex19:5',locale) + '</span>';
-      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOMINLINE) ? '<span class="bookchapter" style="margin-left:6px;"><span class="bcWrap">' + wrap3 + '</span>' + __('Exodus19:5',locale) + '<span class="bcWrap">' + wrap4 + '</span></span>' : '';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">1</span><span class="versetext">'+ Ps114_1 +'</span>';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">2</span><span class="versetext">factus est Iuda sanctuarium eius, Israel potestas eius.</span>';
+      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOMINLINE) ? '<span class="bookchapter" style="margin-left:6px;"><span class="bcWrap">' + wrap3 + '</span><span class="bcTextPs">' + bkChptrPs11412 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '</p>';
-      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOM) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span>' + __('Exodus19:5',locale) + '<span class="bcWrap">' + wrap4 + '</span></span>' : '';
+      PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOM) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span><span class="bcTextPs">' + bkChptrPs11412 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '</div>';
-      PreviewBox += '<p class="bibleversion showbottom" style="display:'+(userProperties.LayoutPrefs.ShowBibleVersion==BGET.VISIBILITY.SHOW && userProperties.LayoutPrefs.BibleVersionPosition==BGET.POS.BOTTOM?'block':'none')+';"><span class="bcWrap">' + wrap1 + '</span>NABRE<span class="bcWrap">' + wrap2 + '</span></p>';
+      PreviewBox += '<p class="bibleversion showbottom" style="display:'+(userProperties.LayoutPrefs.ShowBibleVersion==BGET.VISIBILITY.SHOW && userProperties.LayoutPrefs.BibleVersionPosition==BGET.POS.BOTTOM?'block':'none')+';"><span class="bcWrap">' + wrap1 + '</span>NVBSE<span class="bcWrap">' + wrap2 + '</span></p>';
       PreviewBox += '</fieldset>';
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
     consoleLog('starting HTML output in Settings.html');
@@ -140,7 +175,7 @@
   position: relative;
 }
 .bibleversion{
-  text-align: <?!=userProperties.BibleVersionAlignment?>;
+  text-align: <?!=userProperties.LayoutPrefs.BibleVersionAlignment?>;
 }
 .bookchapter {
   text-align: <?!=userProperties.LayoutPrefs.BookChapterAlignment?>;
@@ -166,7 +201,7 @@
 
 table, td, a {
 	color: #000;
-	font: normal normal 12px Verdana, Geneva, Arial, Helvetica, sans-serif
+	font: normal normal 12px Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
 
 /* define height and width of scrollable area. Add 16px to width for scrollbar */
@@ -608,9 +643,11 @@ span.ui-checkboxradio-icon { display: none; }
           <span class="ctrlGrpLbl"><?!=__('Format',locale)?></span><br />
           <span id="BookChapterFormat" class="buttonset">
             <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.BIBLELANG?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.BIBLELANG){ ?>CHECKED<? } ?> /><?!=__('Language of Bible version',locale)?></label>
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.BIBLELANGABBREV?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.BIBLELANGABBREV){ ?>CHECKED<? } ?> /><?!=__('Language of Bible version (abbrev)',locale)?></label>
             <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.USERLANG?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.USERLANG){ ?>CHECKED<? } ?> /><?!=__('Language of Docs interface',locale)?></label>
-            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.QUERY?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.QUERY){ ?>CHECKED<? } ?> /><?!=__('Show original query',locale)?></label>
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.USERLANGABBREV?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.USERLANGABBREV){ ?>CHECKED<? } ?> /><?!=__('Language of Docs interface (abbrev)',locale)?></label>
           </span>
+          <label><input type="checkbox" id="BookChapterFullQuery" name="BookChapterFullQuery" <? if(JSON.parse(userProperties.LayoutPrefs.BookChapterFullQuery) == true){ ?>CHECKED<? } ?> /><?!=__('Show full reference',locale)?></label>
         </div>    
     
         <div class="flexitemB">
@@ -732,6 +769,26 @@ userProps.populated = false;
 window.domopscomplete = false;
 window.leftindent = <?!=Math.round(parseFloat(userProperties.ParagraphStyles.LeftIndent)*28.3464567)?>; //convert to point size useful for CSS margin-left property
 window.rightindent = <?!=Math.round(parseFloat(userProperties.ParagraphStyles.LeftIndent)*28.3464567)?>; //convert to point size useful for CSS margin-right property
+var bkChptr1Sam213 = '';
+var bkChptrPs11412 = '';
+switch('<?!=userProperties.LayoutPrefs.BookChapterFormat?>'){
+  case '<?!=BGET.FORMAT.BIBLELANG?>':
+    bkChptr1Sam213 = "I Samuelis 2";
+    bkChptrPs11412 = "Psalmorum 114";
+    break;
+  case '<?!=BGET.FORMAT.BIBLELANGABBREV?>':
+    bkChptr1Sam213 = "ISam 2";
+    bkChptrPs11412 = "Ps 114";
+    break;
+  case '<?!=BGET.FORMAT.USERLANG?>': 
+    bkChptr1Sam213 = '<?!=__('ISamuelis2',locale)?>';
+    bkChptrPs11412 = '<?!=__('Psalmorum114',locale)?>';
+    break;
+  case '<?!=BGET.FORMAT.USERLANGABBREV?>':
+    bkChptr1Sam213 = '<?!=__('ISam2',locale)?>';
+    bkChptrPs11412 = '<?!=__('Ps114',locale)?>';
+    break;
+}
 
 //We can't save the userProps obj unless we have all the user Properties in this object, this is why we need the object,
 //and need it fully populated, not only available to populate one at a time
@@ -871,25 +928,6 @@ jQuery(document).ready(function(){
       $('#Lineheight-quote').selectmenu('open').selectmenu('menuWidget').offset({top:($pos.top+$hgt),left:$pos.left});
     });
     
-    /*
-    $('#LeftIndent-quote').change(function(){
-      leftindent = Math.round(parseFloat(this.value) * 28.3464567); //convert to point size useful for CSS margin-left property
-      $('.liveview-quote').css({"margin-left":leftindent+"pt"});
-      $('.bookchapter').css({"margin-left":leftindent+"pt"});
-      $('.bibleversion').css({"margin-left":leftindent+"pt"});
-      userProps.ParagraphStyles.LeftIndent = parseFloat(this.value);
-      saveUserProps(userProps);
-    });
-    
-    $('#RightIndent-quote').change(function(){
-      rightindent = Math.round(parseFloat(this.value) * 28.3464567);
-      $('.liveview-quote').css({"margin-right":rightindent+"pt"}); //convert to point size useful for CSS margin-right property
-      $('.bookchapter').css({"margin-right":rightindent+"pt"});
-      $('.bibleversion').css({"margin-right":rightindent+"pt"});
-      userProps.ParagraphStyles.RightIndent = parseFloat(this.value);
-      saveUserProps(userProps);
-    });
-    */
     $('.indentbtn').on('click',function(){
       let thisid = $(this).attr("id");
       switch(thisid){
@@ -914,8 +952,8 @@ jQuery(document).ready(function(){
           }
           break;
       }
-      leftindent = Math.round(userProps.ParagraphStyles.LeftIndent * 28.3464567); //convert to point size useful for CSS margin-right property
-      rightindent = Math.round(userProps.ParagraphStyles.RightIndent * 28.3464567);
+      leftindent = Math.round(userProps.ParagraphStyles.LeftIndent * 28.3464567);   //convert to point size useful for CSS margin-left property
+      rightindent = Math.round(userProps.ParagraphStyles.RightIndent * 28.3464567); //convert to point size useful for CSS margin-right property
       $('.liveview-quote').css({"margin-left":leftindent+"pt","margin-right":rightindent+"pt"}); 
       $('.bookchapter').css({"margin-left":leftindent+"pt","margin-right":rightindent+"pt"});
       $('.bibleversion').css({"margin-left":leftindent+"pt","margin-right":rightindent+"pt"});
@@ -1034,9 +1072,6 @@ jQuery(document).ready(function(){
       saveUserProps(userProps);
     });
 
-    //$('.indevelopment input').prop('disabled',true);
-    
-
     $('span#versetextstyle input').change(function(){
       if(this.checked){
         var thisstyle = $(this).attr('id').replace("versetext-","");
@@ -1133,7 +1168,7 @@ jQuery(document).ready(function(){
           //jQuery('<span>',{text:myUI}).insertAfter('#tabs');
           userProps.ParagraphStyles.FONT_FAMILY = $(this).val();
           saveUserProps(userProps);
-          $('#gfFontFamily').attr("href","https://fonts.googleapis.com/css?family="+userProps.ParagraphStyles.FONT_FAMILY+"&text=<?!= UniqueStr ?>"+makeUnique(userProps.ParagraphStyles.FONT_FAMILY));
+          $('#gfFontFamily').attr("href","https://fonts.googleapis.com/css?family="+userProps.ParagraphStyles.FONT_FAMILY+"&text="+makeUnique(userProps.ParagraphStyles.FONT_FAMILY+'<?!= UniqueStr ?>'));
           $('.bookchapter').add('p.liveview-quote').css({'font-family':userProps.ParagraphStyles.FONT_FAMILY});
           $('#bibleget-font-family').combobox("widget").css({"font-family":userProps.ParagraphStyles.FONT_FAMILY});
         });
@@ -1141,6 +1176,19 @@ jQuery(document).ready(function(){
         if(userProps.populated){ $('.spinner').fadeOut("fast"); } //$('#tab1').append('<p>spinner was faded after domops completed</p>');
       }
     }
+    
+    $('#BookChapterFullQuery').button().on('change',function(){
+      userProps.LayoutPrefs.BookChapterFullQuery = this.checked;
+      if(this.checked){
+            $('.bcText1Sam').text(bkChptr1Sam213 + ('<?!=locale?>'=='en' ? ':' : ',')+'1-3');
+            $('.bcTextPs').text(bkChptrPs11412 + ('<?!=locale?>'=='en' ? ':' : ',')+'1-2');
+      }
+      else{
+            $('.bcText1Sam').text(bkChptr1Sam213);
+            $('.bcTextPs').text(bkChptrPs11412);
+      }
+      saveUserProps(userProps);
+    }).parent('label').css({"margin-top":"6px"});
     
     $('#tab2').on('change','input[type=radio]', function(){
       if(this.checked){ 
@@ -1206,7 +1254,32 @@ jQuery(document).ready(function(){
             }
             break;
           case "BookChapterFormat":
-            //BGET.FORMAT.BIBLELANG,
+            switch(this.value){
+              case '<?!=BGET.FORMAT.BIBLELANG?>':
+                bkChptr1Sam213 = "I Samuelis 2";
+                bkChptrPs11412 = "Psalmorum 114";
+                break;
+              case '<?!=BGET.FORMAT.BIBLELANGABBREV?>':
+                bkChptr1Sam213 = "ISam 2";
+                bkChptrPs11412 = "Ps 114";
+                break;
+              case '<?!=BGET.FORMAT.USERLANG?>':
+                bkChptr1Sam213 = '<?!=__('ISamuelis2',locale)?>';
+                bkChptrPs11412 = '<?!=__('Psalmorum114',locale)?>';
+                break;
+              case '<?!=BGET.FORMAT.USERLANGABBREV?>':
+                bkChptr1Sam213 = '<?!=__('ISam2',locale)?>';
+                bkChptrPs11412 = '<?!=__('Ps114',locale)?>';
+                break;
+            }
+            if(JSON.parse(userProps.LayoutPrefs.BookChapterFullQuery)){
+              $('.bcText1Sam').text(bkChptr1Sam213 + ('<?!=locale?>'=='en' ? ':' : ',')+'1-3');
+              $('.bcTextPs').text(bkChptrPs11412 + ('<?!=locale?>'=='en' ? ':' : ',')+'1-2');
+            }
+            else{
+              $('.bcText1Sam').text(bkChptr1Sam213);
+              $('.bcTextPs').text(bkChptrPs11412);
+            }
             break;
           case "BookChapterWrap":
             var wrap1='';

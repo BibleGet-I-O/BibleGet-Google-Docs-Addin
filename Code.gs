@@ -8,7 +8,7 @@ const ADDONSTATE = {
   DEVELOPMENT: "development"
 };
 
-const CURRENTSTATE = ADDONSTATE.DEVELOPMENT;
+const CURRENTSTATE = ADDONSTATE.DEVELOPMENT; //make sure to switch to PRODUCTION before publishing!
 //const CURRENTSTATE = ADDONSTATE.PRODUCTION;
 
 const REQUESTPARAMS = {"rettype":"json","appid":"googledocs"};
@@ -42,9 +42,10 @@ const BGET = {
     BOTTOMINLINE: "inline"
   },
   FORMAT: {
-    QUERY: "query",
     USERLANG: "userLang",
-    BIBLELANG: "bibleLang"
+    BIBLELANG: "bibleLang",
+    USERLANGABBREV: 'userLangAbbrev',
+    BIBLELANGABBREV: 'bibleLangAbbrev'
   },
   VISIBILITY: {
     SHOW: "show",
@@ -106,7 +107,8 @@ const DefaultUserProperties = {
     BookChapterAlignment: BGET.ALIGN.LEFT,  //BookChapterAlignment: possible vals 'left','center','right' (use ENUM, e.g. BGET.ALIGN.LEFT)
     BookChapterPosition: BGET.POS.TOP,      //BookChapterPosition: possible vals 'top', 'bottom', 'bottominline'.  (Use ENUM, e.g. BGET.POS.BOTTOMINLINE)
     BookChapterWrap: BGET.WRAP.NONE,        //BookChapterWrap: possible vals 'none', 'parentheses', 'brackets' (use ENUM, e.g. BGET.WRAP.NONE)
-    BookChapterFormat: BGET.FORMAT.BIBLELANG,//BookChapterFormat: possible vals 'query', 'userLang', 'bibleLang' (use ENUM, e.g. BGET.FORMAT.BIBLELANG
+    BookChapterFormat: BGET.FORMAT.BIBLELANG,//BookChapterFormat: possible vals 'userLang', 'bibleLang', 'userLangAbbrev', 'bibleLangAbbrev' (use ENUM, e.g. BGET.FORMAT.BIBLELANG
+    BookChapterFullQuery: false,            //if false, just the name of the book and the chapter will be shown (i.e. 1 John 4). If true the full reference including the verses will be shown (i.e. 1 John 4:7-8)
     //  Meaning: 1) like the original query = if '1Jn4:7-8' was requested '1Jn4:7-8' will be shown
     //           2) according to user lang = if Google Docs is used in chinese, the names of the books of the bible will be in chinese
     //           3) according to bible lang = if you are quoting from a Latin Bible, the names of the books of the bible will be in latin
@@ -164,12 +166,15 @@ function onOpen(e) {
 function openSettings(){
   let locale = getUserLocale();
   let html = HtmlService.createTemplateFromFile('Settings');
+  //docLog(html.getCode());
+  
   html.activetab = 0;
   let evaluated = html.evaluate()
       .setWidth(SETTINGSWINDOW.WIDTH)
       .setHeight(SETTINGSWINDOW.HEIGHT)
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   DocumentApp.getUi().showModalDialog(evaluated, __('Settings',locale));
+  
 }
 
 /** 
