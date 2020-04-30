@@ -15,7 +15,7 @@ const REQUESTPARAMS = {"rettype":"json","appid":"googledocs"};
 const ENDPOINTURL = "https://query.bibleget.io/";
 const ENDPOINTURLMETADATA = "https://query.bibleget.io/metadata.php";
 const SETTINGSWINDOW = {
-  HEIGHT: 540,
+  HEIGHT: 580,
   WIDTH: 800
 }
 
@@ -113,7 +113,7 @@ const DefaultUserProperties = {
     //  N.B. only holds when position = BGET.POS.BOTTOM
     ShowVerseNumbers: BGET.VISIBILITY.SHOW  //ShowVerseNumbers: possible vals 'show', 'hide' (use ENUM, e.g. BGET.VISIBILITY.SHOW)
   },
-  RecentSelectedVersions:"[]"
+  RecentSelectedVersions: [] //initialize as an empty array
 };
 
 
@@ -609,7 +609,7 @@ function doNestedTagStuff(speakerTagBefore,speakerTagContents,speakerTagAfter,th
   
   nabreStyleText = thisPar.appendText(" "+speakerTagContents+" ");
   //Logger.log("we have now appended speakerTagContents");
-  nabreStyleText.setBold(true).setItalic(false).setUnderline(false).setStrikethrough(false).setFontSize(vtStyles.FONT_SIZE).setForegroundColor("#000000").setBackgroundColor("#9A9A9A").setTextAlignment(vtStyles.ALIGN);
+  nabreStyleText.setBold(true).setItalic(false).setUnderline(false).setStrikethrough(false).setFontSize(vtStyles.FONT_SIZE).setForegroundColor("#000000").setBackgroundColor("#9A9A9A").setTextAlignment(vtStyles.VALIGN);
   
   if(speakerTagAfter != ""){
     nabreStyleText = thisPar.appendText(speakerTagAfter);
@@ -636,7 +636,7 @@ function createNewPar(BibleGetGlb,BibleGetProps){
 }
 
 function setVerseStyles(versetext,styles,fontfamily){
-  versetext.setBold(styles.BOLD).setItalic(styles.ITALIC).setUnderline(styles.UNDERLINE).setStrikethrough(styles.STRIKETHROUGH).setFontSize(styles.FONT_SIZE).setForegroundColor(styles.FOREGROUND_COLOR).setBackgroundColor(styles.BACKGROUND_COLOR).setTextAlignment(styles.ALIGN).setFontFamily(fontfamily);
+  versetext.setBold(styles.BOLD).setItalic(styles.ITALIC).setUnderline(styles.UNDERLINE).setStrikethrough(styles.STRIKETHROUGH).setFontSize(styles.FONT_SIZE).setForegroundColor(styles.FOREGROUND_COLOR).setBackgroundColor(styles.BACKGROUND_COLOR).setTextAlignment(styles.VALIGN).setFontFamily(fontfamily);
 }
 
 function doSpeakerTagThing(formattingTagContents){
@@ -866,13 +866,13 @@ function preparePropertiesForDocInjection(){
         if(typeof value1 !== 'boolean'){ userProperties[key][key1] = JSON.parse(value1); }
       }
       else if(key1 == 'Lineheight'){
-        if(typeof value1 !== 'float'){ userProperties[key][key1] = ParseFloat(value1); }
+        if(typeof value1 !== 'float'){ userProperties[key][key1] = parseFloat(value1); }
       }
       else if(key1 == 'LeftIndent' || key1 == 'RightIndent'){
-        if(typeof value1 !== 'float'){ userProperties[key][key1] = Math.round(ParseFloat(value1) * 72); } //=inches to points conversion (while * 28.3464567 = centimeters to points conversion)
+        userProperties[key][key1] = Math.round(parseFloat(value1) * 72); //=inches to points conversion (while * 28.3464567 = centimeters to points conversion)
       }
       else if(key1 == 'FONT_SIZE'){
-        if(typeof value1 !== 'int'){ userProperties[key][key1] = ParseInt(value1); }
+        if(typeof value1 !== 'int'){ userProperties[key][key1] = parseInt(value1); }
       }
       else if(key1 == 'VALIGN'){
         switch(value1){

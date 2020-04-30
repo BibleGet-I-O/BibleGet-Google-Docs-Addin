@@ -25,9 +25,11 @@
   var userProperties = getUserProperties(true); //will be a pure JSON obj, without any stringified values (nostringify=true)
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
     consoleLog('getUserProperties has been run from within Settings.html');
-  }   
-  var lftindnt = Math.round(parseFloat(userProperties.ParagraphStyles.LeftIndent)*28.3464567);
-  var rgtindnt = Math.round(parseFloat(userProperties.ParagraphStyles.RightIndent)*28.3464567);
+  }
+  
+  var lftindnt = Math.round(parseFloat(userProperties.ParagraphStyles.LeftIndent)*28.3464567); //convert to point value useful for CSS margin-left property
+  var rgtindnt = Math.round(parseFloat(userProperties.ParagraphStyles.RightIndent)*28.3464567);//convert to point value useful for CSS margin-right property
+  
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
     consoleLog('left and right indent have been set based on userproperties in Settings.html');
   }   
@@ -300,6 +302,7 @@ html>body tbody.scrollContent td + td + td {
   position: relative;
   display: inline-block;
   right: 2px;
+  top: 0.5px;
 }
 .custom-combobox-toggle {
   position: absolute;
@@ -310,7 +313,7 @@ html>body tbody.scrollContent td + td + td {
 }
 .custom-combobox-input {
   margin: 0;
-  padding: 5px 10px;
+  padding: 7.5px 10px;
   background: -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
   background-position: 95% 50%;
   background-repeat: no-repeat;
@@ -325,6 +328,10 @@ html>body tbody.scrollContent td + td + td {
 
 .flexcontainer .flexitem.bibleget-font-family {
   min-width: 215px;
+}
+
+.bget-fontfamily-combobox {
+  max-width: 245px;
 }
 
 .flexcontainerX {
@@ -394,6 +401,14 @@ span.ui-checkboxradio-icon { display: none; }
   background-color: #1a73e8;
   color: White;
 }
+
+.ui-widget {
+  font-size: 1em;
+}
+
+#rightIndentIncreaseBtn .material-icons,#rightIndentDecreaseBtn .material-icons {
+  transform: scale(-1, 1);
+}
 <?
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
     consoleLog('styles in head of document have been set in Settings.html');
@@ -417,6 +432,12 @@ span.ui-checkboxradio-icon { display: none; }
       <h3><b><?=__('Paragraph Styles',locale)?></b></h3>
       <div class="toolbar ui-widget-header ui-corner-bottom flexcontainer">
         <div class="flexitem">
+          <span class="buttonset" title="<?!=__('Left Indent',locale)?>">
+          <button id="leftIndentDecreaseBtn" class="ui-button indentbtn" title="<?!=__('Left Indent decrease',locale)?>"><i class="material-icons md-18">format_indent_decrease</i></button>
+          <button id="leftIndentIncreaseBtn" class="ui-button indentbtn" title="<?!=__('Left Indent increase',locale)?>"><i class="material-icons md-18">format_indent_increase</i></button>
+          </span>
+        </div>
+        <div class="flexitem">
           <span id="paragraphalign" class="buttonset">
             <input type="radio" id="paragraphalign-left" value="<?!=BGET.ALIGN.LEFT?>" name="paragraphalign" <? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.LEFT) { ?>CHECKED<? } ?>><label for="paragraphalign-left"><i class="material-icons md-18">format_align_left</i></label>
             <input type="radio" id="paragraphalign-center" value="<?!=BGET.ALIGN.CENTER?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.CENTER) { ?>CHECKED<? } ?>><label for="paragraphalign-center"><i class="material-icons md-18">format_align_center</i></label>
@@ -424,8 +445,11 @@ span.ui-checkboxradio-icon { display: none; }
             <input type="radio" id="paragraphalign-justify" value="<?!=BGET.ALIGN.JUSTIFY?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.JUSTIFY) { ?>CHECKED<? } ?>><label for="paragraphalign-justify"><i class="material-icons md-18">format_align_justify</i></label>
           </span>          
         </div>
+        <div class="flexitem bibleget-font-family">
+          <select id="bibleget-font-family" class="bget-fontfamily-combobox"></select>
+        </div>
         <div class="flexitem">
-          <span id="lineheightBtn" class="ui-button"><i class="material-icons md-18">format_line_spacing</i></span><br />
+          <span id="lineheightBtn" class="ui-button"><i class="material-icons md-18">format_line_spacing</i></span>
           <select id="Lineheight-quote" class="selectmenu">
             <option value="1.0"<? if(userProperties.ParagraphStyles.Lineheight=="1.0"){ ?> SELECTED<? } ?>>Single 1.0</option>
             <option value="1.15"<? if(userProperties.ParagraphStyles.Lineheight=="1.15"){ ?> SELECTED<? } ?>>1.15</option>
@@ -434,28 +458,10 @@ span.ui-checkboxradio-icon { display: none; }
           </select>
         </div>
         <div class="flexitem">
-          <label for="LeftIndent-quote"><b><?!=__('Left Indent',locale)?></b></label><br />
-          <select id="LeftIndent-quote" class="gapp-addon">
-          <? var vals = ["0.0","0.25","0.5","0.75","1.0","1.25","1.5","1.75","2.0"]; 
-          for(var n in vals){ ?>
-            <option value=<?!=vals[n]?> <? if(userProperties.ParagraphStyles.LeftIndent==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
-          <? }
-          ?>    
-          </select>
-        </div>
-        <div class="flexitem">
-          <label for="RightIndent-quote"><b><?!=__('Right Indent',locale)?></b></label><br />
-          <select id="RightIndent-quote" class="gapp-addon">
-          <? var vals = ["0.0","0.25","0.5","0.75","1.0","1.25","1.5","1.75","2.0"]; 
-          for(var n in vals){ ?>
-            <option value=<?!=vals[n]?> <? if(userProperties.ParagraphStyles.RightIndent==vals[n]){?>SELECTED<?} ?>><?=vals[n]?></option>
-          <? }
-          ?>    
-          </select>
-        </div>
-        <div class="flexitem bibleget-font-family">
-          <label for="bibleget-font-family"><?=__('Font for Bible Quotes',locale)?></label><br />
-          <select id="bibleget-font-family"></select>
+          <span class="buttonset" title="<?!=__('Right Indent',locale)?>">
+          <button id="rightIndentIncreaseBtn" class="ui-button indentbtn" title="<?!=__('Right Indent increase',locale)?>"><i class="material-icons md-18">format_indent_increase</i></button>
+          <button id="rightIndentDecreaseBtn" class="ui-button indentbtn" title="<?!=__('Right Indent decrease',locale)?>"><i class="material-icons md-18">format_indent_decrease</i></button>
+          </span>
         </div>
       </div>
             
@@ -724,6 +730,8 @@ span.ui-checkboxradio-icon { display: none; }
 window.userProps = {};
 userProps.populated = false;
 window.domopscomplete = false;
+window.leftindent = <?!=Math.round(parseFloat(userProperties.ParagraphStyles.LeftIndent)*28.3464567)?>; //convert to point size useful for CSS margin-left property
+window.rightindent = <?!=Math.round(parseFloat(userProperties.ParagraphStyles.LeftIndent)*28.3464567)?>; //convert to point size useful for CSS margin-right property
 
 //We can't save the userProps obj unless we have all the user Properties in this object, this is why we need the object,
 //and need it fully populated, not only available to populate one at a time
@@ -819,7 +827,7 @@ jQuery(document).ready(function(){
     google.script.run.withSuccessHandler(passUserPropertiesServer2Client).getUserProperties(true); 
     
     //render interface with jquery ui and set events for ui
-    jQuery('#accordion').accordion();
+    jQuery('#accordion').accordion({heightStyle: "content"});
     jQuery('#tabs').tabs({
       active: $('#activetab').val()
     });
@@ -851,18 +859,21 @@ jQuery(document).ready(function(){
     });
     
     let $pos = $('#lineheightBtn').offset();
-    let $hgt = $('#lineheightBtn').height();
+    let $hgt = $('#lineheightBtn').height();      
     $('#Lineheight-quote').selectmenu({width:'auto',change:function(event,ui){
       $('.liveview-quote').css({"line-height":this.value+"em"});
       userProps.ParagraphStyles.Lineheight = this.value;
       saveUserProps(userProps);
-      } }).selectmenu("widget").css({"visibility": "hidden","position":"absolute","top":$pos.top,"left":$pos.left});
+      } }).selectmenu("widget").css({"display": "none"});
     $('#lineheightBtn').on('click',function(){
-      $('#Lineheight-quote').selectmenu('open');
+      let $pos = $('#lineheightBtn').offset();
+      let $hgt = $('#lineheightBtn').outerHeight();      
+      $('#Lineheight-quote').selectmenu('open').selectmenu('menuWidget').offset({top:($pos.top+$hgt),left:$pos.left});
     });
     
+    /*
     $('#LeftIndent-quote').change(function(){
-      var leftindent = Math.round(parseFloat(this.value) * 28.3464567);
+      leftindent = Math.round(parseFloat(this.value) * 28.3464567); //convert to point size useful for CSS margin-left property
       $('.liveview-quote').css({"margin-left":leftindent+"pt"});
       $('.bookchapter').css({"margin-left":leftindent+"pt"});
       $('.bibleversion').css({"margin-left":leftindent+"pt"});
@@ -871,11 +882,43 @@ jQuery(document).ready(function(){
     });
     
     $('#RightIndent-quote').change(function(){
-      var rightindent = Math.round(parseFloat(this.value) * 28.3464567);
-      $('.liveview-quote').css({"margin-right":rightindent+"pt"});
+      rightindent = Math.round(parseFloat(this.value) * 28.3464567);
+      $('.liveview-quote').css({"margin-right":rightindent+"pt"}); //convert to point size useful for CSS margin-right property
       $('.bookchapter').css({"margin-right":rightindent+"pt"});
       $('.bibleversion').css({"margin-right":rightindent+"pt"});
       userProps.ParagraphStyles.RightIndent = parseFloat(this.value);
+      saveUserProps(userProps);
+    });
+    */
+    $('.indentbtn').on('click',function(){
+      let thisid = $(this).attr("id");
+      switch(thisid){
+        case 'leftIndentIncreaseBtn':
+          if(userProps.ParagraphStyles.LeftIndent < 2.5){
+            userProps.ParagraphStyles.LeftIndent += .25;
+          }
+          break;
+        case 'leftIndentDecreaseBtn':
+          if(userProps.ParagraphStyles.LeftIndent > 0){
+            userProps.ParagraphStyles.LeftIndent -= .25;
+          }
+          break;
+        case 'rightIndentIncreaseBtn':
+          if(userProps.ParagraphStyles.RightIndent < 2.5){
+            userProps.ParagraphStyles.RightIndent += .25;
+          }
+          break;
+        case 'rightIndentDecreaseBtn':
+          if(userProps.ParagraphStyles.RightIndent > 0){
+            userProps.ParagraphStyles.RightIndent -= .25;
+          }
+          break;
+      }
+      leftindent = Math.round(userProps.ParagraphStyles.LeftIndent * 28.3464567); //convert to point size useful for CSS margin-right property
+      rightindent = Math.round(userProps.ParagraphStyles.RightIndent * 28.3464567);
+      $('.liveview-quote').css({"margin-left":leftindent+"pt","margin-right":rightindent+"pt"}); 
+      $('.bookchapter').css({"margin-left":leftindent+"pt","margin-right":rightindent+"pt"});
+      $('.bibleversion').css({"margin-left":leftindent+"pt","margin-right":rightindent+"pt"});
       saveUserProps(userProps);
     });
     //$('#no-version-formatting').checkbox();
@@ -884,19 +927,19 @@ jQuery(document).ready(function(){
       if(this.checked){
         switch(this.value){
           case '<?!=BGET.TEXTSTYLE.BOLD?>':
-            $('p.bookchapter').css({"font-weight":"bold"}); 
+            $('.bookchapter').css({"font-weight":"bold"}); 
             userProps.BookChapterStyles.BOLD = true;
             break;
           case '<?!=BGET.TEXTSTYLE.ITALIC?>':
-            $('p.bookchapter').css({"font-style":"italic"}); 
+            $('.bookchapter').css({"font-style":"italic"}); 
             userProps.BookChapterStyles.ITALIC = true; 
             break;
           case '<?!=BGET.TEXTSTYLE.UNDERLINE?>':
-            $('p.bookchapter').css({"text-decoration":"underline"+(userProps.BookChapterStyles.STRIKETHROUGH ? ' line-through' : '')}); 
+            $('.bookchapter').css({"text-decoration":"underline"+(userProps.BookChapterStyles.STRIKETHROUGH ? ' line-through' : '')}); 
             userProps.BookChapterStyles.UNDERLINE = true;
             break;
           case '<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>':
-            $('p.bookchapter').css({"text-decoration":"line-through"+(userProps.BookChapterStyles.UNDERLINE ? ' underline' : '')}); 
+            $('.bookchapter').css({"text-decoration":"line-through"+(userProps.BookChapterStyles.UNDERLINE ? ' underline' : '')}); 
             userProps.BookChapterStyles.STRIKETHROUGH = true;
             break;
         }
@@ -905,19 +948,19 @@ jQuery(document).ready(function(){
         let thisstyle = $(this).attr('id').replace("bookchapter-","");
         switch(thisstyle){
           case '<?!=BGET.TEXTSTYLE.BOLD?>':
-            $('p.bookchapter').css({"font-weight":"normal"}); 
+            $('.bookchapter').css({"font-weight":"normal"}); 
             userProps.BookChapterStyles.BOLD = false;
             break;
           case '<?!=BGET.TEXTSTYLE.ITALIC?>':
-            $('p.bookchapter').css({"font-style":"normal"}); 
+            $('.bookchapter').css({"font-style":"normal"}); 
             userProps.BookChapterStyles.ITALIC = false; 
             break;
           case '<?!=BGET.TEXTSTYLE.UNDERLINE?>':
-            $('p.bookchapter').css({"text-decoration":(usrProps.BookChapterStyles.STRIKETHROUGH) ? ' line-through' : 'none'}); 
+            $('.bookchapter').css({"text-decoration":(usrProps.BookChapterStyles.STRIKETHROUGH) ? ' line-through' : 'none'}); 
             userProps.BookChapterStyles.UNDERLINE = false;
             break;
           case '<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>':
-            $('p.bookchapter').css({"text-decoration":(usrProps.BookChapterStyles.UNDERLINE) ? ' underline' : 'none'}); 
+            $('.bookchapter').css({"text-decoration":(usrProps.BookChapterStyles.UNDERLINE) ? ' underline' : 'none'}); 
             userProps.BookChapterStyles.STRIKETHROUGH = false;
             break;
         }
@@ -929,13 +972,13 @@ jQuery(document).ready(function(){
       if(this.checked){
         switch(this.value){
           case '<?!=BGET.VALIGN.NORMAL?>': 
-            $('p.bookchapter').css({"position":"relative","top":"0px"});
+            $('.bookchapter').css({"position":"relative","top":"0px"});
             break;
           case '<?!=BGET.VALIGN.SUPERSCRIPT?>':
-            $('p.bookchapter').css({"position":"relative","top":"-4px"});
+            $('.bookchapter').css({"position":"relative","top":"-4px"});
             break;
           case '<?!=BGET.VALIGN.SUBSCRIPT?>':
-            $('p.bookchapter').css({"position":"relative","top":"4px"});
+            $('.bookchapter').css({"position":"relative","top":"4px"});
             break;
         }
         userProps.BookChapterStyles.VALIGN = this.value; 
@@ -943,17 +986,10 @@ jQuery(document).ready(function(){
       }
       
     });
-/*    
-    $('select#bookchapter-fontfamily').change(function(){
-      var fontfamily = $(this).val();
-      $('p.bookchapter').css({"font-family":fontfamily});
-      userProps.BookChapterStyles.FONT_FAMILY = fontfamily;
-      saveUserProps(userProps);
-    });
-*/    
+
     $('select#bookchapter-fontsize').change(function(){
       var fontsize = $(this).val() + "px";
-      $('p.bookchapter').css({"font-size":fontsize});
+      $('.bookchapter').css({"font-size":fontsize});
       userProps.BookChapterStyles.FONT_SIZE = $(this).val();
       saveUserProps(userProps);
     });
@@ -990,14 +1026,7 @@ jQuery(document).ready(function(){
         saveUserProps(userProps);      
       }
     });
-/*    
-    $('select#versenumber-fontfamily').change(function(){
-      var fontfamily = $(this).val();
-      $('span.versenumber').css({"font-family":fontfamily});
-      userProps.VerseNumberStyles.FONT_FAMILY = fontfamily;
-      saveUserProps(userProps);
-    });
-*/    
+
     $('select#versenumber-fontsize').change(function(){
       var fontsize = $(this).val() + "px";
       $('span.versenumber').css({"font-size":fontsize});
@@ -1041,14 +1070,7 @@ jQuery(document).ready(function(){
         saveUserProps(userProps);
       }
     });
-/*    
-    $('select#versetext-fontfamily').change(function(){
-      var fontfamily = $(this).val();
-      $('span.versetext').css({"font-family":fontfamily});
-      userProps.VerseTextStyles.FONT_FAMILY = fontfamily;
-      saveUserProps(userProps);
-    });
-*/
+    
     $('select#versetext-fontsize').change(function(){
       var fontsize = $(this).val() + "px";
       $('span.versetext').css({"font-size":fontsize});
@@ -1109,11 +1131,11 @@ jQuery(document).ready(function(){
         jQuery('#bibleget-font-family').on('change',function(){
           //let myUI = jQuery(this).val();
           //jQuery('<span>',{text:myUI}).insertAfter('#tabs');
-          userProps.FONT_FAMILY = $(this).val();
+          userProps.ParagraphStyles.FONT_FAMILY = $(this).val();
           saveUserProps(userProps);
-          $('#gfFontFamily').attr("href","https://fonts.googleapis.com/css?family="+userProps.FONT_FAMILY+"&text=<?!= UniqueStr ?>"+makeUnique(userProps.FONT_FAMILY));
-          $('p.bookchapter').add('p.liveview-quote').css({'font-family':userProps.FONT_FAMILY});
-          $('#bibleget-font-family').combobox("widget").css({"font-family":userProps.FONT_FAMILY});
+          $('#gfFontFamily').attr("href","https://fonts.googleapis.com/css?family="+userProps.ParagraphStyles.FONT_FAMILY+"&text=<?!= UniqueStr ?>"+makeUnique(userProps.ParagraphStyles.FONT_FAMILY));
+          $('.bookchapter').add('p.liveview-quote').css({'font-family':userProps.ParagraphStyles.FONT_FAMILY});
+          $('#bibleget-font-family').combobox("widget").css({"font-family":userProps.ParagraphStyles.FONT_FAMILY});
         });
         domopscomplete = true;
         if(userProps.populated){ $('.spinner').fadeOut("fast"); } //$('#tab1').append('<p>spinner was faded after domops completed</p>');
@@ -1211,12 +1233,12 @@ jQuery(document).ready(function(){
             switch(this.value){
               case '<?!=BGET.POS.TOP?>':
                 jQuery('div.bookchapterWrapper').each(function(){
-                  $(this).find('.bookchapter').css({'display':'block'}).prependTo(this);
+                  $(this).find('.bookchapter').css({'display':'block','margin-left':(leftindent+'pt')}).prependTo(this);
                 });
                 break;
               case '<?!=BGET.POS.BOTTOM?>':
                 jQuery('div.bookchapterWrapper').each(function(){
-                  $(this).find('.bookchapter').css({'display':'block'}).appendTo(this);
+                  $(this).find('.bookchapter').css({'display':'block','margin-left':(rightindent+'pt')}).appendTo(this);
                 });
                 break;
               case '<?!=BGET.POS.BOTTOMINLINE?>':
