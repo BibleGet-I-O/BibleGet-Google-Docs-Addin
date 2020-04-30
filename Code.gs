@@ -8,8 +8,8 @@ const ADDONSTATE = {
   DEVELOPMENT: "development"
 };
 
-const CURRENTSTATE = ADDONSTATE.DEVELOPMENT; //make sure to switch to PRODUCTION before publishing!
-//const CURRENTSTATE = ADDONSTATE.PRODUCTION;
+//const CURRENTSTATE = ADDONSTATE.DEVELOPMENT; //make sure to switch to PRODUCTION before publishing!
+const CURRENTSTATE = ADDONSTATE.PRODUCTION;
 
 const REQUESTPARAMS = {"rettype":"json","appid":"googledocs"};
 const ENDPOINTURL = "https://query.bibleget.io/";
@@ -56,6 +56,12 @@ const BGET = {
     ITALIC: 'italic',
     UNDERLINE: 'underline',
     STRIKETHROUGH: 'strikethrough'
+  },
+  PTYPE: {
+    VERSION: 'version',
+    BOOKCHAPTER: 'bookchapter',
+    VERSENUMBER: 'versenumber',
+    VERSETEXT: 'versetext'
   }
 };
 
@@ -95,7 +101,7 @@ const DefaultUserProperties = {
     LeftIndent:0.0,
     RightIndent:0.0,
     FONT_FAMILY:"Times New Roman",
-    ParagraphAlign: BGET.ALIGN.JUSTIFY,
+    ParagraphAlign: BGET.ALIGN.JUSTIFY,    //ParagraphAlign: possible vals 'left','center','right', 'justify' (use ENUM, e.g. BGET.ALIGN.LEFT)
     NoVersionFormatting:false
   },  
   LayoutPrefs: {
@@ -505,24 +511,6 @@ function docInsert(json){
   
   var versenum;
   var newPar;  
-
-  //Logger.log("index of cursor element in body = "+idx);
-  if(newPar = BibleGetGlobal.body.insertParagraph(BibleGetGlobal.idx,"")){ // we'll be inserting our paragraph below the current position because we've had to choose the parent element...      
-    //docLog("successfully created a new paragraph...");
-    newPar.setAlignment(DocumentApp.HorizontalAlignment.JUSTIFY);
-    newPar.setLineSpacing(BibleGetProperties.ParagraphStyles.Lineheight);
-    //DocumentApp.getUi().alert("Left Indent = "+LeftIndent+" >> "+leftindent+"pt");
-    newPar.setIndentFirstLine(BibleGetProperties.ParagraphStyles.LeftIndent);
-    newPar.setIndentStart(BibleGetProperties.ParagraphStyles.LeftIndent);
-    newPar.setIndentEnd(BibleGetProperties.ParagraphStyles.RightIndent);
-    let ffStyle = {};
-    ffStyle[DocumentApp.Attribute.FONT_FAMILY] = BibleGetProperties.ParagraphStyles.FONT_FAMILY;
-    newPar.setAttributes(ffStyle);
-    BibleGetGlobal.currentPar = newPar;
-  } else {
-    DocumentApp.getUi().alert(__('Cannot insert text at this document location.',locale));
-    return;
-  }
     
   for(var i=0;i<verses.length;i++){
     
@@ -534,24 +522,21 @@ function docInsert(json){
     newelement = checkNewElements(verses[i],newelement);
     //docLog("checking new elements... >> "+JSON.stringify(newelement));
     if(newelement.newversion){          
+      if((BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties,true) ) === false){ return; } //creating the first paragraph, so set last parameter to true
+      BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BibleVersionAlignment);
+
       var versionpargr;
-      if(i==0){ versionpargr = BibleGetGlobal.currentPar.appendText(verses[i].version); }
-      else { 
-        BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
-        versionpargr = BibleGetGlobal.currentPar.appendText(verses[i].version); 
-      }
-      setVerseStyles(versionpargr,BibleGetProperties.BookChapterStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
+      versionpargr = BibleGetGlobal.currentPar.appendText(verses[i].version); 
+      setTextStyles(versionpargr,BibleGetProperties,BGET.PTYPE.VERSION);
       BibleGetGlobal.firstFmtVerse = false;
     }
     //docLog("so far so good");
     
     if(newelement.newbook || newelement.newchapter){
-      //if(i==0 || newversion){ var bookpargr = currentPar.appendText(verses[i].book + " " + verses[i].chapter); }
-      //else{ 
       BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
+
       var bookpargr = BibleGetGlobal.currentPar.appendText(verses[i].book + " " + verses[i].chapter); 
-      //}
-      setVerseStyles(bookpargr,BibleGetProperties.BookChapterStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
+      setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
       BibleGetGlobal.firstFmtVerse = false;
     }
     //docLog("so far so good");
@@ -562,7 +547,7 @@ function docInsert(json){
         BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
       }
       versenum = BibleGetGlobal.currentPar.appendText(" " + verses[i].verse + " ");
-      setVerseStyles(versenum,BibleGetProperties.VerseNumberStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
+      setTextStyles(versenum,BibleGetProperties,BGET.PTYPE.VERSENUMBER);
     }
     //docLog("so far so good");
     
@@ -581,7 +566,7 @@ function docInsert(json){
         verses[i].text = verses[i].text.replace(/<[\/]{0,1}(?:po|speaker)[f|l|s|i]{0,1}[f|l]{0,1}>/g," "); 
         verses[i].text = verses[i].text.replace(/<[\/]{0,1}sm>/g,""); 
         var versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
-        setVerseStyles(versetext,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
+        setTextStyles(versetext,BibleGetProperties,BGET.PTYPE.VERSETEXT);
         //Logger.log(verses[i].text);
       }else{
         BibleGetGlobal = formatSections(verses[i].text,BibleGetProperties,newelement,BibleGetGlobal);
@@ -591,7 +576,7 @@ function docInsert(json){
     else{
       BibleGetGlobal.firstFmtVerse = true;
       var versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
-      setVerseStyles(versetext,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
+      setTextStyles(versetext,BibleGetProperties,BGET.PTYPE.VERSETEXT);
     }
   
   }            
@@ -602,31 +587,31 @@ function getUserLocale(){
   return Session.getActiveUserLocale();
 }
 
-function doNestedTagStuff(speakerTagBefore,speakerTagContents,speakerTagAfter,thisPar,vtStyles,fontfamily){
+function doNestedTagStuff(speakerTagBefore,speakerTagContents,speakerTagAfter,thisPar,BGProperties){
   //Logger.log("We have a nested tag, and we should have extracted it's parts: ");
   //Logger.log("speakerTagBefore = {"+speakerTagBefore+"}, speakerTagContents = {"+speakerTagContents+"}, speakerTagAfter = {"+speakerTagAfter+"}");
   var nabreStyleText;
   if(speakerTagBefore != ""){
     nabreStyleText = thisPar.appendText(speakerTagBefore);
     //Logger.log("we have now appended speakerTagBefore");
-    setVerseStyles(nabreStyleText,vtStyles,fontfamily);
+    setTextStyles(nabreStyleText,BGProperties,BGET.PTYPE.VERSETEXT);
   }
   
   nabreStyleText = thisPar.appendText(" "+speakerTagContents+" ");
   //Logger.log("we have now appended speakerTagContents");
-  nabreStyleText.setBold(true).setItalic(false).setUnderline(false).setStrikethrough(false).setFontSize(vtStyles.FONT_SIZE).setForegroundColor("#000000").setBackgroundColor("#9A9A9A").setTextAlignment(vtStyles.VALIGN);
+  nabreStyleText.setBold(true).setItalic(false).setUnderline(false).setStrikethrough(false).setFontSize(BGProperties.VerseTextStyles.FONT_SIZE).setForegroundColor("#000000").setBackgroundColor("#9A9A9A").setTextAlignment(BGProperties.VerseTextStyles.VALIGN);
   
   if(speakerTagAfter != ""){
     nabreStyleText = thisPar.appendText(speakerTagAfter);
     //Logger.log("we have now appended speakerTagAfter");
-    setVerseStyles(nabreStyleText,vtStyles,fontfamily);
+    setTextStyles(nabreStyleText,BGProperties,BGET.PTYPE.VERSETEXT);
   } 
 }
 
-function createNewPar(BibleGetGlb,BibleGetProps){ 
+function createNewPar(BibleGetGlb,BibleGetProps,first=false){ 
+  if(first===false){ BibleGetGlb.idx++; } //up the index if we're not dealing with the first paragraph at cursor index
   var newPar;
-  if(newPar = BibleGetGlb.body.insertParagraph(++BibleGetGlb.idx,"")){
-    newPar.setAlignment(BibleGetProps.ParagraphStyles.ParagraphAlign);
+  if(newPar = BibleGetGlb.body.insertParagraph(BibleGetGlb.idx,"")){
     newPar.setLineSpacing(BibleGetProps.ParagraphStyles.Lineheight);
     //DocumentApp.getUi().alert("Left Indent = "+LeftIndent+" >> "+leftindent+"pt");
     newPar.setIndentFirstLine(BibleGetProps.ParagraphStyles.LeftIndent);
@@ -637,11 +622,29 @@ function createNewPar(BibleGetGlb,BibleGetProps){
     newPar.setAttributes(ffStyle);
     BibleGetGlb.currentPar = newPar;
   }
+  else {
+    DocumentApp.getUi().alert(__('Cannot insert text at this document location.',locale));
+    return false;
+  }
   return BibleGetGlb;
 }
 
-function setVerseStyles(versetext,styles,fontfamily){
-  versetext.setBold(styles.BOLD).setItalic(styles.ITALIC).setUnderline(styles.UNDERLINE).setStrikethrough(styles.STRIKETHROUGH).setFontSize(styles.FONT_SIZE).setForegroundColor(styles.FOREGROUND_COLOR).setBackgroundColor(styles.BACKGROUND_COLOR).setTextAlignment(styles.VALIGN).setFontFamily(fontfamily);
+function setTextStyles(text,BGProperties,ptype){
+  var styles;
+  let fontfamily = BGProperties.ParagraphStyles.FONT_FAMILY;
+  switch(ptype){
+    case BGET.PTYPE.VERSION:
+    case BGET.PTYPE.BOOKCHAPTER:
+      styles = BGProperties.BookChapterStyles;
+      break;
+    case BGET.PTYPE.VERSENUMBER:
+      styles = BGProperties.VerseNumberStyles;
+      break;
+    case BGET.PTYPE.VERSETEXT:
+      styles = BGProperties.VerseTextStyles;
+      break;
+  }
+  text.setBold(styles.BOLD).setItalic(styles.ITALIC).setUnderline(styles.UNDERLINE).setStrikethrough(styles.STRIKETHROUGH).setFontSize(styles.FONT_SIZE).setForegroundColor(styles.FOREGROUND_COLOR).setBackgroundColor(styles.BACKGROUND_COLOR).setTextAlignment(styles.VALIGN).setFontFamily(fontfamily);
 }
 
 function doSpeakerTagThing(formattingTagContents){
@@ -738,7 +741,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
       Logger.log("We have some normal text before special formatted text in this verse: {" + NABREfmtMatch[1] + "}");
       //this is normal text!
       var versetext = BibleGetGlobal.currentPar.appendText(NABREfmtMatch[1]);
-      setVerseStyles(versetext,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
+      setTextStyles(versetext,BibleGetProperties,BGET.PTYPE.VERSETEXT);
       remainingText = remainingText.replace(NABREfmtMatch[1],"");
       
       if(NABREfmtMatch[2] != "sm"){
@@ -783,12 +786,12 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           }
           
           if(nestedTag){
-            doNestedTagStuff(speakerTag.Before,speakerTag.Contents,speakerTag.After,BibleGetGlobal.currentPar,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
+            doNestedTagStuff(speakerTag.Before,speakerTag.Contents,speakerTag.After,BibleGetGlobal.currentPar,BibleGetProperties);
             nestedTag = false;
           }
           else{
             nabreStyleText = BibleGetGlobal.currentPar.appendText(formattingTagContents);
-            setVerseStyles(nabreStyleText,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
+            setTextStyles(nabreStyleText,BibleGetProperties,BGET.PTYPE.VERSETEXT);
           }
           break;
         case "poif":
@@ -807,12 +810,12 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
             newelement.newverse = false;
           }                      
           if(nestedTag){
-            doNestedTagStuff(speakerTag.Before,speakerTag.Contents,speakerTag.After,BibleGetGlobal.currentPar,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
+            doNestedTagStuff(speakerTag.Before,speakerTag.Contents,speakerTag.After,BibleGetGlobal.currentPar,BibleGetProperties);
             nestedTag = false;
           }
           else{
             nabreStyleText = BibleGetGlobal.currentPar.appendText(formattingTagContents);
-            setVerseStyles(nabreStyleText,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
+            setTextStyles(nabreStyleText,BibleGetProperties,BGET.PTYPE.VERSETEXT);
           }                    
           break;
         case "sm":
@@ -855,7 +858,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
   
   if(remainingText != ""){ //lastNABREfmtMatch[2]=="sm" && 
     var lastText = BibleGetGlobal.currentPar.appendText(remainingText);
-    setVerseStyles(lastText,BibleGetProperties.VerseTextStyles,BibleGetProperties.ParagraphStyles.FONT_FAMILY);
+    setTextStyles(lastText,BibleGetProperties,BGET.PTYPE.VERSETEXT);
   }
   
   return BibleGetGlobal;
@@ -867,7 +870,7 @@ function preparePropertiesForDocInjection(){
   //Let's make sure we have the right typecasting for each value
   for(let [key,value] of Object.entries(userProperties)){
     for(let [key1,value1] of Object.entries(userProperties[key]) ){
-      if(key1 == 'BOLD' || key1 == 'ITALIC' || key1 == 'UNDERLINE' || key1 == 'STRIKETHROUGH' || key1 == 'NoVersionFormatting'){
+      if(key1 == 'BOLD' || key1 == 'ITALIC' || key1 == 'UNDERLINE' || key1 == 'STRIKETHROUGH' || key1 == 'NoVersionFormatting' || key1 == 'BookChapterFullQuery'){
         if(typeof value1 !== 'boolean'){ userProperties[key][key1] = JSON.parse(value1); }
       }
       else if(key1 == 'Lineheight'){
@@ -892,7 +895,7 @@ function preparePropertiesForDocInjection(){
             break;            
         }
       }
-      else if(key1 == 'ParagraphAlign'){
+      else if(key1 == 'ParagraphAlign' || key1 =='BibleVersionAlignment' || key1 == 'BookChapterAlignment'){
         switch(value1){
           case BGET.ALIGN.LEFT:
             userProperties[key][key1] = DocumentApp.HorizontalAlignment.LEFT;
