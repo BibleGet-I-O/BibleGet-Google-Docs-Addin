@@ -88,10 +88,10 @@ var __ = function(str,ling){
       "":{"en":"","it":"","es":"","fr":"","de":""},
       "":{"en":"","it":"","es":"","fr":"","de":""},
       "":{"en":"","it":"","es":"","fr":"","de":""},
-      "":{"en":"","it":"","es":"","fr":"","de":""},
-      "":{"en":"","it":"","es":"","fr":"","de":""},
-      "":{"en":"","it":"","es":"","fr":"","de":""},
-      "":{"en":"","it":"","es":"","fr":"","de":""},
+      "B":{"en":"B","it":"G","es":"N","fr":"G","de":"F"}, //BOLD
+      "I":{"en":"I","it":"C","es":"C","fr":"I","de":"K"}, //ITALIC
+      "U":{"en":"U","it":"S","es":"S","fr":"S","de":"U"}, //UNDERLINE
+      "S":{"en":"S","it":"B","es":"T","fr":"B","de":"D"}, //STRIKETHROUGH
       "Versions and Languages":{"en":"Supported Versions and Languages","it":"Versioni e Lingue supportate","es":"Versiones y Idiomas compatibles","fr":"Versions et Idiomes compatibles","de":"Unterstützte Versionen und Sprachen"},
       "Preview":{"en":"Preview","it":"Anteprima","es":"Pre estreno","fr":"Avant-première","de":"Vorschau"},
       "ISamuelis2":{"en":"1 Samuel 2","it":"1 Samuele 2","es":"1 Samuel 2","fr":"1 Samuel 2","de":"1 Samuel 2"},

@@ -8,120 +8,132 @@ const ADDONSTATE = {
   DEVELOPMENT: "development"
 };
 
-//const CURRENTSTATE = ADDONSTATE.DEVELOPMENT; //make sure to switch to PRODUCTION before publishing!
-const CURRENTSTATE = ADDONSTATE.PRODUCTION;
+const CURRENTSTATE = ADDONSTATE.DEVELOPMENT; //make sure to switch to PRODUCTION before publishing!
+//const CURRENTSTATE = ADDONSTATE.PRODUCTION;
 
 const REQUESTPARAMS = {"rettype":"json","appid":"googledocs"};
 const ENDPOINTURL = "https://query.bibleget.io/";
 const ENDPOINTURLMETADATA = "https://query.bibleget.io/metadata.php";
-const SETTINGSWINDOW = {
-  HEIGHT: 580,
-  WIDTH: 800
-}
+const SETTINGSWINDOW = { HEIGHT: 580, WIDTH: 900 };
 
+//DEFINE CONSTANTS FOR USER PREFERENCES
+//these will be used throughout scripts
+//and in the html interfaces and client javascript
+//to ensure consistency
 const BGET = {
   ALIGN: {
-    LEFT:   "left",
-    RIGHT:  "right",
-    CENTER: "center",
-    JUSTIFY: "justify"
+    LEFT:        "left",       //make sure these are text values
+    RIGHT:       "right",      //that correspond to actual CSS properties for the for text-align rule
+    CENTER:      "center",     //
+    JUSTIFY:     "justify"     //they will be used as is in the stylesheet definitions
   },
   VALIGN: {
-    SUPERSCRIPT: "superscript",
-    SUBSCRIPT: "subscript",
-    NORMAL: "normal"
+    SUPERSCRIPT: 1,
+    SUBSCRIPT:   2,
+    NORMAL:      3
   },
   WRAP: {
-    NONE:        "none",
-    PARENTHESES: "parentheses",
-    BRACKETS:    "brackets"
+    NONE:        1,
+    PARENTHESES: 2,
+    BRACKETS:    3
   },
   POS: {
-    TOP:    "top",
-    BOTTOM: "bottom",
-    BOTTOMINLINE: "inline"
+    TOP:         1,
+    BOTTOM:      2,
+    BOTTOMINLINE:3
   },
   FORMAT: {
-    USERLANG: "userLang",
-    BIBLELANG: "bibleLang",
-    USERLANGABBREV: 'userLangAbbrev',
-    BIBLELANGABBREV: 'bibleLangAbbrev'
+    USERLANG:        1, // if Google Docs is used in chinese, the names of the books of the bible will be given in chinese 
+    BIBLELANG:       2, // if Google Docs is used in chinese, the abbreviated names of the books of the bible in chinese will be given
+    USERLANGABBREV:  3, // if you are quoting from a Latin Bible, the names of the books of the bible will be given in latin
+    BIBLELANGABBREV: 4  // if you are quoting from a Latin Bible, the abbreviated names of the books of the bible in latin will be given
   },
   VISIBILITY: {
-    SHOW: "show",
-    HIDE: "hide"
+    SHOW:            1,
+    HIDE:            2
   },
   TEXTSTYLE: {
-    BOLD: 'bold',
-    ITALIC: 'italic',
-    UNDERLINE: 'underline',
-    STRIKETHROUGH: 'strikethrough'
+    BOLD:            1,
+    ITALIC:          2,
+    UNDERLINE:       3,
+    STRIKETHROUGH:   4
   },
-  PTYPE: {
-    VERSION: 'version',
-    BOOKCHAPTER: 'bookchapter',
-    VERSENUMBER: 'versenumber',
-    VERSETEXT: 'versetext'
+  PTYPE: {               //PARAGRAPH TYPE : useful when creating a new paragraph, 
+    BIBLEVERSION:    1,  //  to let the paragraph creation function newPar know what kind of paragraph we're dealing with
+    BOOKCHAPTER:     2,  //  and consequently choose which styles to set from user preferences
+    VERSENUMBER:     3,
+    VERSETEXT:       4
+  },
+  TYPECASTING: {        //just for quality assurance and good measure, let's explicitly define typecasting of our UserProperties, don't just rely on JSON.parse
+                        //this way we know that floats will be floats and ints will be ints and we don't have to worry about it every time in our code when we use the values
+    BOOLEANVALS : ["NoVersionFormatting","BOLD","ITALIC","UNDERLINE","STRIKETHROUGH","BookChapterFullQuery"],
+    FLOATVALS   : ["Lineheight","LeftIndent","RightIndent"],
+    INTVALS     : ["FONT_SIZE","VALIGN","ShowBibleVersion","BibleVersionPosition","BibleVersionWrap","BookChapterPosition","BookChapterWrap","BookChapterFormat","ShowVerseNumbers"],
+    STRINGVALS  : ["FONT_FAMILY","ParagraphAlign","FOREGROUND_COLOR","BACKGROUND_COLOR","BibleVersionAlignment","BookChapterAlignment"],
+    STRINGARRAYS: ["RecentSelectedVersions"]
   }
 };
 
 const DefaultUserProperties = {
-  BookChapterStyles: {
-    BOLD:true,
-    ITALIC:false,
-    UNDERLINE:false,
-    STRIKETHROUGH:false,
-    FOREGROUND_COLOR:"#000044",
-    BACKGROUND_COLOR:"#FFFFFF",
-    FONT_SIZE:10,
-    VALIGN:BGET.VALIGN.NORMAL
-  },
-  VerseNumberStyles: {
-    BOLD:true,
-    ITALIC:false,
-    UNDERLINE:false,
-    STRIKETHROUGH:false,
-    FOREGROUND_COLOR:"#AA0000",
-    BACKGROUND_COLOR:"#FFFFFF",
-    FONT_SIZE:10,
-    VALIGN:BGET.VALIGN.SUPERSCRIPT  
-  },
-  VerseTextStyles: {
-    BOLD:false,
-    ITALIC:false,
-    UNDERLINE:false,
-    STRIKETHROUGH:false,
-    FOREGROUND_COLOR:"#666666",
-    BACKGROUND_COLOR:"#FFFFFF",
-    FONT_SIZE:10,
-    VALIGN:BGET.VALIGN.NORMAL
-  },
-  ParagraphStyles:{
-    Lineheight:1.5,
-    LeftIndent:0.0,
-    RightIndent:0.0,
-    FONT_FAMILY:"Times New Roman",
-    ParagraphAlign: BGET.ALIGN.JUSTIFY,    //ParagraphAlign: possible vals 'left','center','right', 'justify' (use ENUM, e.g. BGET.ALIGN.LEFT)
-    NoVersionFormatting:false
+  //Will be handled first thing on TAB 1 of the Settings UI
+  ParagraphStyles: {
+    Lineheight:          1.5,                //FLOAT
+    LeftIndent:          0,                  //FLOAT
+    RightIndent:         0,                  //FLOAT
+    FONT_FAMILY:         "Times New Roman",  //STRING
+    ParagraphAlign:      BGET.ALIGN.JUSTIFY, //STRING   possible vals 'left','center','right', 'justify' (use ENUM, e.g. BGET.ALIGN.LEFT)
+    NoVersionFormatting: false               //BOOLEAN
   },  
-  LayoutPrefs: {
-    ShowBibleVersion: BGET.VISIBILITY.SHOW, //ShowBibleVersion: possible vals 'show', 'hide' (use ENUM, e.g. BGET.VISIBILITY.SHOW)
-    BibleVersionAlignment: BGET.ALIGN.LEFT, //BibleVersionAlignment: possible vals 'left','center','right' (use ENUM, e.g. BGET.ALIGN.LEFT)
-    BibleVersionPosition: BGET.POS.TOP,     //BibleVersionPosition: possible vals 'top','bottom'. (Use ENUM, e.g. BGET.POS.TOP)
-                                            //N.B. if BookChapterPosition is also bottom, then they will be placed next to each other and BibleVersionAlignment will have no effect, only BookChapterAlignment will
-    BibleVersionWrap: BGET.WRAP.NONE,       //BibleVersionWrap: possible vals 'none', 'parentheses', 'brackets' (use ENUM, e.g. BGET.WRAP.NONE)
-    BookChapterAlignment: BGET.ALIGN.LEFT,  //BookChapterAlignment: possible vals 'left','center','right' (use ENUM, e.g. BGET.ALIGN.LEFT)
-    BookChapterPosition: BGET.POS.TOP,      //BookChapterPosition: possible vals 'top', 'bottom', 'bottominline'.  (Use ENUM, e.g. BGET.POS.BOTTOMINLINE)
-    BookChapterWrap: BGET.WRAP.NONE,        //BookChapterWrap: possible vals 'none', 'parentheses', 'brackets' (use ENUM, e.g. BGET.WRAP.NONE)
-    BookChapterFormat: BGET.FORMAT.BIBLELANG,//BookChapterFormat: possible vals 'userLang', 'bibleLang', 'userLangAbbrev', 'bibleLangAbbrev' (use ENUM, e.g. BGET.FORMAT.BIBLELANG
-    BookChapterFullQuery: false,            //if false, just the name of the book and the chapter will be shown (i.e. 1 John 4). If true the full reference including the verses will be shown (i.e. 1 John 4:7-8)
-    //  Meaning: 1) like the original query = if '1Jn4:7-8' was requested '1Jn4:7-8' will be shown
-    //           2) according to user lang = if Google Docs is used in chinese, the names of the books of the bible will be in chinese
-    //           3) according to bible lang = if you are quoting from a Latin Bible, the names of the books of the bible will be in latin
-    //  N.B. only holds when position = BGET.POS.BOTTOM
-    ShowVerseNumbers: BGET.VISIBILITY.SHOW  //ShowVerseNumbers: possible vals 'show', 'hide' (use ENUM, e.g. BGET.VISIBILITY.SHOW)
+  //Will be handled right under ParagraphStyles on TAB 1 of the Settings UI
+  BookChapterStyles: {
+    BOLD:                true,      //BOOLEAN
+    ITALIC:              false,     //BOOLEAN
+    UNDERLINE:           false,     //BOOLEAN
+    STRIKETHROUGH:       false,     //BOOLEAN
+    FOREGROUND_COLOR:    "#000044", //STRING
+    BACKGROUND_COLOR:    "#FFFFFF", //STRING
+    FONT_SIZE:           10,        //INT
+    VALIGN:              BGET.VALIGN.NORMAL //const will resolve to INT
   },
-  RecentSelectedVersions: [] //initialize as an empty array
+  //Will be handled right under BookChapterStyles on TAB 1 of the Settings UI
+  VerseNumberStyles: {
+    BOLD:                true,      //BOOLEAN
+    ITALIC:              false,     //BOOLEAN
+    UNDERLINE:           false,     //BOOLEAN
+    STRIKETHROUGH:       false,     //BOOLEAN
+    FOREGROUND_COLOR:    "#AA0000", //STRING
+    BACKGROUND_COLOR:    "#FFFFFF", //STRING
+    FONT_SIZE:           10,        //INT
+    VALIGN:              BGET.VALIGN.SUPERSCRIPT //const will resolve to INT
+  },
+  //Will be handled right under VerseNumberStyles on TAB 1 of the Settings UI
+  VerseTextStyles: {
+    BOLD:                false,     //BOOLEAN
+    ITALIC:              false,     //BOOLEAN
+    UNDERLINE:           false,     //BOOLEAN
+    STRIKETHROUGH:       false,     //BOOLEAN
+    FOREGROUND_COLOR:    "#666666", //STRING
+    BACKGROUND_COLOR:    "#FFFFFF", //STRING
+    FONT_SIZE:           10,        //INT
+    VALIGN:              BGET.VALIGN.NORMAL //const will resolve to INT
+  },
+  //Will be handled right on TAB 2 of the Settings UI
+  LayoutPrefs: {
+    ShowBibleVersion:      BGET.VISIBILITY.SHOW, //const will resolve to INT    (use ENUM, e.g. BGET.VISIBILITY.SHOW)
+    BibleVersionAlignment: BGET.ALIGN.LEFT,      //const will resolve to STRING (use ENUM, e.g. BGET.ALIGN.LEFT)
+    BibleVersionPosition:  BGET.POS.TOP,         //const will resolve to INT    (use ENUM, e.g. BGET.POS.TOP. Can only be TOP or BOTTOM)
+    BibleVersionWrap:      BGET.WRAP.NONE,       //const will resolve to INT    (use ENUM, e.g. BGET.WRAP.NONE)
+    BookChapterAlignment:  BGET.ALIGN.LEFT,      //const will resolve to STRING (use ENUM, e.g. BGET.ALIGN.LEFT)
+    BookChapterPosition:   BGET.POS.TOP,         //const will resolve to INT    (use ENUM, e.g. BGET.POS.BOTTOMINLINE. Can be TOP, BOTTOM, or BOTTOMINLINE)
+    BookChapterWrap:       BGET.WRAP.NONE,       //const will resolve to INT    (use ENUM, e.g. BGET.WRAP.NONE)
+    BookChapterFormat:     BGET.FORMAT.BIBLELANG,//const will resolve to INT    (use ENUM, e.g. BGET.FORMAT.BIBLELANG
+    BookChapterFullQuery:  false,                //false: just the name of the book and the chapter will be shown (i.e. 1 John 4)
+                                                 //true: the full reference including the verses will be shown (i.e. 1 John 4:7-8) 
+                                                 //[great idea btw, but now how to tackle it practically during docInsert!!!]
+    ShowVerseNumbers:      BGET.VISIBILITY.SHOW  //const will resolve to INT    (use ENUM, e.g. BGET.VISIBILITY.SHOW)
+  },
+  //Will be handled from the Sidebar UI when sending queries
+  RecentSelectedVersions:  []                    //Array of STRING values
 };
 
 
@@ -167,7 +179,7 @@ function onOpen(e) {
 }
 
 /***************************************************/
-/* FUNCTIONS THAT MANAGE THE UI (SIDEBARS, MODALS) */
+/*     UI CREATION FUNCTIONS (SIDEBARS, MODALS)    */
 /***************************************************/
 function openSettings(){
   let locale = getUserLocale();
@@ -199,16 +211,6 @@ function openSendFeedback(){
 }
 
 
-// Helper function for MailPrompt
-function sendMail(txt) {
-    MailApp.sendEmail({
-     to: "bibleget.io@gmail.com",
-     subject: "Google Apps Script Feedback",
-     htmlBody: txt
-   });
-  //}
-}
-
 function openContributionModal(){
   let locale = getUserLocale();
   let html = HtmlService.createTemplateFromFile('Contribute')
@@ -227,8 +229,6 @@ function openSimpleSidebar(){
 
 function openMainSidebar(){
   let html = HtmlService.createTemplateFromFile('Sidebar');
-  //Logger.log(html.getCode());
-  //MailApp.sendEmail("bibleget.io@gmail.com", "Sidebar Code", html.getCode());
   DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O'));
 }
 
@@ -238,20 +238,10 @@ function openHelpSidebar(){
   DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O - '+__('Instructions',locale)));
 }
 
-/***********************************************/
-/* FUNCTIONS THAT RUN FROM THE SIDEBAR SCRIPTS */
-/***********************************************/
-/*
-function getFontFamilies(){
-  var fontfamilies = [""];//DocumentApp.FontFamily.values().toString();
-  Logger.log(fontfamilies);
-  return fontfamilies;
-}
-*/
-function alertMe(str){
-  DocumentApp.getUi().alert(str);
-}
 
+/********************************************************************/
+/* FUNCTIONS THAT DEAL WITH USER PREFERENCES AND PROPERTIES SERVICE */
+/********************************************************************/
 
 /**
   * FUNCTION setDefaultUserProperties
@@ -309,17 +299,12 @@ function setDefaultUserProperties(){
  * unless "true" is passed in, in which case a pure JSON obj will be returned
 */
 function getDefaultUserProperties(nostringify=false){
-  let defltUserProperties = {
-    BookChapterStyles: (nostringify ? DefaultUserProperties.BookChapterStyles : JSON.stringify(DefaultUserProperties.BookChapterStyles)),
-    VerseNumberStyles: (nostringify ? DefaultUserProperties.VerseNumberStyles : JSON.stringify(DefaultUserProperties.VerseNumberStyles)),
-    VerseTextStyles: (nostringify ? DefaultUserProperties.VerseTextStyles : JSON.stringify(DefaultUserProperties.VerseTextStyles)),
-    PararaphStyles: (nostringify ? DefaultUserProperties.ParagraphStyles : JSON.stringify(DefaultUserProperties.ParagraphStyles)),
-    LayoutPrefs: (nostringify ? DefaultUserProperties.LayoutPrefs : JSON.stringify(DefaultUserProperties.LayoutPrefs)),
-    RecentSelectedVersions: (nostringify ? DefaultUserProperties.RecentSelectedVersions : JSON.stringify(DefaultUserProperties.RecentSelectedVersions))
-  };  
+  let defltUserProperties = {};
+  for(let [key, value] of Object.entries(DefaultUserProperties)){
+    defltUserProperties[key] = (nostringify ? value : JSON.stringify(value) );
+  }
   return defltUserProperties;
 }
-
 
 
 /*
@@ -329,45 +314,34 @@ function getDefaultUserProperties(nostringify=false){
  * and all values will be returned as true booleans, ints, floats...
 */
 function getUserProperties(nostringify=false){
-  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
-    consoleLog('function getUserProperties starting with nostringify = ' + nostringify.toString());
-  }   
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){ consoleLog('function getUserProperties starting with nostringify = ' + nostringify.toString()); }   
   let userProperties = PropertiesService.getUserProperties();
   let usrProperties = userProperties.getProperties();
   let currentProperties = {};
-  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
-    for(let [key,value] of Object.entries(usrProperties)){
-      consoleLog('function getUserProperties will parse = ' + key + ' from saved user properties, with '+ (typeof value) +' value: ' +value);
-    } 
-  }   
-  
-  currentProperties.BookChapterStyles =  (nostringify ? JSON.parse(usrProperties.BookChapterStyles) : usrProperties.BookChapterStyles);    
-  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
-    consoleLog('BookChapterStyles parsed, result : '+currentProperties.BookChapterStyles);
-  }
-  currentProperties.VerseNumberStyles = (nostringify ? JSON.parse(usrProperties.VerseNumberStyles) : usrProperties.VerseNumberStyles);
-  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
-    consoleLog('VerseNumberStyles parsed, result : '+currentProperties.VerseNumberStyles);
-  }
-  currentProperties.VerseTextStyles = (nostringify ? JSON.parse(usrProperties.VerseTextStyles) : usrProperties.VerseTextStyles);
-  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
-    consoleLog('VerseTextStyles parsed, result : '+currentProperties.VerseTextStyles);
-  }
-  currentProperties.ParagraphStyles = (nostringify ? JSON.parse(usrProperties.ParagraphStyles) : usrProperties.ParagraphStyles);  
-  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
-    consoleLog('ParagraphStyles parsed, result : '+currentProperties.ParagraphStyles);
-  }
-  currentProperties.LayoutPrefs = (nostringify ? JSON.parse(usrProperties.LayoutPrefs) : usrProperties.LayoutPrefs);
-  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
-    consoleLog('LayoutPrefs parsed, result : '+currentProperties.LayoutPrefs);
-  }
-  currentProperties.RecentSelectedVersions = (nostringify ? JSON.parse(usrProperties.RecentSelectedVersions) : usrProperties.RecentSelectedVersions);
-  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){
-    consoleLog('RecentSelectedVersions parsed, result : '+currentProperties.RecentSelectedVersions);
-  }
-  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
-    consoleLog('function getUserProperties ending');
-  }   
+  for(let [key, value] of Object.entries(usrProperties)){
+    if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){ consoleLog('function getUserProperties will parse = ' + key + ' from saved user properties, with value ['+ (typeof value) +']: ' +value); }    
+    currentProperties[key] = (nostringify ? JSON.parse(value) : value);
+    
+    //for quality insurance and for good measure
+    //let's just double check that JSON.parse is actually giving us the right typecasting
+    //and enforce it if not
+    if(nostringify){
+    //we don't worry about string values, just ints, floats and booleans
+    //let's start with booleans
+      if(BGET.TYPECASTING.FLOATVALS.includes(key)        && typeof currentProperties[key] !== 'float')  { currentProperties[key] = parseFloat(currentProperties[key]); }
+      else if(BGET.TYPECASTING.INTVALS.includes(key)     && typeof currentProperties[key] !== 'int')    { currentProperties[key] = parseInt(currentProperties[key]);   }
+      else if(BGET.TYPECASTING.BOOLEANVALS.includes(key) && typeof currentProperties[key] !== 'boolean'){ 
+        //I'm not even going to try to typecast, because if JSON.parse can't do it then nobody can
+        alertMe('JSON.parse has not succeeded in parsing a boolean value for UserProperty '+key+' with value '+value); 
+      }
+      else if(BGET.TYPECASTING.STRINGVALS.includes(key)  && typeof currentProperties[key] !== 'string') { currentProperties[key] = currentProperties[key].toString(); }
+      else if(BGET.TYPECASTING.STRINGARRAYS.includes(key) && typeof currentProperties[key] !== 'object'){
+        //Again, not much I can do here, if JSON.parse doesn't succeed then just let the user know
+        alertMe('JSON.parse has not succeeded in parsing a string array from UserProperty '+key+' with value '+value);
+      }
+    }
+    if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){ consoleLog(key + ' parsed, result : '+currentProperties[key]); }
+  }     
   return currentProperties;
 }
 
@@ -432,6 +406,27 @@ function resetUserProperties(nostringify=false){
   DocumentApp.getUi().showModalDialog(evaluated, __('Impostazioni',locale));
 }
 
+
+
+/***********************************************/
+/* FUNCTIONS THAT RUN FROM THE UI SCRIPTS      */
+/***********************************************/
+
+//Function alertMe @ used in SidebarJS.html and Processing.gs and in other scripts here in Code.gs to show error messages to the end user
+function alertMe(str){
+  DocumentApp.getUi().alert(str);
+}
+
+//Function sendmail @ used in feedback UI to actually send the email
+function sendMail(txt) {
+    MailApp.sendEmail({
+     to: "bibleget.io@gmail.com",
+     subject: "Google Apps Script Feedback",
+     htmlBody: txt
+   });
+}
+
+//Function fetchData @ used in SidebarJS and in other scripts here in Code.gs (which are called from SidebarJS), to communicate with the BibleGet endpoints
 function fetchData(request){
   let {query,version} = request;
   let {rettype,appid} = REQUESTPARAMS;
@@ -455,39 +450,70 @@ function fetchData(request){
   }
 }
 
-function docLog(str){
-  var locale = getUserLocale();
-  var doc = DocumentApp.getActiveDocument();
-  var body = doc.getBody();
-  var cursor = doc.getCursor();
-  var idx;  
-  if(cursor){  
-    var cursorEl = cursor.getElement();
-  
-    if(cursorEl.getType() == "TEXT"){ // seems that we can't get a page index or insert paragraphs from the position of an element of type Text?
-      cursorEl = cursorEl.getParent(); // so let's get it's parent to avoid getting nasty error messages
-      //Logger.log(cursorEl);
-    }
-    idx = body.getChildIndex(cursorEl);
-  }
-  else{ //if for example there is a selection, so we can't get a cursor POSITION
-    var selection = doc.getSelection();
-    if(selection){
-      var elements = selection.getRangeElements();
-      var element = elements[0].getElement();
-      if(element.getType() == 'TEXT'){
-        element = element.getParent();
+//Function getUserLocale @ used in pretty much every UI in order to determine the Docs interface locale
+function getUserLocale(){
+  return Session.getActiveUserLocale();
+}
+
+
+function makeUnique(str) {
+  return String.prototype.concat(...new Set(str));
+}
+
+
+/**********************************************************
+ * FUNCTIONS THAT PROCESS THE BIBLE QUOTES IN JSON FORMAT *
+ * AFTER THEY ARE RETRIEVED FROM THE BIBLEGET ENDPOINT    *
+ * AND PROCESS THE INJECTION INTO THE DOCUMENT            *
+ * BASED ON USER PREFERENCE FOR ELEMENT STYLING           *
+ **********************************************************/
+
+
+function preparePropertiesForDocInjection(){
+  let userProperties = getUserProperties(true); //will get a pure JSON obj, all stringified values parsed and checked for typecasting
+  //Let's make sure we have the right typecasting for each value
+  for(let [key,value] of Object.entries(userProperties)){
+    for(let [key1,value1] of Object.entries(userProperties[key]) ){
+      if(key1 == 'LeftIndent' || key1 == 'RightIndent'){
+        //setIndentStart and setIndentEnd etc. take values in points
+        //while the ruler at the top of the document is in inches
+        //so we store our values in inches, then convert to points
+        userProperties[key][key1] = inchesToPoints(value1);
       }
-      idx = body.getChildIndex(element);
-    }
-    else{  
-      DocumentApp.getUi().alert(__('Cannot insert text at this document location.',locale));
+      else if(key1 == 'VALIGN'){
+        switch(value1){
+          case BGET.VALIGN.NORMAL:
+            userProperties[key][key1] = DocumentApp.TextAlignment.NORMAL;
+            break;
+          case BGET.VALIGN.SUPERSCRIPT:
+            userProperties[key][key1] = DocumentApp.TextAlignment.SUPERSCRIPT;
+            break;
+          case BGET.VALIGN.SUBSCRIPT:
+            userProperties[key][key1] = DocumentApp.TextAlignment.SUBSCRIPT;
+            break;            
+        }
+      }
+      else if(key1 == 'ParagraphAlign' || key1 =='BibleVersionAlignment' || key1 == 'BookChapterAlignment'){
+        switch(value1){
+          case BGET.ALIGN.LEFT:
+            userProperties[key][key1] = DocumentApp.HorizontalAlignment.LEFT;
+            break;
+          case BGET.ALIGN.CENTER:
+            userProperties[key][key1] = DocumentApp.HorizontalAlignment.CENTER;
+            break;
+          case BGET.ALIGN.RIGHT:
+            userProperties[key][key1] = DocumentApp.HorizontalAlignment.RIGHT;
+            break;
+          case BGET.ALIGN.JUSTIFY:
+            userProperties[key][key1] = DocumentApp.HorizontalAlignment.JUSTIFY;
+            break;
+          default:
+            userProperties[key][key1] = DocumentApp.HorizontalAlignment.JUSTIFY;
+        }
+      }
     }
   }
-  var newPar;
-  if (newPar = body.insertParagraph(idx,"")) { // we'll be inserting our paragraph below the current position because we've had to choose the parent element...
-    newPar.appendText(str);
-  }
+  return userProperties;
 }
 
 function docInsert(json){
@@ -527,13 +553,14 @@ function docInsert(json){
 
       var versionpargr;
       versionpargr = BibleGetGlobal.currentPar.appendText(verses[i].version); 
-      setTextStyles(versionpargr,BibleGetProperties,BGET.PTYPE.VERSION);
+      setTextStyles(versionpargr,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
       BibleGetGlobal.firstFmtVerse = false;
     }
     //docLog("so far so good");
     
     if(newelement.newbook || newelement.newchapter){
       BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
+      BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
 
       var bookpargr = BibleGetGlobal.currentPar.appendText(verses[i].book + " " + verses[i].chapter); 
       setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
@@ -545,6 +572,7 @@ function docInsert(json){
       if(BibleGetGlobal.iterateNewPar || newelement.newchapter){
         BibleGetGlobal.iterateNewPar = false;
         BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
+        BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
       }
       versenum = BibleGetGlobal.currentPar.appendText(" " + verses[i].verse + " ");
       setTextStyles(versenum,BibleGetProperties,BGET.PTYPE.VERSENUMBER);
@@ -581,10 +609,6 @@ function docInsert(json){
   
   }            
 
-}
-
-function getUserLocale(){
-  return Session.getActiveUserLocale();
 }
 
 function doNestedTagStuff(speakerTagBefore,speakerTagContents,speakerTagAfter,thisPar,BGProperties){
@@ -633,7 +657,7 @@ function setTextStyles(text,BGProperties,ptype){
   var styles;
   let fontfamily = BGProperties.ParagraphStyles.FONT_FAMILY;
   switch(ptype){
-    case BGET.PTYPE.VERSION:
+    case BGET.PTYPE.BIBLEVERSION:
     case BGET.PTYPE.BOOKCHAPTER:
       styles = BGProperties.BookChapterStyles;
       break;
@@ -746,11 +770,12 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
       
       if(NABREfmtMatch[2] != "sm"){
         BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
+        BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
       }
     }
     if(NABREfmtMatch[4] != null && NABREfmtMatch[4] != ""){
       var formattingTagContents = NABREfmtMatch[4].trim();
-      Logger.log("{"+formattingTagContents+"}");      
+      //Logger.log("{"+formattingTagContents+"}");      
       //check for nested speaker tags!
       var nestedTag = false;
       var speakerTag = {"Before":"","Contents":"","After":""};
@@ -772,6 +797,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
             if(!newelement.newverse){Logger.log("case pof|pos|po|pol and not the start of a new verse... creating paragraph... <"+formattingTagContents+">");}
             else{Logger.log("case pof|pos|po|pol and is start of a new verse but is also the first verse with special formatting... creating paragraph... <"+formattingTagContents+">");}
             BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
+            BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
             
             if(BibleGetGlobal.firstFmtVerse){
               BibleGetGlobal.firstFmtVerse = false;
@@ -800,8 +826,9 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           BibleGetGlobal.iterateNewPar = true;
           // create a new paragraph only if it's not the start of a new verse
           if(!newelement.newverse){
-            Logger.log("not the start of a new verse, so creating a new paragraph... <"+formattingTagContents+">");
+            //Logger.log("not the start of a new verse, so creating a new paragraph... <"+formattingTagContents+">");
             BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
+            BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
           }
           // because if it is the start of a new verse we probably already have a new paragraph
           else{
@@ -865,59 +892,6 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
 }
 
 
-function preparePropertiesForDocInjection(){
-  let userProperties = getUserProperties(true); //will get a pure JSON obj, all stringified values parsed
-  //Let's make sure we have the right typecasting for each value
-  for(let [key,value] of Object.entries(userProperties)){
-    for(let [key1,value1] of Object.entries(userProperties[key]) ){
-      if(key1 == 'BOLD' || key1 == 'ITALIC' || key1 == 'UNDERLINE' || key1 == 'STRIKETHROUGH' || key1 == 'NoVersionFormatting' || key1 == 'BookChapterFullQuery'){
-        if(typeof value1 !== 'boolean'){ userProperties[key][key1] = JSON.parse(value1); }
-      }
-      else if(key1 == 'Lineheight'){
-        if(typeof value1 !== 'float'){ userProperties[key][key1] = parseFloat(value1); }
-      }
-      else if(key1 == 'LeftIndent' || key1 == 'RightIndent'){
-        userProperties[key][key1] = Math.round(parseFloat(value1) * 72); //=inches to points conversion (while * 28.3464567 = centimeters to points conversion)
-      }
-      else if(key1 == 'FONT_SIZE'){
-        if(typeof value1 !== 'int'){ userProperties[key][key1] = parseInt(value1); }
-      }
-      else if(key1 == 'VALIGN'){
-        switch(value1){
-          case BGET.VALIGN.NORMAL:
-            userProperties[key][key1] = DocumentApp.TextAlignment.NORMAL;
-            break;
-          case BGET.VALIGN.SUPERSCRIPT:
-            userProperties[key][key1] = DocumentApp.TextAlignment.SUPERSCRIPT;
-            break;
-          case BGET.VALIGN.SUBSCRIPT:
-            userProperties[key][key1] = DocumentApp.TextAlignment.SUBSCRIPT;
-            break;            
-        }
-      }
-      else if(key1 == 'ParagraphAlign' || key1 =='BibleVersionAlignment' || key1 == 'BookChapterAlignment'){
-        switch(value1){
-          case BGET.ALIGN.LEFT:
-            userProperties[key][key1] = DocumentApp.HorizontalAlignment.LEFT;
-            break;
-          case BGET.ALIGN.CENTER:
-            userProperties[key][key1] = DocumentApp.HorizontalAlignment.CENTER;
-            break;
-          case BGET.ALIGN.RIGHT:
-            userProperties[key][key1] = DocumentApp.HorizontalAlignment.RIGHT;
-            break;
-          case BGET.ALIGN.JUSTIFY:
-            userProperties[key][key1] = DocumentApp.HorizontalAlignment.JUSTIFY;
-            break;
-          default:
-            userProperties[key][key1] = DocumentApp.HorizontalAlignment.JUSTIFY;
-        }
-      }
-    }
-  }
-  return userProperties;
-}
-
 function getCursorIndex(){
 
   var idx;
@@ -953,12 +927,68 @@ function getCursorIndex(){
   return idx;
 }
 
-function makeUnique(str) {
-  return String.prototype.concat(...new Set(str));
+/***********************************************
+ *           UTILITY FUNCTIONS                 *
+ **********************************************/
+
+/* requires float, returns int */
+function inchesToPoints(inchVal){
+  if(typeof inchVal !== 'float'){
+    inchVal = parseFloat(inchVal);
+  }
+  return Math.round(inchVal * 72);
 }
+
+/* requires float, returns int */
+function centimetersToPoints(cmVal){
+  if(typeof cmVal !== 'float'){
+    cmVal = parseFloat(cmVal);
+  }
+  return Math.round(cmVal * 28.3464567);
+}
+
+/***********************************************/
+/* FUNCTIONS USEFUL FOR DEBUGGING PURPOSES     */
+/***********************************************/
+
 
 function consoleLog(str){
   Logger.log(str);   //internal log (not very efficient?)
   console.info(str); //stackdriver logs
 }
 
+//Function docLog @ can be used to help debug scripts when it becomes difficult to know what exactly Apps Script is choking on
+function docLog(str){
+  var locale = getUserLocale();
+  var doc = DocumentApp.getActiveDocument();
+  var body = doc.getBody();
+  var cursor = doc.getCursor();
+  var idx;  
+  if(cursor){  
+    var cursorEl = cursor.getElement();
+  
+    if(cursorEl.getType() == "TEXT"){ // seems that we can't get a page index or insert paragraphs from the position of an element of type Text?
+      cursorEl = cursorEl.getParent(); // so let's get it's parent to avoid getting nasty error messages
+      //Logger.log(cursorEl);
+    }
+    idx = body.getChildIndex(cursorEl);
+  }
+  else{ //if for example there is a selection, so we can't get a cursor POSITION
+    var selection = doc.getSelection();
+    if(selection){
+      var elements = selection.getRangeElements();
+      var element = elements[0].getElement();
+      if(element.getType() == 'TEXT'){
+        element = element.getParent();
+      }
+      idx = body.getChildIndex(element);
+    }
+    else{  
+      DocumentApp.getUi().alert(__('Cannot insert text at this document location.',locale));
+    }
+  }
+  var newPar;
+  if (newPar = body.insertParagraph(idx,"")) { // we'll be inserting our paragraph below the current position because we've had to choose the parent element...
+    newPar.appendText(str);
+  }
+}
