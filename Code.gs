@@ -66,7 +66,7 @@ const BGET = {
   },
   TYPECASTING: {        //just for quality assurance and good measure, let's explicitly define typecasting of our UserProperties, don't just rely on JSON.parse
                         //this way we know that floats will be floats and ints will be ints and we don't have to worry about it every time in our code when we use the values
-    BOOLEANVALS : ["NoVersionFormatting","BOLD","ITALIC","UNDERLINE","STRIKETHROUGH","BookChapterFullQuery"],
+    BOOLEANVALS : ["NoVersionFormatting","BOLD","ITALIC","UNDERLINE","STRIKETHROUGH","BookChapterFullQuery","InterfaceInCM"],
     FLOATVALS   : ["Lineheight","LeftIndent","RightIndent"],
     INTVALS     : ["FONT_SIZE","VALIGN","ShowBibleVersion","BibleVersionPosition","BibleVersionWrap","BookChapterPosition","BookChapterWrap","BookChapterFormat","ShowVerseNumbers"],
     STRINGVALS  : ["FONT_FAMILY","ParagraphAlign","FOREGROUND_COLOR","BACKGROUND_COLOR","BibleVersionAlignment","BookChapterAlignment"],
@@ -82,7 +82,8 @@ const DefaultUserProperties = {
     RightIndent:         0,                  //FLOAT
     FONT_FAMILY:         "Times New Roman",  //STRING
     ParagraphAlign:      BGET.ALIGN.JUSTIFY, //STRING   possible vals 'left','center','right', 'justify' (use ENUM, e.g. BGET.ALIGN.LEFT)
-    NoVersionFormatting: false               //BOOLEAN
+    NoVersionFormatting: false,               //BOOLEAN
+    InterfaceInCM:       false
   },  
   //Will be handled right under ParagraphStyles on TAB 1 of the Settings UI
   BookChapterStyles: {

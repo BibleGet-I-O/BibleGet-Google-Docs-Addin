@@ -23,8 +23,19 @@
   var userProperties = getUserProperties(true); //will be a pure JSON obj, without any stringified values (nostringify=true)
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){ consoleLog('getUserProperties has been run from within Settings.html'); }
   
-  var lftindnt = inchesToPoints(userProperties.ParagraphStyles.LeftIndent);
-  var rgtindnt = inchesToPoints(userProperties.ParagraphStyles.RightIndent);
+  const dPR = 1.25; //TODO: retrieve this in the client javascript using window.devicePixelRatio and update both css properties and accordingly!!!
+  const ptToPx = 1.33 * dPR;
+  var lftindnt,rgtindnt;
+  switch(userProperties.ParagraphStyles.InterfaceInCM){
+    case true:
+      lftindnt = centimetersToPoints(userProperties.ParagraphStyles.LeftIndent) * ptToPx; //point to pixel conversion
+      rgtindnt = centimetersToPoints(userProperties.ParagraphStyles.RightIndent) * ptToPx;//point to pixel conversion
+      break;
+    case false:
+      lftindnt = inchesToPoints(userProperties.ParagraphStyles.LeftIndent) * ptToPx; //point to pixel conversion
+      rgtindnt = inchesToPoints(userProperties.ParagraphStyles.RightIndent) * ptToPx;//point to pixel conversion
+      break;
+  }
   
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){ consoleLog('left and right indent have been set based on userproperties in Settings.html'); }   
 
@@ -107,24 +118,25 @@
   }   
 
   var PreviewBox = '<fieldset class="fieldset-results"><legend><b>' + __('Preview',locale) + '</b></legend>';
+      PreviewBox += '<canvas class="previewRuler"></canvas>';
       PreviewBox += '<p class="bibleversion showtop" style="display:'+(userProperties.LayoutPrefs.ShowBibleVersion==BGET.VISIBILITY.SHOW && userProperties.LayoutPrefs.BibleVersionPosition==BGET.POS.TOP?'block':'none')+';"><span class="bcWrap">' + wrap1 + '</span>NVBSE<span class="bcWrap">' + wrap2 + '</span></p>';
       PreviewBox += '<div class="bookchapterWrapper">';
       PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.TOP) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span><span class="bcText1Sam">' + bkChptr1Sam213 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
-      PreviewBox += '<p class="liveview-quote" style="margin-top:-6px;padding-top:0px;">';
+      PreviewBox += '<div class="liveview-quote">';
       PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">1</span><span class="versetext">'+ ISam2_1 +'</span>';
       PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">2</span><span class="versetext">'+ ISam2_2 +'</span>';
       PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">3</span><span class="versetext">'+ ISam2_3 +'</span>';
       PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOMINLINE) ? '<span class="bookchapter" style="margin-left:6px;"><span class="bcWrap">' + wrap3 + '</span><span class="bcText1Sam">' + bkChptr1Sam213 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
-      PreviewBox += '</p>';
+      PreviewBox += '</div>';
       PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOM) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span><span class="bcText1Sam">' + bkChptr1Sam213 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '</div>';
       PreviewBox += '<div class="bookchapterWrapper">';
       PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.TOP) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span><span class="bcTextPs">' + bkChptrPs11412 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
-      PreviewBox += '<p class="liveview-quote" style="margin-top:-6px;padding-top:0px;">';
+      PreviewBox += '<div class="liveview-quote">';
       PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">1</span><span class="versetext">'+ Ps114_1 +'</span>';
       PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">2</span><span class="versetext">factus est Iuda sanctuarium eius, Israel potestas eius.</span>';
       PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOMINLINE) ? '<span class="bookchapter" style="margin-left:6px;"><span class="bcWrap">' + wrap3 + '</span><span class="bcTextPs">' + bkChptrPs11412 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
-      PreviewBox += '</p>';
+      PreviewBox += '</div>';
       PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOM) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span><span class="bcTextPs">' + bkChptrPs11412 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '</div>';
       PreviewBox += '<p class="bibleversion showbottom" style="display:'+(userProperties.LayoutPrefs.ShowBibleVersion==BGET.VISIBILITY.SHOW && userProperties.LayoutPrefs.BibleVersionPosition==BGET.POS.BOTTOM?'block':'none')+';"><span class="bcWrap">' + wrap1 + '</span>NVBSE<span class="bcWrap">' + wrap2 + '</span></p>';
@@ -147,17 +159,18 @@
  /*padding:0px 8px 3px 6px;*/
  /*background-color:#EEEEFF;*/
  min-height: 60px;
- max-height: 200px;
+ max-height: 250px;
  overflow-y:auto;
+ text-align: center;
 }
 
 .fieldset-results .bibleversion, .fieldset-results .bookchapterWrapper { /* .bookchapterWrapper wraps .bookchapter and .liveview-quote*/
-  width: 800px;
-  max-width: 800px;
+  width: 730px;
+  max-width: 730px;
   box-sizing: border-box;
   margin: 0px auto;
-  padding-left: <?!= lftindnt?>pt;
-  padding-right:<?!= rgtindnt?>pt;
+  padding-left: <?!= lftindnt?>px;
+  padding-right:<?!= rgtindnt?>px;
 }
 
 .bibleversion, .bookchapter {
@@ -199,6 +212,7 @@
   background-color: <?!= userProperties.VerseNumberStyles.BACKGROUND_COLOR ?>;
   position: relative;
   top: <?!= userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.NORMAL ? 0 : (userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.SUPERSCRIPT ? -4 : 4) ?>px;
+  padding-left: 3px;
 }
 .versetext{
   font-size: <?!= userProperties.VerseTextStyles.FONT_SIZE ?>px;
@@ -423,10 +437,6 @@ html>body tbody.scrollContent td + td + td {
   text-align: center;
 }
 
-#tab2 fieldset {
-  min-height: 200px;
-}
-
 /* override some jquery ui stylings to fix things up to the pixel (or fraction of a pixel!) */
 
 ul.ui-autocomplete.ui-widget {
@@ -457,6 +467,16 @@ span.ui-checkboxradio-icon { display: none; }
 #rightIndentIncreaseBtn .material-icons,#rightIndentDecreaseBtn .material-icons {
   transform: scale(-1, 1);
 }
+
+#otherSettingsTab1 {
+  margin-top: 6px;
+  justify-content: space-around;
+}
+
+#otherSettingsTab1 .ui-button {
+  font-size: .8em;
+}
+
 <?
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
     consoleLog('styles in head of document have been set in Settings.html');
@@ -589,9 +609,13 @@ span.ui-checkboxradio-icon { display: none; }
       </div> <!-- END TOOLBAR WIDGET -->    
     </div> <!-- END ACCORDION  -->
     <?!= PreviewBox ?>
-    <div>
-      <p><?!=__("Some Bible versions have their own formatting. This is left by default to keep the text as close as possible to the original. If however you need to have consistent formatting in your document, you may override the Bible version's own formatting.",locale)?></p>
-      <input type="checkbox" id="no-version-formatting" name="no-version-formatting" <? if(userProperties.ParagraphStyles.NoVersionFormatting){ ?>CHECKED<? } ?>><label for="noversionformatting"><?!=__("Override Bible version formatting",locale)?></label>
+    <div class="flexcontainer" id="otherSettingsTab1">
+      <div class="flexitem">
+        <label title="<?!=__("p9",locale)?>"><input type="checkbox" id="NoVersionFormatting" name="NoVersionFormatting" <? if(userProperties.ParagraphStyles.NoVersionFormatting){ ?>CHECKED<? } ?>><?!=__("lbl1",locale)?></label>
+      </div>
+      <div class="flexitem">
+        <label><input type="checkbox" id="InterfaceInCM" name="InterfaceInCM" <? if(userProperties.ParagraphStyles.InterfaceInCM){ ?>CHECKED<? } ?>><?!=__("DocInterfaceInCM",locale)?></label>
+      </div>
     </div>
   </div>  
   <!-- END TAB 1-->
@@ -658,10 +682,10 @@ span.ui-checkboxradio-icon { display: none; }
         <div class="flexitemB">
           <span class="ctrlGrpLbl"><?!=__('Format',locale)?></span><br />
           <span id="BookChapterFormat" class="buttonset">
-            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.BIBLELANG?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.BIBLELANG){ ?>CHECKED<? } ?> /><?!=__('Language of Bible version',locale)?></label>
-            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.BIBLELANGABBREV?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.BIBLELANGABBREV){ ?>CHECKED<? } ?> /><?!=__('Language of Bible version (abbrev)',locale)?></label>
-            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.USERLANG?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.USERLANG){ ?>CHECKED<? } ?> /><?!=__('Language of Docs interface',locale)?></label>
-            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.USERLANGABBREV?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.USERLANGABBREV){ ?>CHECKED<? } ?> /><?!=__('Language of Docs interface (abbrev)',locale)?></label>
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.BIBLELANG?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.BIBLELANG){ ?>CHECKED<? } ?> /><?!=__('BIBLELANG',locale)?></label>
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.BIBLELANGABBREV?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.BIBLELANGABBREV){ ?>CHECKED<? } ?> /><?!=__('BIBLELANGABBREV',locale)?></label>
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.USERLANG?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.USERLANG){ ?>CHECKED<? } ?> /><?!=__('USERLANG',locale)?></label>
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.USERLANGABBREV?>" <? if(userProperties.LayoutPrefs.BookChapterFormat == BGET.FORMAT.USERLANGABBREV){ ?>CHECKED<? } ?> /><?!=__('USERLANGABBREV',locale)?></label>
           </span>
           <label><input type="checkbox" id="BookChapterFullQuery" name="BookChapterFullQuery" <? if(userProperties.LayoutPrefs.BookChapterFullQuery){ ?>CHECKED<? } ?> /><?!=__('Show full reference',locale)?></label>
         </div>    
@@ -745,7 +769,7 @@ span.ui-checkboxradio-icon { display: none; }
       else{?>, <i style="color:Blue;"><?=_l(languages[i],locale)?></i><?}
       }?>
     </p>
-    <p><span style="color:Blue;"><?=Object.keys(versions).length?></span> <?=__('p8')?></p>
+    <p><span style="color:Blue;"><?=Object.keys(versions).length?></span> <?=__('p8',locale)?></p>
     <div id="tableContainer" class="tableContainer">
       <table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
         <thead class="fixedHeader">
@@ -778,15 +802,15 @@ span.ui-checkboxradio-icon { display: none; }
 <?!= include("FontListCombobox"); ?>
 
 <script type="text/javascript">
-
+const dPR = window.devicePixelRatio;
+const ptToPx = 1.33 * dPR;
 //this will be our global variable that holds the user preferences, which should be a pure JSON obj without stringified values (nostringify=true)
-window.userProps = {};
-userProps.populated = false;
-window.domopscomplete = false;
-window.leftindent = <?!=inchesToPoints(userProperties.ParagraphStyles.LeftIndent)?>; //convert to point size useful for CSS margin-left property
-window.rightindent = <?!=inchesToPoints(userProperties.ParagraphStyles.RightIndent)?>; //convert to point size useful for CSS margin-right property
-var bkChptr1Sam213 = '';
-var bkChptrPs11412 = '';
+var userProps = {populated:false},
+  domopscomplete = false,
+  leftindent = <?!=(userProperties.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProperties.ParagraphStyles.LeftIndent) : inchesToPoints(userProperties.ParagraphStyles.LeftIndent))?> * ptToPx,   //convert to point size then to pixel size useful for CSS margin-left property
+  rightindent = <?!=(userProperties.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProperties.ParagraphStyles.LeftIndent) : inchesToPoints(userProperties.ParagraphStyles.RightIndent))?> * ptToPx, //convert to point size then to pixel size useful for CSS margin-right property
+  bkChptr1Sam213 = '',
+  bkChptrPs11412 = '';
 switch('<?!=userProperties.LayoutPrefs.BookChapterFormat?>'){
   case '<?!=BGET.FORMAT.BIBLELANG?>':
     bkChptr1Sam213 = "I Samuelis 2";
@@ -837,33 +861,29 @@ var passUserPropertiesServer2Client = function(propsobj){
     }
 }
 
-window.saveUserProps = function(userprops){
+var saveUserProps = function(userprops){
   $('.spinner').fadeIn("fast");
   delete userProps.populated;
   google.script.run.withSuccessHandler(userPropsUpdateSuccess).setUserProperties(userprops);
-}
-
-window.makeUnique = function(str) {
+},
+makeUnique = function(str) {
   return String.prototype.concat(...new Set(str));
-}
-
+},
 /* requires float, returns int */
-function inchesToPoints(inchVal){
+inchesToPoints = function(inchVal){
   if(typeof inchVal !== 'float'){
     inchVal = parseFloat(inchVal);
   }
   return Math.round(inchVal * 72);
-}
-
+},
 /* requires float, returns int */
-function centimetersToPoints(cmVal){
+centimetersToPoints = function (cmVal){
   if(typeof cmVal !== 'float'){
     cmVal = parseFloat(cmVal);
   }
   return Math.round(cmVal * 28.3464567);
-}
-
-window.userPropsUpdateSuccess = function(updatedProps){
+},
+userPropsUpdateSuccess = function(updatedProps){
   //redefine userProps.populated which we deleted upon saving userProps,
   //to avoid it being saved to Apps Script UserProperties
   userProps.populated = true;
@@ -905,7 +925,111 @@ window.userPropsUpdateSuccess = function(updatedProps){
   }
   <? } ?>
   $('.spinner').fadeOut("fast");
-}
+},
+/**
+ * FUNCTION drawRuler
+ * @ rulerLength (float) in Inches
+ * @ convertToCM (boolean)
+ *
+*/
+getPixelRatioVals = function(rulerLength,convertToCM){
+  let inchesToCM = 2.54,
+    dpr = window.devicePixelRatio,
+    ppi = ((96 * dpr) / 100),
+    dpi = (96 * ppi),
+    drawInterval = 0.125;
+  if(convertToCM){
+    ppi /= inchesToCM;
+    dpi /= inchesToCM;
+    rulerLength *= inchesToCM;
+    drawInterval = 0.25;
+  }
+  return {
+    inchesToCM: inchesToCM,
+    dpr: dpr,      
+    ppi: ppi,
+    dpi: dpi,
+    rulerLength: rulerLength,
+    drawInterval: drawInterval
+  };
+},
+triangleAt = function (x,context,pixelRatioVals,initialPadding){
+  context.lineWidth = 0.5;
+  context.fillStyle = "#4285F4";
+  context.beginPath();
+  context.moveTo(initialPadding+x*pixelRatioVals.dpi-6,11);
+  context.lineTo(initialPadding+x*pixelRatioVals.dpi+6,11);
+  context.lineTo(initialPadding+x*pixelRatioVals.dpi,18);
+  context.closePath();
+  context.stroke();
+  context.fill();
+},
+drawRuler = function(rulerLen, cvtToCM, lftindnt, rgtindnt){
+  var canvasWidth = 800,
+      canvasHeight = 20,
+      $canvas = jQuery('.previewRuler'),
+      rulerLength = rulerLen,
+      leftindent = lftindnt,
+      rightindent = rgtindnt,
+      convertToCM = cvtToCM;
+  $canvas.each(function(){
+    let canvas = this,
+        pixelRatioVals = getPixelRatioVals(rulerLength,convertToCM),
+        initialPadding = 35,
+        context = canvas.getContext('2d');
+    canvas.style.width = canvasWidth + 'px';
+    canvas.style.height = canvasHeight + 'px';
+    canvas.width = canvasWidth * pixelRatioVals.dpr;
+    canvas.height = canvasHeight * pixelRatioVals.dpr;
+
+    context.scale(pixelRatioVals.dpr,pixelRatioVals.dpr);
+    context.translate(pixelRatioVals.dpr, 0);
+      
+    context.lineWidth = 0.5;
+    context.strokeStyle = '#000';
+    context.font = 'bold 10px Arial';
+
+    context.beginPath();
+    context.moveTo(initialPadding, 1);
+    context.lineTo(initialPadding + pixelRatioVals.rulerLength * pixelRatioVals.dpi,1);
+    context.stroke();
+
+    let currentWholeNumber = 0;
+    let offset = 2;
+
+    for(let interval = 0; interval <= pixelRatioVals.rulerLength; interval += pixelRatioVals.drawInterval){
+      //so far this gives the sharpest lines and numbers (when drawing inches) 
+      let xPosA = interval*pixelRatioVals.dpi;
+    
+      if(interval == Math.floor(interval) && interval > 0){
+        if(currentWholeNumber+1 == 10){ offset+=4; }
+        context.fillText(++currentWholeNumber,initialPadding+xPosA-offset,14);
+      }
+      else if(interval == Math.floor(interval)+0.5){
+        context.beginPath();
+        context.moveTo(initialPadding+xPosA,15);
+        context.lineTo(initialPadding+xPosA,5); 
+        context.closePath();
+        context.stroke();   
+      }
+      else{
+        context.beginPath();
+        context.moveTo(initialPadding+xPosA,10);
+        context.lineTo(initialPadding+xPosA,5);
+        context.closePath();
+        context.stroke();
+      }
+    }
+  
+    triangleAt(leftindent,context,pixelRatioVals,initialPadding);
+    triangleAt(pixelRatioVals.rulerLength-rightindent,context,pixelRatioVals,initialPadding);
+    context.translate(-pixelRatioVals.dpr, 0);
+
+  });
+  
+};
+
+
 
 //Start our page manipulation and event handling
 jQuery(document).ready(function(){
@@ -944,28 +1068,29 @@ jQuery(document).ready(function(){
       switch(thisid){
         case 'leftIndentIncreaseBtn':
           if(userProps.ParagraphStyles.LeftIndent < 2.5){
-            userProps.ParagraphStyles.LeftIndent += .25;
+            userProps.ParagraphStyles.InterfaceInCM ? userProps.ParagraphStyles.LeftIndent += .5 : userProps.ParagraphStyles.LeftIndent += .25;
           }
           break;
         case 'leftIndentDecreaseBtn':
           if(userProps.ParagraphStyles.LeftIndent > 0){
-            userProps.ParagraphStyles.LeftIndent -= .25;
+            userProps.ParagraphStyles.InterfaceInCM ? userProps.ParagraphStyles.LeftIndent -= .5 : userProps.ParagraphStyles.LeftIndent -= .25;
           }
           break;
         case 'rightIndentIncreaseBtn':
           if(userProps.ParagraphStyles.RightIndent < 2.5){
-            userProps.ParagraphStyles.RightIndent += .25;
+            userProps.ParagraphStyles.InterfaceInCM ? userProps.ParagraphStyles.RightIndent += .5 : userProps.ParagraphStyles.RightIndent += .25;
           }
           break;
         case 'rightIndentDecreaseBtn':
           if(userProps.ParagraphStyles.RightIndent > 0){
-            userProps.ParagraphStyles.RightIndent -= .25;
+            userProps.ParagraphStyles.InterfaceInCM ? userProps.ParagraphStyles.RightIndent -= .5 : userProps.ParagraphStyles.RightIndent -= .25;
           }
           break;
       }
-      leftindent = inchesToPoints(userProps.ParagraphStyles.LeftIndent);   //convert to point size useful for CSS margin-left property
-      rightindent = inchesToPoints(userProps.ParagraphStyles.RightIndent); //convert to point size useful for CSS margin-right property
-      $('.bibleversion').add('.bookchapterWrapper').css({"padding-left":leftindent+"pt","padding-right":rightindent+"pt"});
+      leftindent = (userProps.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProps.ParagraphStyles.LeftIndent) : inchesToPoints(userProps.ParagraphStyles.LeftIndent)) * ptToPx;   //convert to point size then to pixel size useful for CSS margin-left property
+      rightindent = (userProps.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProps.ParagraphStyles.RightIndent) : inchesToPoints(userProps.ParagraphStyles.RightIndent)) * ptToPx; //convert to point size then to pixel size useful for CSS margin-right property
+      $('.bibleversion').add('.bookchapterWrapper').css({"padding-left":leftindent+"px","padding-right":rightindent+"px"});
+      drawRuler(6.25,userProps.ParagraphStyles.InterfaceInCM,userProps.ParagraphStyles.LeftIndent,userProps.ParagraphStyles.RightIndent);
       saveUserProps(userProps);
     });
     
@@ -994,7 +1119,7 @@ jQuery(document).ready(function(){
           userProps.ParagraphStyles.FONT_FAMILY = $(this).val();
           saveUserProps(userProps);
           $('#gfFontFamily').attr("href","https://fonts.googleapis.com/css?family="+userProps.ParagraphStyles.FONT_FAMILY+"&text="+makeUnique(userProps.ParagraphStyles.FONT_FAMILY+'<?!= UniqueStr ?>'));
-          $('.bookchapter').add('p.liveview-quote').css({'font-family':userProps.ParagraphStyles.FONT_FAMILY});
+          $('.bookchapter').add('.liveview-quote').css({'font-family':userProps.ParagraphStyles.FONT_FAMILY});
           $('#bibleget-font-family').combobox("widget").css({"font-family":userProps.ParagraphStyles.FONT_FAMILY});
         });
       }
@@ -1199,12 +1324,30 @@ jQuery(document).ready(function(){
       
     });
     
+    $('#otherSettingsTab1 input').button();    
     
-    $('#no-version-formatting').change(function(){
-      //google.script.run.consoleLog("checkbox was checked, current value is: "+$(this).prop("checked"));
-      userProps.ParagraphStyles.NoVersionFormatting = $(this).prop("checked");
+    $('#NoVersionFormatting').change(function(){
+      userProps.ParagraphStyles.NoVersionFormatting = this.checked;//$(this).prop("checked");
       saveUserProps(userProps);
     });
+    
+    $('#InterfaceInCM').change(function(){
+      //When in inches mode (default), increments will be by 0.25. When in centimeters mode, increments will be by 0.5
+      //so let's convert between these two, doubling when going from inches to CM and halving the other way around
+      userProps.ParagraphStyles.InterfaceInCM = this.checked;
+      userProps.ParagraphStyles.LeftIndent = (this.checked ? userProps.ParagraphStyles.LeftIndent*2 : userProps.ParagraphStyles.LeftIndent/2);
+      userProps.ParagraphStyles.RightIndent = (this.checked ? userProps.ParagraphStyles.RightIndent*2 : userProps.ParagraphStyles.RightIndent/2);
+      leftindent = (userProps.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProps.ParagraphStyles.LeftIndent) : inchesToPoints(userProps.ParagraphStyles.LeftIndent)) * ptToPx;   //convert to point size then to pixel size useful for CSS margin-left property
+      rightindent = (userProps.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProps.ParagraphStyles.RightIndent) : inchesToPoints(userProps.ParagraphStyles.RightIndent)) * ptToPx; //convert to point size then to pixel size useful for CSS margin-right property
+      $('.bibleversion').add('.bookchapterWrapper').css({"padding-left":leftindent+"px","padding-right":rightindent+"px"});
+      drawRuler(6.25,userProps.ParagraphStyles.InterfaceInCM,userProps.ParagraphStyles.LeftIndent,userProps.ParagraphStyles.RightIndent);
+      saveUserProps(userProps);
+    });
+    
+    leftindent = <?!=(userProperties.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProperties.ParagraphStyles.LeftIndent) : inchesToPoints(userProperties.ParagraphStyles.LeftIndent))?> * ptToPx;   //convert to point size then to pixel size useful for CSS margin-left property
+    rightindent = <?!=(userProperties.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProperties.ParagraphStyles.LeftIndent) : inchesToPoints(userProperties.ParagraphStyles.RightIndent))?> * ptToPx; //convert to point size then to pixel size useful for CSS margin-right property
+    $('.bibleversion').add('.bookchapterWrapper').css({"padding-left":leftindent+"px","padding-right":rightindent+"px"});
+    drawRuler(6.25,<?!=userProperties.ParagraphStyles.InterfaceInCM?>,<?!=userProperties.ParagraphStyles.LeftIndent?>,<?!=userProperties.ParagraphStyles.RightIndent?>);
     
     /*******************************************************
      *                     TAB 2                           *
@@ -1341,7 +1484,7 @@ jQuery(document).ready(function(){
                 break;
               case '<?!=BGET.POS.BOTTOMINLINE?>':
                 jQuery('div.bookchapterWrapper').each(function(){
-                  $(this).find('.bookchapter').css({'display':'inline','margin-left':'6px'}).appendTo($(this).find('p.liveview-quote'));
+                  $(this).find('.bookchapter').css({'display':'inline','margin-left':'6px'}).appendTo($(this).find('.liveview-quote'));
                 });
                 break;
             }
