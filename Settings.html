@@ -23,12 +23,21 @@
   var userProperties = getUserProperties(true); //will be a pure JSON obj, without any stringified values (nostringify=true)
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){ consoleLog('getUserProperties has been run from within Settings.html'); }
   
-  const dPR = 1.25; //TODO: retrieve this in the client javascript using window.devicePixelRatio and update both css properties and accordingly!!!
+  //DEFINE devicePixelRatio constant useful for drawing the canvas with image of ruler precisely, correctly, sharply
+  const dPR = 1.0; //a typical screen will have a ratio of 1.0 == 96 dpi 
+                   //some lower quality graphics display might have for example a ratio of 0.78125 = 75 dpi
+                   //high retina displays can have a ratio of 2.0 = 192 dpi
+                   //my laptop has 1.25 = 120 dpi 
+                   //TODO: my tests however show that on my display 115 dpi is actually closer to 1 physical inch. is it just my display? 
+                   //      If I compensate for my display, will the compensation work for other displays? Need to do some testing on other displays.
+                   //In any we cannot actually know window.devicePixelRatio at this point, because it is only available to client javascript, so here it doesn't mean much of anything
+                   //we will therefor retrieve this value in the client javascript using window.devicePixelRatio and update both css properties and accordingly!!!
   const ptToPx = 1.33 * dPR;
+  
   var lftindnt,rgtindnt;
   switch(userProperties.ParagraphStyles.InterfaceInCM){
     case true:
-      lftindnt = centimetersToPoints(userProperties.ParagraphStyles.LeftIndent) * ptToPx; //point to pixel conversion
+      lftindnt = centimetersToPoints(userProperties.ParagraphStyles.LeftIndent) * ptToPx; //point to pixel conversion, again just 
       rgtindnt = centimetersToPoints(userProperties.ParagraphStyles.RightIndent) * ptToPx;//point to pixel conversion
       break;
     case false:
@@ -41,39 +50,36 @@
 
   var wrap1 = '', wrap2 = '', wrap3 = '', wrap4 = '';
   switch(userProperties.LayoutPrefs.BibleVersionWrap){
+    case BGET.WRAP.NONE:
+      break;
     case BGET.WRAP.PARENTHESES:
-      wrap1= '(';
+      wrap1 = '(';
       wrap2 = ')';
       break;
     case BGET.WRAP.BRACKETS:
       wrap1 = '[';
       wrap2 = ']';
       break;
-    case BGET.WRAP.NONE:
-      wrap1 = '';
-      wrap2 = '';
-      break;
   } 
   switch(userProperties.LayoutPrefs.BookChapterWrap){
+    case BGET.WRAP.NONE:
+      break;
     case BGET.WRAP.PARENTHESES:
-      wrap3= '(';
+      wrap3 = '(';
       wrap4 = ')';
       break;
     case BGET.WRAP.BRACKETS:
       wrap3 = '[';
       wrap4 = ']';
       break;
-    case BGET.WRAP.NONE:
-      wrap3 = '';
-      wrap4 = '';
-      break;
   } 
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
-    consoleLog('wraps have been prepared for bibleversion and bookchapter based on user preferences in Settings.html');
+    consoleLog('Settings.html: wraps have been prepared for bibleversion (wrap1 = '+wrap1+',wrap2 = '+wrap2+') and bookchapter (wrap3 = '+wrap3+',wrap4 = '+wrap4+') based on user preferences (userProperties.LayoutPrefs.BibleVersionWrap = '+userProperties.LayoutPrefs.BibleVersionWrap+') ');
+    consoleLog('typeof userProperties.LayoutPrefs.BibleVersionWrap = '+(typeof userProperties.LayoutPrefs.BibleVersionWrap)+', typeof BGET.WRAP.PARENTHESES = '+(typeof BGET.WRAP.PARENTHESES));
   }   
   
-  var bkChptr1Sam213 = '';
-  var bkChptrPs11412 = '';
+  let bkChptr1Sam213 = '',
+      bkChptrPs11412 = '';
   switch(userProperties.LayoutPrefs.BookChapterFormat){
     case BGET.FORMAT.BIBLELANG:
       bkChptr1Sam213 = "I Samuelis 2";
@@ -123,9 +129,9 @@
       PreviewBox += '<div class="bookchapterWrapper">';
       PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.TOP) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span><span class="bcText1Sam">' + bkChptr1Sam213 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '<div class="liveview-quote">';
-      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">1</span><span class="versetext">'+ ISam2_1 +'</span>';
-      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">2</span><span class="versetext">'+ ISam2_2 +'</span>';
-      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">3</span><span class="versetext">'+ ISam2_3 +'</span>';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers===BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">1</span><span class="versetext">'+ ISam2_1 +'</span>';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers===BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">2</span><span class="versetext">'+ ISam2_2 +'</span>';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers===BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">3</span><span class="versetext">'+ ISam2_3 +'</span>';
       PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOMINLINE) ? '<span class="bookchapter" style="margin-left:6px;"><span class="bcWrap">' + wrap3 + '</span><span class="bcText1Sam">' + bkChptr1Sam213 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '</div>';
       PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOM) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span><span class="bcText1Sam">' + bkChptr1Sam213 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
@@ -133,13 +139,13 @@
       PreviewBox += '<div class="bookchapterWrapper">';
       PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.TOP) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span><span class="bcTextPs">' + bkChptrPs11412 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '<div class="liveview-quote">';
-      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">1</span><span class="versetext">'+ Ps114_1 +'</span>';
-      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers==BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">2</span><span class="versetext">factus est Iuda sanctuarium eius, Israel potestas eius.</span>';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers===BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">1</span><span class="versetext">'+ Ps114_1 +'</span>';
+      PreviewBox += '<span class="versenumber" style="display:'+(userProperties.LayoutPrefs.ShowVerseNumbers===BGET.VISIBILITY.SHOW ? 'inline' : 'none')+';">2</span><span class="versetext">factus est Iuda sanctuarium eius, Israel potestas eius.</span>';
       PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOMINLINE) ? '<span class="bookchapter" style="margin-left:6px;"><span class="bcWrap">' + wrap3 + '</span><span class="bcTextPs">' + bkChptrPs11412 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '</div>';
       PreviewBox += (userProperties.LayoutPrefs.BookChapterPosition==BGET.POS.BOTTOM) ? '<span class="bookchapter" style="display:block;"><span class="bcWrap">' + wrap3 + '</span><span class="bcTextPs">' + bkChptrPs11412 + '</span><span class="bcWrap">' + wrap4 + '</span></span>' : '';
       PreviewBox += '</div>';
-      PreviewBox += '<p class="bibleversion showbottom" style="display:'+(userProperties.LayoutPrefs.ShowBibleVersion==BGET.VISIBILITY.SHOW && userProperties.LayoutPrefs.BibleVersionPosition==BGET.POS.BOTTOM?'block':'none')+';"><span class="bcWrap">' + wrap1 + '</span>NVBSE<span class="bcWrap">' + wrap2 + '</span></p>';
+      PreviewBox += '<p class="bibleversion showbottom" style="display:'+(userProperties.LayoutPrefs.ShowBibleVersion===BGET.VISIBILITY.SHOW && userProperties.LayoutPrefs.BibleVersionPosition===BGET.POS.BOTTOM?'block':'none')+';"><span class="bcWrap">' + wrap1 + '</span>NVBSE<span class="bcWrap">' + wrap2 + '</span></p>';
       PreviewBox += '</fieldset>';
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
     consoleLog('starting HTML output in Settings.html');

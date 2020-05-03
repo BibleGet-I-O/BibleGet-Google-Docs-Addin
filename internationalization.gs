@@ -65,7 +65,7 @@ var __ = function(str,ling){
       "e.g. Matthew 1:1-10,13-15":{"en":"e.g. Matthew 1:1-10,13-15","it":"es. Matteo 1,1-10.13-15","es":"ej. Mateo 1,1-10.13-15","fr":"ex. Mathieu 1,1-10.13-15","de":"z.B. Matthäus 1,1-10.13-15"},
       "e.g. Creation":{"en":"e.g. Creation","it":"es. Creazione","es":"ej. Creación","fr":"ex. Création","de":"z.B. Erschaffung"},
       "Search":{"en":"Search","it":"Cerca","es":"Busca","fr":"Recherche","de":"Suchen"},
-      "Get verses":{"en":"Get verses","it":"Richiedi","es":"Solicita","fr":"Demande","de":"Bitte"},
+      "Get verses":{"en":"Get","it":"Richiedi","es":"Solicita","fr":"Demande","de":"Bitte"},
       "There are Errors":{"en":"There are Errors","it":"Ci sono degli Errori","es":"Hay algunos Errores","fr":"Il y a des Erreurs","de":"Es gibt Fehler"},
       "Result":{"en":"Result","it":"Risultato","es":"Resultado","fr":"Résultat","de":"Ergebnis"}, //NOT USED?
       "Paragraph Styles":{"en":"Paragraph Styles","it":"Stili Paragrafo","es":"Estilos de Párrafo","fr":"Styles de Paragraphe","de":"Absatzstile"},

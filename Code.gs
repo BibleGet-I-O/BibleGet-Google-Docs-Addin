@@ -316,10 +316,10 @@ function getDefaultUserProperties(nostringify=false){
 */
 function getUserProperties(nostringify=false){
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){ consoleLog('function getUserProperties starting with nostringify = ' + nostringify.toString()); }   
-  let userProperties = PropertiesService.getUserProperties();
-  let usrProperties = userProperties.getProperties();
+  let propsService = PropertiesService.getUserProperties();
+  let userProperties = propsService.getProperties();
   let currentProperties = {};
-  for(let [key, value] of Object.entries(usrProperties)){
+  for(let [key, value] of Object.entries(userProperties)){
     if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){ consoleLog('function getUserProperties will parse = ' + key + ' from saved user properties, with value ['+ (typeof value) +']: ' +value); }    
     currentProperties[key] = (nostringify ? JSON.parse(value) : value);
     
@@ -327,18 +327,14 @@ function getUserProperties(nostringify=false){
     //let's just double check that JSON.parse is actually giving us the right typecasting
     //and enforce it if not
     if(nostringify){
-    //we don't worry about string values, just ints, floats and booleans
-    //let's start with booleans
-      if(BGET.TYPECASTING.FLOATVALS.includes(key)        && typeof currentProperties[key] !== 'float')  { currentProperties[key] = parseFloat(currentProperties[key]); }
-      else if(BGET.TYPECASTING.INTVALS.includes(key)     && typeof currentProperties[key] !== 'int')    { currentProperties[key] = parseInt(currentProperties[key]);   }
-      else if(BGET.TYPECASTING.BOOLEANVALS.includes(key) && typeof currentProperties[key] !== 'boolean'){ 
-        //I'm not even going to try to typecast, because if JSON.parse can't do it then nobody can
-        alertMe('JSON.parse has not succeeded in parsing a boolean value for UserProperty '+key+' with value '+value); 
-      }
-      else if(BGET.TYPECASTING.STRINGVALS.includes(key)  && typeof currentProperties[key] !== 'string') { currentProperties[key] = currentProperties[key].toString(); }
-      else if(BGET.TYPECASTING.STRINGARRAYS.includes(key) && typeof currentProperties[key] !== 'object'){
-        //Again, not much I can do here, if JSON.parse doesn't succeed then just let the user know
-        alertMe('JSON.parse has not succeeded in parsing a string array from UserProperty '+key+' with value '+value);
+      for(let [key1, value1] of Object.entries(currentProperties[key])){
+        //we don't worry about string values, just ints, floats and booleans
+        //let's start with booleans
+        if(BGET.TYPECASTING.FLOATVALS.includes(key1)         && typeof currentProperties[key][key1] !== 'float')  { currentProperties[key][key1] = parseFloat(value1); }
+        else if(BGET.TYPECASTING.INTVALS.includes(key1)      && typeof currentProperties[key][key1] !== 'int')    { currentProperties[key][key1] = parseInt(value1);   }
+        else if(BGET.TYPECASTING.BOOLEANVALS.includes(key1)  && typeof currentProperties[key][key1] !== 'boolean'){ currentProperties[key][key1] = JSON.parse(value1); }
+        else if(BGET.TYPECASTING.STRINGVALS.includes(key1)   && typeof currentProperties[key][key1] !== 'string') { currentProperties[key][key1] = value1.toString();  }
+        else if(BGET.TYPECASTING.STRINGARRAYS.includes(key1) && typeof currentProperties[key][key1] !== 'object') { currentProperties[key][key1] = JSON.parse(value1); }
       }
     }
     if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){ consoleLog(key + ' parsed, result : '+currentProperties[key]); }
@@ -479,7 +475,7 @@ function preparePropertiesForDocInjection(){
         //setIndentStart and setIndentEnd etc. take values in points
         //while the ruler at the top of the document is in inches
         //so we store our values in inches, then convert to points
-        userProperties[key][key1] = inchesToPoints(value1);
+        userProperties[key][key1] = userProperties.ParagraphStyles.InterfaceInCM ? centimetersToPoints(value1) : inchesToPoints(value1);
       }
       else if(key1 == 'VALIGN'){
         switch(value1){
@@ -520,24 +516,24 @@ function preparePropertiesForDocInjection(){
 function docInsert(json){
   
   //docLog("retrieved json object from server, now inserting into document... "+JSON.stringify(json));
-  //returns an already parsed json object, whether from user preferences set in properties service, or from default values
-  var verses = json.results;
-  //docLog("retrieved json object from server, now inserting into document... "+JSON.stringify(verses));
-  
-  var biblequote = "";
-  
-  var newelement = {"thisversion":"","newversion":false,"thisbook":"","newbook":false,"thischapter":0,"newchapter":false,"thisverse":0,"newverse":false};
-  var BibleGetProperties = preparePropertiesForDocInjection();
 
-  var BibleGetGlobal = {"iterateNewPar":false,"currentPar":null};
+  var verses = json.results,
+  //docLog("retrieved json object from server, now inserting into document... "+JSON.stringify(verses));  
+      biblequote = "",  
+      newelement = {"thisversion":"","newversion":false,"thisbook":"","newbook":false,"thischapter":0,"newchapter":false,"thisverse":0,"newverse":false},
+  //returns an already parsed json object, whether from user preferences set in properties service, or from default values
+      BibleGetProperties = preparePropertiesForDocInjection(),
+      BibleGetGlobal = {"iterateNewPar":false,"currentPar":null};
+  
   BibleGetGlobal.body = DocumentApp.getActiveDocument().getBody();
   BibleGetGlobal.idx = getCursorIndex();
   BibleGetGlobal.locale = getUserLocale();
   BibleGetGlobal.firstFmtVerse = false;
+  BibleGetGlobal.stack = { bibleversion: [], bookchapter: [] };
   //docLog("got results from server, now preparing to elaborate... BibleGetGlobal object = "+JSON.stringify(BibleGetGlobal));
   
-  var versenum;
-  var newPar;  
+  var versenum,
+      newPar;  
     
   for(var i=0;i<verses.length;i++){
     
@@ -546,24 +542,61 @@ function docInsert(json){
     //verses[i].partialverse_isdescr = parseInt(verses.partialverse_isdescr);
     //docLog("initial value of newelement >> "+JSON.stringify(newelement));
     //docLog("value of verses["+i+"] >> "+JSON.stringify(verses[i]));
+    
     newelement = checkNewElements(verses[i],newelement);
     //docLog("checking new elements... >> "+JSON.stringify(newelement));
     if(newelement.newversion){          
-      if((BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties,true) ) === false){ return; } //creating the first paragraph, so set last parameter to true
-      BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BibleVersionAlignment);
-
-      var versionpargr;
-      versionpargr = BibleGetGlobal.currentPar.appendText(verses[i].version); 
-      setTextStyles(versionpargr,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
-      BibleGetGlobal.firstFmtVerse = false;
+      switch(BibleGetProperties.LayoutPrefs.BibleVersionWrap){
+        case BGET.WRAP.NONE:
+          break;
+        case BGET.WRAP.PARENTHESES:
+          verses[i].version = "("+verses[i].version+")";
+          break;
+        case BGET.WRAP.BRACKETS:
+          verses[i].version = "["+verses[i].version+"]";
+          break;
+      }
+      if(BibleGetProperties.LayoutPrefs.ShowBibleVersion === BGET.VISIBILITY.SHOW){
+        switch(BibleGetProperties.LayoutPrefs.BibleVersionPosition){
+          case BGET.POS.BOTTOM:
+            BibleGetGlobal.stack.bibleversion.push(verses[i].version);
+            if(BibleGetGlobal.stack.bibleversion.length > 1){
+              //if we have started accumulating more than one element at this point, 
+              //then we print one from the top of the stack (array.shift) to the document 
+              //(i.e. if this is the first element we encounter we don't print anything yet)
+              if((BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties) ) === false){ 
+                DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
+                return; 
+              }
+              BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BibleVersionAlignment);
+              let versionpargr = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bibleversion.shift()); 
+              setTextStyles(versionpargr,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
+              BibleGetGlobal.firstFmtVerse = false;
+            }
+            break;
+          case BGET.POS.TOP:
+            if((BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties) ) === false){ 
+              DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
+              return; 
+            }
+            BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BibleVersionAlignment);
+          
+            let versionpargr = BibleGetGlobal.currentPar.appendText(verses[i].version); 
+            setTextStyles(versionpargr,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
+            BibleGetGlobal.firstFmtVerse = false;
+        }
+      }
     }
     //docLog("so far so good");
     
     if(newelement.newbook || newelement.newchapter){
+      
+      //if(BibleGetProperties.LayoutPrefs)
+      
       BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
       BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
 
-      var bookpargr = BibleGetGlobal.currentPar.appendText(verses[i].book + " " + verses[i].chapter); 
+      let bookpargr = BibleGetGlobal.currentPar.appendText(verses[i].book + " " + verses[i].chapter); 
       setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
       BibleGetGlobal.firstFmtVerse = false;
     }
@@ -594,7 +627,7 @@ function docInsert(json){
         //if user preferences ask to override version formatting, we just need to remove the formatting tags from the text
         verses[i].text = verses[i].text.replace(/<[\/]{0,1}(?:po|speaker)[f|l|s|i]{0,1}[f|l]{0,1}>/g," "); 
         verses[i].text = verses[i].text.replace(/<[\/]{0,1}sm>/g,""); 
-        var versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
+        let versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
         setTextStyles(versetext,BibleGetProperties,BGET.PTYPE.VERSETEXT);
         //Logger.log(verses[i].text);
       }else{
@@ -604,12 +637,28 @@ function docInsert(json){
     }
     else{
       BibleGetGlobal.firstFmtVerse = true;
-      var versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
+      let versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
       setTextStyles(versetext,BibleGetProperties,BGET.PTYPE.VERSETEXT);
     }
   
-  }            
-
+  }
+  
+  //Now that we're out of our loop, check if we still have things piled up on our stacks
+  //If so we need to print them out, starting from BookChapter and then going to BibleVersion
+  if(BibleGetProperties.LayoutPrefs.BibleVersionPosition === BGET.POS.BOTTOM && BibleGetProperties.LayoutPrefs.ShowBibleVersion === BGET.VISIBILITY.SHOW){
+    //we should still have one element on the stack, if so print it to the document
+    if(BibleGetGlobal.stack.bibleversion.length > 0){
+      if((BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties) ) === false){ 
+        DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
+        return; 
+      }
+      BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BibleVersionAlignment);
+      let versionpargr = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bibleversion.shift()); 
+      setTextStyles(versionpargr,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
+      BibleGetGlobal.firstFmtVerse = false; //not necessary at this point?
+    }
+  }
+  
 }
 
 function doNestedTagStuff(speakerTagBefore,speakerTagContents,speakerTagAfter,thisPar,BGProperties){
@@ -633,8 +682,7 @@ function doNestedTagStuff(speakerTagBefore,speakerTagContents,speakerTagAfter,th
   } 
 }
 
-function createNewPar(BibleGetGlb,BibleGetProps,first=false){ 
-  if(first===false){ BibleGetGlb.idx++; } //up the index if we're not dealing with the first paragraph at cursor index
+function createNewPar(BibleGetGlb,BibleGetProps){ 
   var newPar;
   if(newPar = BibleGetGlb.body.insertParagraph(BibleGetGlb.idx,"")){
     newPar.setLineSpacing(BibleGetProps.ParagraphStyles.Lineheight);
@@ -646,9 +694,9 @@ function createNewPar(BibleGetGlb,BibleGetProps,first=false){
     ffStyle[DocumentApp.Attribute.FONT_FAMILY] = BibleGetProps.ParagraphStyles.FONT_FAMILY;
     newPar.setAttributes(ffStyle);
     BibleGetGlb.currentPar = newPar;
+    BibleGetGlb.idx++; //up the index for the next insertion
   }
   else {
-    DocumentApp.getUi().alert(__('Cannot insert text at this document location.',locale));
     return false;
   }
   return BibleGetGlb;
@@ -895,11 +943,11 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
 
 function getCursorIndex(){
 
-  var idx;
-  var doc = DocumentApp.getActiveDocument();
-  var body = doc.getBody();
-  var cursor = doc.getCursor();
-  var locale = getUserLocale();
+  var idx,
+      doc = DocumentApp.getActiveDocument(),
+      body = doc.getBody(),
+      cursor = doc.getCursor(),
+      locale = getUserLocale();
 
   if(cursor){  
     var cursorEl = cursor.getElement();
