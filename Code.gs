@@ -382,7 +382,7 @@ function setUserProperty(propKey,propVal){
 function getUserProperty(propKey,nostringify=false){
   let userProperties = PropertiesService.getUserProperties();
   let userProp = (nostringify ? JSON.parse(userProperties.getProperty(propKey)) : userProperties.getProperty(propKey));
-  //Logger.log(userProp);
+  //consoleLog(userProp);
   return userProp;
 }
 
@@ -432,10 +432,10 @@ function fetchData(request){
     var response = UrlFetchApp.fetch(ENDPOINTURL,{'method':'post','payload':payload});
     var responsecode = response.getResponseCode();
     if(responsecode==200){
-      //Logger.log("Response code was 200.");
+      //consoleLog("Response code was 200.");
       let content = response.getContentText();
-      //Logger.log("Contents:");
-      //Logger.log(content);
+      //consoleLog("Contents:");
+      //consoleLog(content);
       return content;
     }
     else{
@@ -590,15 +590,57 @@ function docInsert(json){
     //docLog("so far so good");
     
     if(newelement.newbook || newelement.newchapter){
+      let bkChStr = verses[i].book + " " + verses[i].chapter;
+      switch(BibleGetProperties.LayoutPrefs.BookChapterWrap){
+        case BGET.WRAP.NONE:
+          break;
+        case BGET.WRAP.PARENTHESES:
+          bkChStr = "("+bkChStr+")";
+          break;
+        case BGET.WRAP.BRACKETS:
+          bkChStr = "["+bkChStr+"]";
+          break;
+      }
       
-      //if(BibleGetProperties.LayoutPrefs)
-      
-      BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
-      BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
-
-      let bookpargr = BibleGetGlobal.currentPar.appendText(verses[i].book + " " + verses[i].chapter); 
-      setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
-      BibleGetGlobal.firstFmtVerse = false;
+      switch(BibleGetProperties.LayoutPrefs.BookChapterPosition){
+        case BGET.POS.BOTTOM:
+          BibleGetGlobal.stack.bookchapter.push(bkChStr);
+          if(BibleGetGlobal.stack.bookchapter.length > 1){
+            //if we have started accumulating more than one element at this point, 
+            //then we print one from the top of the stack (array.shift) to the document 
+            //(i.e. if this is the first element we encounter we don't print anything yet)
+            if((BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties) ) === false){ 
+              DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
+              return; 
+            }
+            BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
+            let bookpargr = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bookchapter.shift()); 
+            setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
+            BibleGetGlobal.firstFmtVerse = false;
+          }
+          break;
+        case BGET.POS.TOP:
+          if((BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties) ) === false){ 
+            DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
+            return; 
+          }
+          BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
+          
+          let bookpargr = BibleGetGlobal.currentPar.appendText(bkChStr); 
+          setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
+          BibleGetGlobal.firstFmtVerse = false;
+          break;
+        case BGET.POS.BOTTOMINLINE:
+          BibleGetGlobal.stack.bookchapter.push(bkChStr);
+          if(BibleGetGlobal.stack.bookchapter.length > 1){
+            //if we have started accumulating more than one element at this point, 
+            //then we print one from the top of the stack (array.shift) to the document 
+            //(i.e. if this is the first element we encounter we don't print anything yet)
+            let bookpargr = BibleGetGlobal.currentPar.appendText(' '+BibleGetGlobal.stack.bookchapter.shift()); 
+            setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
+            BibleGetGlobal.firstFmtVerse = false; //TODO: double check what we're doing with this variable, is it needed only when creating paragraphs? so perhaps not here?
+          }          
+      }
     }
     //docLog("so far so good");
     
@@ -608,8 +650,10 @@ function docInsert(json){
         BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
         BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
       }
-      versenum = BibleGetGlobal.currentPar.appendText(" " + verses[i].verse + " ");
-      setTextStyles(versenum,BibleGetProperties,BGET.PTYPE.VERSENUMBER);
+      if(BibleGetProperties.LayoutPrefs.ShowVerseNumbers === BGET.VISIBILITY.SHOW){
+        let versenum = BibleGetGlobal.currentPar.appendText(" " + verses[i].verse + " ");
+        setTextStyles(versenum,BibleGetProperties,BGET.PTYPE.VERSENUMBER);
+      }
     }
     //docLog("so far so good");
     
@@ -618,18 +662,17 @@ function docInsert(json){
     //partial.setBold(false).setItalic(true).setFontSize(6).setForegroundColor("#FF0000");
     
     //before appending the verse text, we need to parse it to see if it contains special markup
-    if(/<[\/]{0,1}(?:sm|po|speaker)[f|l|s|i]{0,1}[f|l]{0,1}>/.test(verses[i].text)){
-      //docLog("looks like we have special formatting in this verse... <"+verses[i].text+">");
-      
+    if(/<[\/]{0,1}(?:sm|po|speaker|i)[f|l|s|i]{0,1}[f|l]{0,1}>/.test(verses[i].text)){
+      consoleLog("looks like we have special formatting that we have to deal with in this verse... {"+verses[i].text+"}");      
       verses[i].text = verses[i].text.replace(/(\n|\r)/gm,"");
-      //we have special formatting to deal with
+      
       if(BibleGetProperties.ParagraphStyles.NoVersionFormatting){
         //if user preferences ask to override version formatting, we just need to remove the formatting tags from the text
-        verses[i].text = verses[i].text.replace(/<[\/]{0,1}(?:po|speaker)[f|l|s|i]{0,1}[f|l]{0,1}>/g," "); 
+        verses[i].text = verses[i].text.replace(/<[\/]{0,1}(?:po|speaker|i)[f|l|s|i]{0,1}[f|l]{0,1}>/g," "); 
         verses[i].text = verses[i].text.replace(/<[\/]{0,1}sm>/g,""); 
         let versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
         setTextStyles(versetext,BibleGetProperties,BGET.PTYPE.VERSETEXT);
-        //Logger.log(verses[i].text);
+        consoleLog("NoVersionFormatting=true, simply removing the tags. Verse text is now : <"+verses[i].text+">");  
       }else{
         BibleGetGlobal = formatSections(verses[i].text,BibleGetProperties,newelement,BibleGetGlobal);
       }
@@ -645,6 +688,32 @@ function docInsert(json){
   
   //Now that we're out of our loop, check if we still have things piled up on our stacks
   //If so we need to print them out, starting from BookChapter and then going to BibleVersion
+  switch(BibleGetProperties.LayoutPrefs.BookChapterPosition){
+    case BGET.POS.TOP:
+      break;
+    case BGET.POS.BOTTOM:
+      if(BibleGetGlobal.stack.bookchapter.length > 0){
+        //if we still have something on the stack, then we print it to the document 
+        if((BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties) ) === false){ 
+          DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
+          return; 
+        }
+        BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
+        let bookpargr = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bookchapter.shift()); 
+        setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
+        BibleGetGlobal.firstFmtVerse = false;
+      }
+      break;
+    case BGET.POS.BOTTOMINLINE:
+      if(BibleGetGlobal.stack.bookchapter.length > 0){
+        //if we still have something on the stack, then we print it to the document 
+        let bookpargr = BibleGetGlobal.currentPar.appendText(' '+BibleGetGlobal.stack.bookchapter.shift()); 
+        setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
+        BibleGetGlobal.firstFmtVerse = false; //TODO: double check what we're doing with this variable, is it needed only when creating paragraphs? so perhaps not here?
+      }          
+  }
+  
+  
   if(BibleGetProperties.LayoutPrefs.BibleVersionPosition === BGET.POS.BOTTOM && BibleGetProperties.LayoutPrefs.ShowBibleVersion === BGET.VISIBILITY.SHOW){
     //we should still have one element on the stack, if so print it to the document
     if(BibleGetGlobal.stack.bibleversion.length > 0){
@@ -661,90 +730,40 @@ function docInsert(json){
   
 }
 
-function doNestedTagStuff(speakerTagBefore,speakerTagContents,speakerTagAfter,thisPar,BGProperties){
-  //Logger.log("We have a nested tag, and we should have extracted it's parts: ");
-  //Logger.log("speakerTagBefore = {"+speakerTagBefore+"}, speakerTagContents = {"+speakerTagContents+"}, speakerTagAfter = {"+speakerTagAfter+"}");
-  var nabreStyleText;
-  if(speakerTagBefore != ""){
-    nabreStyleText = thisPar.appendText(speakerTagBefore);
-    //Logger.log("we have now appended speakerTagBefore");
-    setTextStyles(nabreStyleText,BGProperties,BGET.PTYPE.VERSETEXT);
-  }
-  
-  nabreStyleText = thisPar.appendText(" "+speakerTagContents+" ");
-  //Logger.log("we have now appended speakerTagContents");
-  nabreStyleText.setBold(true).setItalic(false).setUnderline(false).setStrikethrough(false).setFontSize(BGProperties.VerseTextStyles.FONT_SIZE).setForegroundColor("#000000").setBackgroundColor("#9A9A9A").setTextAlignment(BGProperties.VerseTextStyles.VALIGN);
-  
-  if(speakerTagAfter != ""){
-    nabreStyleText = thisPar.appendText(speakerTagAfter);
-    //Logger.log("we have now appended speakerTagAfter");
-    setTextStyles(nabreStyleText,BGProperties,BGET.PTYPE.VERSETEXT);
-  } 
-}
 
-function createNewPar(BibleGetGlb,BibleGetProps){ 
-  var newPar;
-  if(newPar = BibleGetGlb.body.insertParagraph(BibleGetGlb.idx,"")){
-    newPar.setLineSpacing(BibleGetProps.ParagraphStyles.Lineheight);
-    //DocumentApp.getUi().alert("Left Indent = "+LeftIndent+" >> "+leftindent+"pt");
-    newPar.setIndentFirstLine(BibleGetProps.ParagraphStyles.LeftIndent);
-    newPar.setIndentStart(BibleGetProps.ParagraphStyles.LeftIndent);
-    newPar.setIndentEnd(BibleGetProps.ParagraphStyles.RightIndent);
-    let ffStyle = {};
-    ffStyle[DocumentApp.Attribute.FONT_FAMILY] = BibleGetProps.ParagraphStyles.FONT_FAMILY;
-    newPar.setAttributes(ffStyle);
-    BibleGetGlb.currentPar = newPar;
-    BibleGetGlb.idx++; //up the index for the next insertion
-  }
-  else {
-    return false;
-  }
-  return BibleGetGlb;
-}
+function getCursorIndex(){
 
-function setTextStyles(text,BGProperties,ptype){
-  var styles;
-  let fontfamily = BGProperties.ParagraphStyles.FONT_FAMILY;
-  switch(ptype){
-    case BGET.PTYPE.BIBLEVERSION:
-    case BGET.PTYPE.BOOKCHAPTER:
-      styles = BGProperties.BookChapterStyles;
-      break;
-    case BGET.PTYPE.VERSENUMBER:
-      styles = BGProperties.VerseNumberStyles;
-      break;
-    case BGET.PTYPE.VERSETEXT:
-      styles = BGProperties.VerseTextStyles;
-      break;
-  }
-  text.setBold(styles.BOLD).setItalic(styles.ITALIC).setUnderline(styles.UNDERLINE).setStrikethrough(styles.STRIKETHROUGH).setFontSize(styles.FONT_SIZE).setForegroundColor(styles.FOREGROUND_COLOR).setBackgroundColor(styles.BACKGROUND_COLOR).setTextAlignment(styles.VALIGN).setFontFamily(fontfamily);
-}
+  var idx,
+      doc = DocumentApp.getActiveDocument(),
+      body = doc.getBody(),
+      cursor = doc.getCursor(),
+      locale = getUserLocale();
 
-function doSpeakerTagThing(formattingTagContents){
-  var remainingText2 = formattingTagContents;
-  var NABREfmt2 = /(.*?)<(speaker)>(.*?)<\/\2>/g;
-  var NABREfmtMatch2;
-  var speakerTag = {"Before":"","Contents":"","After":""};
+  if(cursor){  
+    var cursorEl = cursor.getElement();
   
-  while((NABREfmtMatch2 = NABREfmt2.exec(formattingTagContents)) != null){
-    if(NABREfmtMatch2[2] != null && NABREfmtMatch2[2] != "" && NABREfmtMatch2[2] == "speaker"){
-      //Logger.log("Now extracting parts from the <speaker> tag...");
-      
-      if(NABREfmtMatch2[1] != null && NABREfmtMatch2[1] != ""){
-        speakerTag.Before = NABREfmtMatch2[1];
-        //Logger.log("speakerTagBefore = {"+speakerTagBefore+"}");
-        
-        remainingText2 = remainingText2.replace(speakerTagBefore, "");
+    if(cursorEl.getType() == "TEXT"){ // seems that we can't get a page index or insert paragraphs from the position of an element of type Text?
+      cursorEl = cursorEl.getParent(); // so let's get it's parent to avoid getting nasty error messages
+      //consoleLog(cursorEl);
+    }
+    idx = body.getChildIndex(cursorEl);
+  }
+  else{ //if for example there is a selection, so we can't get a cursor POSITION
+    var selection = doc.getSelection();
+    if(selection){
+      var elements = selection.getRangeElements();
+      var element = elements[0].getElement();
+      if(element.getType() == 'TEXT'){
+        element = element.getParent();
       }
-      
-      speakerTag.Contents = NABREfmtMatch2[3];
-      //Logger.log("speakerTagContents = {"+speakerTagContents+"}");
-      
-      speakerTag.After = remainingText2.replace("<"+NABREfmtMatch2[2]+">"+speakerTag.Contents+"</"+NABREfmtMatch2[2]+">", "");
-      //Logger.log("speakerTagAfter = {"+speakerTagAfter+"}");
+      idx = body.getChildIndex(element);
+    }
+    else{
+      DocumentApp.getUi().alert(__('Cannot insert text at this document location.',locale));
     }
   }
-  return speakerTag;
+  
+  return idx;
 }
 
 function checkNewElements(verses,newelement){
@@ -788,53 +807,158 @@ function checkNewElements(verses,newelement){
   return newelement;
 }
 
+function createNewPar(BibleGetGlb,BibleGetProps){ 
+  var newPar;
+  if(newPar = BibleGetGlb.body.insertParagraph(BibleGetGlb.idx,"")){
+    newPar.setLineSpacing(BibleGetProps.ParagraphStyles.Lineheight);
+    //DocumentApp.getUi().alert("Left Indent = "+LeftIndent+" >> "+leftindent+"pt");
+    newPar.setIndentFirstLine(BibleGetProps.ParagraphStyles.LeftIndent);
+    newPar.setIndentStart(BibleGetProps.ParagraphStyles.LeftIndent);
+    newPar.setIndentEnd(BibleGetProps.ParagraphStyles.RightIndent);
+    let ffStyle = {};
+    ffStyle[DocumentApp.Attribute.FONT_FAMILY] = BibleGetProps.ParagraphStyles.FONT_FAMILY;
+    newPar.setAttributes(ffStyle);
+    BibleGetGlb.currentPar = newPar;
+    BibleGetGlb.idx++; //up the index for the next insertion
+  }
+  else {
+    return false;
+  }
+  return BibleGetGlb;
+}
+
+function setTextStyles(text,BGProperties,ptype){
+  var styles;
+  let fontfamily = BGProperties.ParagraphStyles.FONT_FAMILY;
+  switch(ptype){
+    case BGET.PTYPE.BIBLEVERSION:
+    case BGET.PTYPE.BOOKCHAPTER:
+      styles = BGProperties.BookChapterStyles;
+      break;
+    case BGET.PTYPE.VERSENUMBER:
+      styles = BGProperties.VerseNumberStyles;
+      break;
+    case BGET.PTYPE.VERSETEXT:
+      styles = BGProperties.VerseTextStyles;
+      break;
+  }
+  text.setBold(styles.BOLD).setItalic(styles.ITALIC).setUnderline(styles.UNDERLINE).setStrikethrough(styles.STRIKETHROUGH).setFontSize(styles.FONT_SIZE).setForegroundColor(styles.FOREGROUND_COLOR).setBackgroundColor(styles.BACKGROUND_COLOR).setTextAlignment(styles.VALIGN).setFontFamily(fontfamily);
+}
+
+
+/**********************************************************
+ * FUNCTIONS THAT PROCESS THE BIBLE QUOTES IN JSON FORMAT *
+ * THAT HAVE SPECIAL TAGS IN THE CASE OF NABRE VERSION    *
+ **********************************************************/
+
+function doNestedTagStuff(nestedTagObj,thisPar,BGProperties){
+  //consoleLog("We have a nested tag, and we should have extracted it's parts: ");
+  //consoleLog("speakerTagBefore = {"+speakerTagBefore+"}, speakerTagContents = {"+speakerTagContents+"}, speakerTagAfter = {"+speakerTagAfter+"}");
+  let textReference;
+  if(nestedTagObj.Before != ""){
+    textReference = thisPar.appendText(nestedTagObj.Before);
+    //consoleLog("we have now appended speakerTagBefore");
+    setTextStyles(textReference,BGProperties,BGET.PTYPE.VERSETEXT);
+  }
+    
+  switch(nestedTagObj.Tag){
+    case 'speaker':
+      //consoleLog("we have now appended speakerTagContents");
+      textReference = thisPar.appendText(" "+nestedTagObj.Contents+" ");
+      textReference.setBold(true).setItalic(false).setUnderline(false).setStrikethrough(false).setFontSize(BGProperties.VerseTextStyles.FONT_SIZE).setForegroundColor("#000000").setBackgroundColor("#9A9A9A").setTextAlignment(BGProperties.VerseTextStyles.VALIGN);
+      break;
+    case 'sm':
+      textReference = thisPar.appendText(nestedTagObj.Contents);
+      let smallCapsFontSize = Math.round(BGProperties.VerseTextStyles.FONT_SIZE - (BGProperties.VerseTextStyles.FONT_SIZE * .15));
+      textReference.setFontSize(smallCapsFontSize);
+  }
+  
+  if(nestedTagObj.After != ""){
+    textReference = thisPar.appendText(nestedTagObj.After);
+    //consoleLog("we have now appended speakerTagAfter");
+    setTextStyles(textReference,BGProperties,BGET.PTYPE.VERSETEXT);
+  }
+}
+
+function getNestedTagObj(formattingTagContents){
+  let remainingText = formattingTagContents,
+      NABREfmt = /(.*?)<((sm|po|speaker|i)[f|l|s|i|3]{0,1}[f|l]{0,1})>(.*?)<\/\2>/g,
+      NABREfmtMatch,
+      nestedTagObj = {"Before":"","Contents":"","After":"","Tag":""};
+  
+  while((NABREfmtMatch = NABREfmt.exec(formattingTagContents)) != null){
+    if(NABREfmtMatch[2] != null && NABREfmtMatch[2] != ""){
+      //Let's record which tag we're dealing with
+      nestedTagObj.Tag = NABREfmtMatch[2];
+      //consoleLog("Now extracting parts from the nested tag, whether <speaker> or other...");
+      
+      if(NABREfmtMatch[1] != null && NABREfmtMatch[1] != ""){
+        nestedTagObj.Before = NABREfmtMatch[1];
+        //consoleLog("nestedTagObj.Before = {"+nestedTagObj.Before+"}");
+        
+        remainingText = remainingText.replace(nestedTagObj.Before, "");
+      }
+      
+      nestedTagObj.Contents = NABREfmtMatch[4];
+      //consoleLog("nestedTagObj.Contents = {"+nestedTagObj.Contents+"}");
+      
+      nestedTagObj.After = remainingText.replace("<"+nestedTagObj.Tag+">"+nestedTagObj.Contents+"</"+nestedTagObj.Tag+">", "");
+      //consoleLog("nestedTagObj.After = {"+nestedTagObj.After+"}");
+    }
+  }
+  return nestedTagObj;
+}
+
 function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
   //otherwise we have to divide the text into sections and format each section accordingly...
-  var NABREfmt = /(.*?)<((sm|po|speaker)[f|l|s|i|3]{0,1}[f|l]{0,1})>(.*?)<\/\2>/g;
-  //Logger.log(verses[i].text);
-  var NABREfmtMatch;
-  var lastNABREfmtMatch;
-  var remainingText = thistext;  
-  var NABREpar;
+  let NABREfmt = /(.*?)<((sm|po|speaker|i)[f|l|s|i|3]{0,1}[f|l]{0,1})>(.*?)<\/\2>/g,
+  //consoleLog(verses[i].text);
+      NABREfmtMatch,
+      lastNABREfmtMatch,
+      remainingText = thistext,
+      NABREpar;
   
-  //Logger.log("noVersionFormatting=false, now extracting regex groups...");
-  //Logger.log(NABREfmtMatch);
+  //consoleLog("noVersionFormatting=false, now extracting regex groups...");
+  //consoleLog(NABREfmtMatch);
   //NABREfmtMatch = NABREfmt.exec(remainingText);
   //docLog("we are now in the formatSections function...");
   
   while((NABREfmtMatch = NABREfmt.exec(thistext)) !== null){
-    //docLog("we have a match <"+thistext+">");
+    consoleLog("we have a regex match in the text {"+thistext+"}");
+    //consoleLog(NABREfmtMatch);
     
     lastNABREfmtMatch = NABREfmtMatch;
-    //Logger.log(NABREfmtMatch);
     // matched text: match[0]
     // match start: match.index
     // capturing group n: match[n]
-    if(NABREfmtMatch[1] != null && NABREfmtMatch[1] != ""){
-      Logger.log("We have some normal text before special formatted text in this verse: {" + NABREfmtMatch[1] + "}");
-      //this is normal text!
-      var versetext = BibleGetGlobal.currentPar.appendText(NABREfmtMatch[1]);
+    if(NABREfmtMatch[1] !== null && NABREfmtMatch[1] !== ""){
+      consoleLog("We have some normal text before special formatted text in this verse: {" + NABREfmtMatch[1] + "}");
+      //this is normal text so we simply append it to our paragraph and apply usual styles, and remove it from the text we are matching against
+      let versetext = BibleGetGlobal.currentPar.appendText(NABREfmtMatch[1]);
       setTextStyles(versetext,BibleGetProperties,BGET.PTYPE.VERSETEXT);
       remainingText = remainingText.replace(NABREfmtMatch[1],"");
       
-      if(NABREfmtMatch[2] != "sm"){
+      //NABREfmtMatch[2] matches the opening tag; we will create a new paragraph if it's any tag besided "sm" or "i" (what about speaker tags?)
+      if(NABREfmtMatch[2] !== "sm" && NABREfmtMatch[2] !== "i"){
         BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
         BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
       }
     }
-    if(NABREfmtMatch[4] != null && NABREfmtMatch[4] != ""){
-      var formattingTagContents = NABREfmtMatch[4].trim();
-      //Logger.log("{"+formattingTagContents+"}");      
+    //NABREfmtMatch[4] matches the contents between the opening and closing tag
+    if(NABREfmtMatch[4] !== null && NABREfmtMatch[4] !== ""){
+      let formattingTagContents = NABREfmtMatch[4].trim(),
+      //consoleLog("{"+formattingTagContents+"}");      
       //check for nested speaker tags!
-      var nestedTag = false;
-      var speakerTag = {"Before":"","Contents":"","After":""};
-      var nabreStyleText;
+          nestedTag = false,
+          nestedTagObj = {"Before":"","Contents":"","After":"","Tag":""},
+          nabreStyleText;
       
-      if(/<[\/]{0,1}speaker>/.test(formattingTagContents)){
+      if(/<[\/]{0,1}(?:sm|po|speaker|i)[f|l|s|i]{0,1}[f|l]{0,1}>/.test(formattingTagContents)){
         nestedTag = true;
-        speakerTag = doSpeakerTagThing(formattingTagContents);                
+        nestedTagObj = getNestedTagObj(formattingTagContents);                
       }
       
+      //NABREfmtMatch[2] matches the opening tag
       switch(NABREfmtMatch[2]){
         case "pof":
         case "pos":
@@ -843,14 +967,12 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           BibleGetGlobal.iterateNewPar = true;
           //create a new paragraph only if it's not the start of a new verse, or if it is the start of a new verse but it's also the first verse with special formatting and without any normal text at the start
           if(!newelement.newverse || ((NABREfmtMatch[1] == "" || NABREfmtMatch[1] == null) && BibleGetGlobal.firstFmtVerse)){ // 
-            if(!newelement.newverse){Logger.log("case pof|pos|po|pol and not the start of a new verse... creating paragraph... <"+formattingTagContents+">");}
-            else{Logger.log("case pof|pos|po|pol and is start of a new verse but is also the first verse with special formatting... creating paragraph... <"+formattingTagContents+">");}
+            if(!newelement.newverse){consoleLog("case pof|pos|po|pol and not the start of a new verse... creating paragraph... <"+formattingTagContents+">");}
+            else{consoleLog("case pof|pos|po|pol and is start of a new verse but is also the first verse with special formatting... creating paragraph... <"+formattingTagContents+">");}
             BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
             BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
             
-            if(BibleGetGlobal.firstFmtVerse){
-              BibleGetGlobal.firstFmtVerse = false;
-            }
+            if(BibleGetGlobal.firstFmtVerse){ BibleGetGlobal.firstFmtVerse = false; }
             newelement.newverse = false;
           }
           // because if it is the start of a new verse, we probably already have a new paragraph
@@ -861,7 +983,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           }
           
           if(nestedTag){
-            doNestedTagStuff(speakerTag.Before,speakerTag.Contents,speakerTag.After,BibleGetGlobal.currentPar,BibleGetProperties);
+            doNestedTagStuff(nestedTagObj,BibleGetGlobal.currentPar,BibleGetProperties);
             nestedTag = false;
           }
           else{
@@ -875,7 +997,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           BibleGetGlobal.iterateNewPar = true;
           // create a new paragraph only if it's not the start of a new verse
           if(!newelement.newverse){
-            //Logger.log("not the start of a new verse, so creating a new paragraph... <"+formattingTagContents+">");
+            //consoleLog("not the start of a new verse, so creating a new paragraph... <"+formattingTagContents+">");
             BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
             BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
           }
@@ -886,7 +1008,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
             newelement.newverse = false;
           }                      
           if(nestedTag){
-            doNestedTagStuff(speakerTag.Before,speakerTag.Contents,speakerTag.After,BibleGetGlobal.currentPar,BibleGetProperties);
+            doNestedTagStuff(nestedTagObj,BibleGetGlobal.currentPar,BibleGetProperties);
             nestedTag = false;
           }
           else{
@@ -895,31 +1017,37 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           }                    
           break;
         case "sm":
+          consoleLog('we apparently have an <sm> tag to deal with');
           BibleGetGlobal.iterateNewPar = false;
           //if(NABREpar != null){
-          var smText = BibleGetGlobal.currentPar.appendText(formattingTagContents);
+          let smText = BibleGetGlobal.currentPar.appendText(formattingTagContents);
           //}else{
           //  var smText = newPar.appendText(formattingTagContents);
           //}
-          var smallCapsFontSize = Math.round(BibleGetProperties.VerseTextStyles.FONT_SIZE - (BibleGetProperties.VerseTextStyles.FONT_SIZE * .15));
+          let smallCapsFontSize = Math.round(BibleGetProperties.VerseTextStyles.FONT_SIZE - (BibleGetProperties.VerseTextStyles.FONT_SIZE * .15));
           smText.setFontSize(smallCapsFontSize);
           break;
         case "speaker":
           BibleGetGlobal.iterateNewPar = false;
           //if(NABREpar != null){
-          var smText = BibleGetGlobal.currentPar.appendText(formattingTagContents);
+          let spkText = BibleGetGlobal.currentPar.appendText(formattingTagContents);
           //}else{
           //  var smText = newPar.appendText(formattingTagContents);
           //}
-          smText.setBackgroundColor("#6A6A6A").setTextAlignment(BibleGetProperties.VerseTextStyles.ALIGN);
+          spkText.setBackgroundColor("#6A6A6A").setTextAlignment(BibleGetProperties.VerseTextStyles.ALIGN);
+          break;
+        case "i":
+          BibleGetGlobal.iterateNewPar = false;
+          let italicText = BibleGetGlobal.currentPar.appendText(formattingTagContents);
+          italicText.setItalic(true);
       }
       remainingText = remainingText.replace("<"+NABREfmtMatch[2]+">"+NABREfmtMatch[4]+"</"+NABREfmtMatch[2]+">", ""); 
-      Logger.log("remainingText: {"+remainingText+"}");
+      //consoleLog("remainingText: {"+remainingText+"}");
     }              
     
   }
   
-  //Logger.log("remainingText = {"+remainingText+"}");
+  //consoleLog("remainingText = {"+remainingText+"}");
   /*
   if(lastNABREfmtMatch[2]=="pol" || lastNABREfmtMatch[2]=="poil"){
   newPar = body.insertParagraph(++idx, "");
@@ -933,48 +1061,13 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
   /*else*/ 
   
   if(remainingText != ""){ //lastNABREfmtMatch[2]=="sm" && 
-    var lastText = BibleGetGlobal.currentPar.appendText(remainingText);
+    let lastText = BibleGetGlobal.currentPar.appendText(remainingText);
     setTextStyles(lastText,BibleGetProperties,BGET.PTYPE.VERSETEXT);
   }
   
   return BibleGetGlobal;
 }
 
-
-function getCursorIndex(){
-
-  var idx,
-      doc = DocumentApp.getActiveDocument(),
-      body = doc.getBody(),
-      cursor = doc.getCursor(),
-      locale = getUserLocale();
-
-  if(cursor){  
-    var cursorEl = cursor.getElement();
-  
-    if(cursorEl.getType() == "TEXT"){ // seems that we can't get a page index or insert paragraphs from the position of an element of type Text?
-      cursorEl = cursorEl.getParent(); // so let's get it's parent to avoid getting nasty error messages
-      //Logger.log(cursorEl);
-    }
-    idx = body.getChildIndex(cursorEl);
-  }
-  else{ //if for example there is a selection, so we can't get a cursor POSITION
-    var selection = doc.getSelection();
-    if(selection){
-      var elements = selection.getRangeElements();
-      var element = elements[0].getElement();
-      if(element.getType() == 'TEXT'){
-        element = element.getParent();
-      }
-      idx = body.getChildIndex(element);
-    }
-    else{
-      DocumentApp.getUi().alert(__('Cannot insert text at this document location.',locale));
-    }
-  }
-  
-  return idx;
-}
 
 /***********************************************
  *           UTILITY FUNCTIONS                 *
@@ -1002,7 +1095,7 @@ function centimetersToPoints(cmVal){
 
 
 function consoleLog(str){
-  Logger.log(str);   //internal log (not very efficient?)
+  //Logger.log(str);   //internal log (not very efficient?)
   console.info(str); //stackdriver logs
 }
 
@@ -1018,7 +1111,7 @@ function docLog(str){
   
     if(cursorEl.getType() == "TEXT"){ // seems that we can't get a page index or insert paragraphs from the position of an element of type Text?
       cursorEl = cursorEl.getParent(); // so let's get it's parent to avoid getting nasty error messages
-      //Logger.log(cursorEl);
+      //consoleLog(cursorEl);
     }
     idx = body.getChildIndex(cursorEl);
   }

@@ -32,19 +32,6 @@
                    //      If I compensate for my display, will the compensation work for other displays? Need to do some testing on other displays.
                    //In any we cannot actually know window.devicePixelRatio at this point, because it is only available to client javascript, so here it doesn't mean much of anything
                    //we will therefor retrieve this value in the client javascript using window.devicePixelRatio and update both css properties and accordingly!!!
-  const ptToPx = 1.33 * dPR;
-  
-  var lftindnt,rgtindnt;
-  switch(userProperties.ParagraphStyles.InterfaceInCM){
-    case true:
-      lftindnt = centimetersToPoints(userProperties.ParagraphStyles.LeftIndent) * ptToPx; //point to pixel conversion, again just 
-      rgtindnt = centimetersToPoints(userProperties.ParagraphStyles.RightIndent) * ptToPx;//point to pixel conversion
-      break;
-    case false:
-      lftindnt = inchesToPoints(userProperties.ParagraphStyles.LeftIndent) * ptToPx; //point to pixel conversion
-      rgtindnt = inchesToPoints(userProperties.ParagraphStyles.RightIndent) * ptToPx;//point to pixel conversion
-      break;
-  }
   
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){ consoleLog('left and right indent have been set based on userproperties in Settings.html'); }   
 
@@ -171,12 +158,10 @@
 }
 
 .fieldset-results .bibleversion, .fieldset-results .bookchapterWrapper { /* .bookchapterWrapper wraps .bookchapter and .liveview-quote*/
-  width: 730px;
-  max-width: 730px;
   box-sizing: border-box;
   margin: 0px auto;
-  padding-left: <?!= lftindnt?>px;
-  padding-right:<?!= rgtindnt?>px;
+  padding-left: 35px;
+  padding-right:35px;
 }
 
 .bibleversion, .bookchapter {
@@ -809,14 +794,13 @@ span.ui-checkboxradio-icon { display: none; }
 
 <script type="text/javascript">
 const dPR = window.devicePixelRatio;
-const ptToPx = 1.33 * dPR;
+//const ptToPx = (96 * dPR) / 72;//1.33 * dPR;
 //this will be our global variable that holds the user preferences, which should be a pure JSON obj without stringified values (nostringify=true)
 var userProps = {populated:false},
   domopscomplete = false,
-  leftindent = <?!=(userProperties.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProperties.ParagraphStyles.LeftIndent) : inchesToPoints(userProperties.ParagraphStyles.LeftIndent))?> * ptToPx,   //convert to point size then to pixel size useful for CSS margin-left property
-  rightindent = <?!=(userProperties.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProperties.ParagraphStyles.LeftIndent) : inchesToPoints(userProperties.ParagraphStyles.RightIndent))?> * ptToPx, //convert to point size then to pixel size useful for CSS margin-right property
   bkChptr1Sam213 = '',
   bkChptrPs11412 = '';
+  
 switch('<?!=userProperties.LayoutPrefs.BookChapterFormat?>'){
   case '<?!=BGET.FORMAT.BIBLELANG?>':
     bkChptr1Sam213 = "I Samuelis 2";
@@ -834,6 +818,10 @@ switch('<?!=userProperties.LayoutPrefs.BookChapterFormat?>'){
     bkChptr1Sam213 = '<?!=__('ISam2',locale)?>';
     bkChptrPs11412 = '<?!=__('Ps114',locale)?>';
     break;
+}
+
+Number.prototype.map = function (in_min, in_max, out_min, out_max) {
+  return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
 //We can't save the userProps obj unless we have all the user Properties in this object, this is why we need the object,
@@ -941,11 +929,12 @@ userPropsUpdateSuccess = function(updatedProps){
 getPixelRatioVals = function(rulerLength,convertToCM){
   let inchesToCM = 2.54,
     dpr = window.devicePixelRatio,
-    ppi = ((96 * dpr) / 100),
-    dpi = (96 * ppi),
+    //ppi = ((96 * dpr) / 100),
+    //dpi = (96 * ppi),
+    dpi = 96 * dpr,
     drawInterval = 0.125;
   if(convertToCM){
-    ppi /= inchesToCM;
+    //ppi /= inchesToCM;
     dpi /= inchesToCM;
     rulerLength *= inchesToCM;
     drawInterval = 0.25;
@@ -953,40 +942,38 @@ getPixelRatioVals = function(rulerLength,convertToCM){
   return {
     inchesToCM: inchesToCM,
     dpr: dpr,      
-    ppi: ppi,
+    //ppi: ppi,
     dpi: dpi,
     rulerLength: rulerLength,
     drawInterval: drawInterval
   };
 },
-triangleAt = function (x,context,pixelRatioVals,initialPadding){
+triangleAt = function (x,context,pixelRatioVals,initialPadding,canvasWidth){
+  let xPos = x*pixelRatioVals.dpi;//x.map(0,pixelRatioVals.rulerLength,0,(canvasWidth-(initialPadding*2)));
+  window.xVal = x;
+  window.xPos = xPos;
   context.lineWidth = 0.5;
   context.fillStyle = "#4285F4";
   context.beginPath();
-  context.moveTo(initialPadding+x*pixelRatioVals.dpi-6,11);
-  context.lineTo(initialPadding+x*pixelRatioVals.dpi+6,11);
-  context.lineTo(initialPadding+x*pixelRatioVals.dpi,18);
+  context.moveTo(initialPadding+xPos-6,11);
+  context.lineTo(initialPadding+xPos+6,11);
+  context.lineTo(initialPadding+xPos,18);
   context.closePath();
   context.stroke();
   context.fill();
 },
 drawRuler = function(rulerLen, cvtToCM, lftindnt, rgtindnt){
-  var canvasWidth = 800,
-      canvasHeight = 20,
-      $canvas = jQuery('.previewRuler'),
-      rulerLength = rulerLen,
-      leftindent = lftindnt,
-      rightindent = rgtindnt,
-      convertToCM = cvtToCM;
+  var pixelRatioVals = getPixelRatioVals(rulerLen,cvtToCM),
+      initialPadding = 35,
+      $canvas = jQuery('.previewRuler');
   $canvas.each(function(){
     let canvas = this,
-        pixelRatioVals = getPixelRatioVals(rulerLength,convertToCM),
-        initialPadding = 35,
-        context = canvas.getContext('2d');
+        context = canvas.getContext('2d'),
+        canvasWidth = (rulerLen * 96 * pixelRatioVals.dpr) + (initialPadding*2);
     canvas.style.width = canvasWidth + 'px';
-    canvas.style.height = canvasHeight + 'px';
+    canvas.style.height = '20px';
     canvas.width = canvasWidth * pixelRatioVals.dpr;
-    canvas.height = canvasHeight * pixelRatioVals.dpr;
+    canvas.height = 20 * pixelRatioVals.dpr;
 
     context.scale(pixelRatioVals.dpr,pixelRatioVals.dpr);
     context.translate(pixelRatioVals.dpr, 0);
@@ -997,14 +984,13 @@ drawRuler = function(rulerLen, cvtToCM, lftindnt, rgtindnt){
 
     context.beginPath();
     context.moveTo(initialPadding, 1);
-    context.lineTo(initialPadding + pixelRatioVals.rulerLength * pixelRatioVals.dpi,1);
+    context.lineTo(initialPadding + (pixelRatioVals.rulerLength * pixelRatioVals.dpi),1);
     context.stroke();
 
     let currentWholeNumber = 0;
     let offset = 2;
 
     for(let interval = 0; interval <= pixelRatioVals.rulerLength; interval += pixelRatioVals.drawInterval){
-      //so far this gives the sharpest lines and numbers (when drawing inches) 
       let xPosA = interval*pixelRatioVals.dpi;
     
       if(interval == Math.floor(interval) && interval > 0){
@@ -1027,14 +1013,13 @@ drawRuler = function(rulerLen, cvtToCM, lftindnt, rgtindnt){
       }
     }
   
-    triangleAt(leftindent,context,pixelRatioVals,initialPadding);
-    triangleAt(pixelRatioVals.rulerLength-rightindent,context,pixelRatioVals,initialPadding);
+    triangleAt(lftindnt,context,pixelRatioVals,initialPadding,canvasWidth);
+    triangleAt(pixelRatioVals.rulerLength-rgtindnt,context,pixelRatioVals,initialPadding,canvasWidth);
     context.translate(-pixelRatioVals.dpr, 0);
 
   });
   
 };
-
 
 
 //Start our page manipulation and event handling
@@ -1093,8 +1078,11 @@ jQuery(document).ready(function(){
           }
           break;
       }
-      leftindent = (userProps.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProps.ParagraphStyles.LeftIndent) : inchesToPoints(userProps.ParagraphStyles.LeftIndent)) * ptToPx;   //convert to point size then to pixel size useful for CSS margin-left property
-      rightindent = (userProps.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProps.ParagraphStyles.RightIndent) : inchesToPoints(userProps.ParagraphStyles.RightIndent)) * ptToPx; //convert to point size then to pixel size useful for CSS margin-right property
+      //leftindent = (userProps.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProps.ParagraphStyles.LeftIndent) : inchesToPoints(userProps.ParagraphStyles.LeftIndent)) * ptToPx;   //convert to point size then to pixel size useful for CSS margin-left property
+      //rightindent = (userProps.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProps.ParagraphStyles.RightIndent) : inchesToPoints(userProps.ParagraphStyles.RightIndent)) * ptToPx; //convert to point size then to pixel size useful for CSS margin-right property
+      let pixelRatioVals = getPixelRatioVals(6.25,userProps.ParagraphStyles.InterfaceInCM);
+      let leftindent = userProps.ParagraphStyles.LeftIndent * pixelRatioVals.dpi + 35;
+      let rightindent = userProps.ParagraphStyles.RightIndent * pixelRatioVals.dpi + 35;
       $('.bibleversion').add('.bookchapterWrapper').css({"padding-left":leftindent+"px","padding-right":rightindent+"px"});
       drawRuler(6.25,userProps.ParagraphStyles.InterfaceInCM,userProps.ParagraphStyles.LeftIndent,userProps.ParagraphStyles.RightIndent);
       saveUserProps(userProps);
@@ -1343,16 +1331,21 @@ jQuery(document).ready(function(){
       userProps.ParagraphStyles.InterfaceInCM = this.checked;
       userProps.ParagraphStyles.LeftIndent = (this.checked ? userProps.ParagraphStyles.LeftIndent*2 : userProps.ParagraphStyles.LeftIndent/2);
       userProps.ParagraphStyles.RightIndent = (this.checked ? userProps.ParagraphStyles.RightIndent*2 : userProps.ParagraphStyles.RightIndent/2);
-      leftindent = (userProps.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProps.ParagraphStyles.LeftIndent) : inchesToPoints(userProps.ParagraphStyles.LeftIndent)) * ptToPx;   //convert to point size then to pixel size useful for CSS margin-left property
-      rightindent = (userProps.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProps.ParagraphStyles.RightIndent) : inchesToPoints(userProps.ParagraphStyles.RightIndent)) * ptToPx; //convert to point size then to pixel size useful for CSS margin-right property
+      //leftindent = (userProps.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProps.ParagraphStyles.LeftIndent) : inchesToPoints(userProps.ParagraphStyles.LeftIndent)) * ptToPx;   //convert to point size then to pixel size useful for CSS margin-left property
+      //rightindent = (userProps.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProps.ParagraphStyles.RightIndent) : inchesToPoints(userProps.ParagraphStyles.RightIndent)) * ptToPx; //convert to point size then to pixel size useful for CSS margin-right property
+      let pixelRatioVals = getPixelRatioVals(6.25,userProps.ParagraphStyles.InterfaceInCM);
+      let leftindent = userProps.ParagraphStyles.LeftIndent * pixelRatioVals.dpi + 35;
+      let rightindent = userProps.ParagraphStyles.RightIndent * pixelRatioVals.dpi + 35;
       $('.bibleversion').add('.bookchapterWrapper').css({"padding-left":leftindent+"px","padding-right":rightindent+"px"});
       drawRuler(6.25,userProps.ParagraphStyles.InterfaceInCM,userProps.ParagraphStyles.LeftIndent,userProps.ParagraphStyles.RightIndent);
       saveUserProps(userProps);
     });
     
-    leftindent = <?!=(userProperties.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProperties.ParagraphStyles.LeftIndent) : inchesToPoints(userProperties.ParagraphStyles.LeftIndent))?> * ptToPx;   //convert to point size then to pixel size useful for CSS margin-left property
-    rightindent = <?!=(userProperties.ParagraphStyles.InterfaceInCM ? centimetersToPoints(userProperties.ParagraphStyles.LeftIndent) : inchesToPoints(userProperties.ParagraphStyles.RightIndent))?> * ptToPx; //convert to point size then to pixel size useful for CSS margin-right property
-    $('.bibleversion').add('.bookchapterWrapper').css({"padding-left":leftindent+"px","padding-right":rightindent+"px"});
+    let pixelRatioVals = getPixelRatioVals(6.25,<?!=userProperties.ParagraphStyles.InterfaceInCM?>);
+    let leftindent = <?!=userProperties.ParagraphStyles.LeftIndent?> * pixelRatioVals.dpi + 35;
+    let rightindent = <?!=userProperties.ParagraphStyles.RightIndent?> * pixelRatioVals.dpi + 35;
+    let bestWidth = 6.25 * 96 * window.devicePixelRatio + (35*2);
+    $('.bibleversion').add('.bookchapterWrapper').css({"width":bestWidth+"px","padding-left":leftindent+"px","padding-right":rightindent+"px"}); 
     drawRuler(6.25,<?!=userProperties.ParagraphStyles.InterfaceInCM?>,<?!=userProperties.ParagraphStyles.LeftIndent?>,<?!=userProperties.ParagraphStyles.RightIndent?>);
     
     /*******************************************************
