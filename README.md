@@ -20,7 +20,7 @@ The same query can be formed just so:
 Mt5:1-3,7-9;7:4-7;9:15;Mc3:5;Gv1:1;3:5-7
 
 If you have any feedback for bugs that you may have found in the BibleGet I/O service, or for suggestions in making it and the scripts and apps that use it any better, you can send me an email using the “Send Feedback” option in the BibleGet menu.
-><
+
 _______
 
 POST-INSTALL TIP
