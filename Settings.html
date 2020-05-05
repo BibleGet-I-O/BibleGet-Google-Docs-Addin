@@ -976,7 +976,7 @@ drawRuler = function(rulerLen, cvtToCM, lftindnt, rgtindnt){
     canvas.height = 20 * pixelRatioVals.dpr;
 
     context.scale(pixelRatioVals.dpr,pixelRatioVals.dpr);
-    context.translate(pixelRatioVals.dpr, 0);
+    //context.translate(pixelRatioVals.dpr, 0);
       
     context.lineWidth = 0.5;
     context.strokeStyle = '#000';
@@ -1015,7 +1015,7 @@ drawRuler = function(rulerLen, cvtToCM, lftindnt, rgtindnt){
   
     triangleAt(lftindnt,context,pixelRatioVals,initialPadding,canvasWidth);
     triangleAt(pixelRatioVals.rulerLength-rgtindnt,context,pixelRatioVals,initialPadding,canvasWidth);
-    context.translate(-pixelRatioVals.dpr, 0);
+    //context.translate(-pixelRatioVals.dpr, 0);
 
   });
   

@@ -236,6 +236,7 @@ function openMainSidebar(){
 function openHelpSidebar(){
   let locale = getUserLocale();
   let html = HtmlService.createTemplateFromFile('Help.html');
+  //docLog(html.evaluate().getContent());
   DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O - '+__('Instructions',locale)));
 }
 
@@ -1087,6 +1088,37 @@ function centimetersToPoints(cmVal){
     cmVal = parseFloat(cmVal);
   }
   return Math.round(cmVal * 28.3464567);
+}
+
+/*
+ * Function getLocalizedBookNames
+ * @var locale of type string, can be two letter ISO code or full language name in English
+ */
+function getLocalizedBookNames(locale){ 
+  let forLanguage = (locale.length > 2 ? locale : _c(locale));
+  let biblebooks = [];
+  let abbreviations = [];
+  let scriptProperties = PropertiesService.getScriptProperties();
+  if(scriptProperties.getProperty("biblebooks0")===null){
+    //docLog('biblebooks not yet defined in script properties, now retrieving from server');
+    setScriptProps();
+  }
+  let scrptProps = scriptProperties.getProperties();
+  let languages = JSON.parse(scrptProps["languages"]);
+  //Logger.log(languages);
+  let idx,scrptprop,jsbook,lclbook,lclabbrev;
+  for(let i=0;i<73;i++){
+    scrptprop = "biblebooks"+i;
+    jsbook = JSON.parse(scrptProps[scrptprop]);
+    idx = languages.indexOf(forLanguage);    
+    if(idx==-1){ idx = languages.indexOf("English"); }
+    lclabbrev = jsbook[idx][1];
+    lclbook = jsbook[idx][0];    
+    lclbook = lclbook.replace(/\s+\|/g, "&emsp;|");
+    biblebooks.push(lclbook);
+    abbreviations.push(lclabbrev);
+  }
+  return {biblebooks:biblebooks,abbreviations:abbreviations,languages:languages};
 }
 
 /***********************************************/

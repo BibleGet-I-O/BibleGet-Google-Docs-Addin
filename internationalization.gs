@@ -148,10 +148,10 @@ var __ = function(str,ling){
       "USERLANGABBREV":{"en":"Language of Docs interface (abbrev)","it":"Lingua di Google Docs (abbrev)","es":"Idioma de Google Docs (abrev)","fr":"Langue de Google Docs (abrév)","de":"Sprache von Google Docs (abkürz)","pt":"Idioma do Google Docs (abrev)"},
       "Show full reference":{"en":"Show full reference","it":"Mostra riferimento completo","es":"Muestra referencia completa","fr":"Affiche la référence complète","de":"Vollständige Referenz anzeigen","pt":"Mostra referência completa"},
       "Verse number":{"en":"Verse number","it":"Numero del Versetto","es":"Número de Versículo","fr":"Numéro du Verset","de":"Vers Nummer","pt":"Número do versículo"},
-      "RESET PREFERENCES TO DEFAULT OPTIONS":{"en":"RESET PREFERENCES TO DEFAULT OPTIONS","it":"RIPRISTINA LE OPZIONI PREDEFINITE","es":"RESTABLECER LAS OPCIONES POR DEFECTO","fr":"Restaurer les paramètres par défaut","de":"Setzen Sie die Standardeinstellungen zurück","pt":"RESTAURAR OPÇÕES PADRÃO"},
+      "RESET PREFERENCES TO DEFAULT OPTIONS":{"en":"RESET PREFERENCES TO DEFAULT OPTIONS","it":"RIPRISTINA LE OPZIONI PREDEFINITE","es":"RESTABLECER LAS OPCIONES POR DEFECTO","fr":"RESTAURER LES PARAMÈTRES PAR DÉFAUT","de":"STEZEN SIE DIE STANDAREINSTELLUNGEN ZURÜCK","pt":"RESTAURAR OPÇÕES PADRÃO"},
       "Insert citation":{"en":"Insert citation","it":"Inserisci citazione","es":"Inserta la cita","fr":"Entrez la citation","de":"Fügen Sie das Zitat","pt":"Inserir a cotação"},
       "Find verses by keyword":{"en":"Find verses by keyword","it":"Trova versetti per parola chiave","es":"Encontra versículos por palabra clave","fr":"Trouver des versets par mot-clé","de":"Finde Verse nach Stichwort","pt":"Encontre versículos por palavra-chave"},
-      "":{"en":"","it":"","es":"","fr":"","de":"","pt":""},
+      "Language":{"en":"Language","it":"Lingua","es":"Idioma","fr":"Langue","de":"Sprache","pt":"Linguagem"},
       "":{"en":"","it":"","es":"","fr":"","de":"","pt":""},
       "":{"en":"","it":"","es":"","fr":"","de":"","pt":""},
       "DocInterfaceInCM":{"en":"My Docs interface is in centimeters","it":"La mia interfaccia di Google Documenti è in centimetri","es":"Mi interfaz de Google Docs está en centímetros.","fr":"Mon interface Google Docs est en centimètres","de":"Meine Google Text & Tabellen-Oberfläche ist in Zentimetern angegeben","pt":"A interface do Google Docs está em centímetros"},
@@ -170,9 +170,9 @@ var __ = function(str,ling){
         "en":"Write your observations about BibleGet I/O",
         "it":"Scrivi le tue osservazioni su BibleGet I/O",
         "es":"Escríbe tus observaciones sobre BibleGet I/O",
-        "fr":"Donnez vos commentaires sur BibleGet",
+        "fr":"Donnez vos commentaires sur BibleGet I/O",
         "de":"Schreiben Sie Ihre Kommentare zu BibleGet I/O",
-        "pt":"Escreva suas observações sobre BibleGet"
+        "pt":"Escreva suas observações sobre BibleGet I/O"
       },
       "Send Message":{"en":"Send Message","it":"Invia Messaggio","es":"Enviar Mensaje","fr":"Envoyer Message","de":"Nachricht Senden","pt":""},
       "Your message was delivered successfully. Thank you for getting in touch with us!":{

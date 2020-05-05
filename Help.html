@@ -1,35 +1,11 @@
-<? var locale = getUserLocale(); 
-  var biblebooks = [];
-  var abbreviations = [];
-  var userProperties = PropertiesService.getScriptProperties();
-  if(userProperties.getProperty("biblebooks0")===null){
-    //docLog('biblebooks not yet defined in script properties, now retrieving from server');
-    setScriptProps();
-  }
-  var usrProps = userProperties.getProperties();
-  var languages = JSON.parse(usrProps["languages"]);
-  Logger.log(languages);
-  var idx;
-  for(var i=0;i<73;i++){
-    var usrprop = "biblebooks"+i;
-    var jsbook = JSON.parse(usrProps[usrprop]);
-    var lclbook = "";
-    var lclabbrev = "";
-    idx = languages.indexOf(_c(locale));    
-    if(idx==-1){ idx = languages.indexOf("English"); }
-    lclabbrev = jsbook[idx][1];
-    lclbook = jsbook[idx][0];    
-    lclbook = lclbook.replace(/\s+\|/g, "&emsp;|");
-    biblebooks.push(lclbook);
-    abbreviations.push(lclabbrev);
-  }
-  //biblebooks.map(function(str){ return str.replace(/\s+\|/g, "&emsp;|"); });
+<? 
+let locale = getUserLocale();
+let {biblebooks,abbreviations,languages} = getLocalizedBookNames(locale); //it also returns a list of supported languages
 ?>
 <!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
-
-<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
 
 <style>
 
@@ -98,21 +74,33 @@ div.active-tab {
   text-align: justify;
   padding-right: 32px;
 }
-table { width: 100%; }
+table { 
+  width: 100%; 
+  border-top: 2px outset #2B7DE9;
+  padding-top: 12px;
+}
 table th { font-weight:bold;text-align:left;width:50%; }
 table th,table td{ padding-left: 3px; }
 table td+td{ border-left: 1px dashed #ebebeb; }
-
 
 span.internal-link {
   color:#000044;
   background-color:#EEEEEE;
   cursor:pointer;
 }
+
 span.internal-link:hover {
   color:#0000FF;
   background-color:#CCCCCC;
 }
+
+#supportedLanguagesContainer {
+  text-align: center; 
+  margin-bottom: 12px;
+}
+
+#supportedLanguages { margin-left: 12px; }
+
 </style>
 </head>
 <body>
@@ -140,7 +128,10 @@ span.internal-link:hover {
 </div>
 
 <div class="sidebar-body inactive-tab" style="display:none;" id="bookabbrevs-div">
-<table>
+<div id="supportedLanguagesContainer"><label><?!=__('Language',locale)?><select id="supportedLanguages">
+      <?for(var i in languages){ ?><option value="<?!=languages[i]?>" <?!=languages[i]==_c(locale) ? 'SELECTED' : '' ?>><?=_l(languages[i],locale)?></option><?}?>
+</select></label></div>
+<table id="bibleBooksTable">
 <tr><th><?=__("BOOK",locale)?></th><th><?=__("ABBREVIATION",locale)?></th></tr>
 <? for(var i=0;i<73;i++){ ?>
 <tr><td><?!=biblebooks[i]?></td><td><?=abbreviations[i]?></td></tr>
@@ -155,25 +146,44 @@ span.internal-link:hover {
   <div style="background:linear-gradient(white,gray,lightblue,black);color:White;font-weight:bold;text-shadow:3px 3px 3px Black;padding:1px;vertical-align:middle;"><a target="_blank" href="https://www.bibleget.io"><?!= include("BibleIcon_32"); ?></a><span style="position:relative;top:-9px;">BibleGet I/O for Google Docs</span></div>
 </div>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
 <script>
+
+let updateBibleBooksTable = function(response){
+  let {biblebooks,abbreviations,languages} = response;
+  let tableHTML = '<tr><th><?!=__("BOOK",locale)?></th><th><?!=__("ABBREVIATION",locale)?></th></tr>';
+  for(let i=0;i<73;i++){
+   tableHTML += '<tr><td>'+biblebooks[i]+'</td><td>'+abbreviations[i]+'</td></tr>';
+  }
+  jQuery('#bibleBooksTable').fadeOut("fast",function(){
+    $(this).empty().html(tableHTML);
+    $(this).fadeIn("slow");
+  });
+}
+
 $(function() {
-  $(".nav li").click(function(){
-    var thisid = $(this).attr("id");
+  $(".nav li").on('click',function(){
+    let thisid = $(this).attr("id");
     $(".active").removeClass("active");
     $(this).addClass("active");
     $(".active-tab").fadeOut().removeClass("active-tab");
     $("#"+thisid+"-div").addClass("active-tab").fadeIn();
   });
   
-  $("span.internal-link").click(function(){
-    var toid = $(this).attr("id").replace("to-","");
+  $("span.internal-link").on('click',function(){
+    let toid = $(this).attr("id").replace("to-","");
     $(".active").removeClass("active");
     $("#"+toid).addClass("active");
     $(".sidebar-body").fadeOut().removeClass("active-tab");
     $("#"+toid+"-div").addClass("active-tab").fadeIn();
   });
+  
+  $("#supportedLanguages").on('change',function(){
+    google.script.run.withSuccessHandler(updateBibleBooksTable).getLocalizedBookNames(this.value);
+  });
+  
 });
 </script>
 </body>
