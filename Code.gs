@@ -532,6 +532,12 @@ function docInsert(json){
   BibleGetGlobal.firstFmtVerse = false;
   BibleGetGlobal.stack = { bibleversion: [], bookchapter: [] };
   //docLog("got results from server, now preparing to elaborate... BibleGetGlobal object = "+JSON.stringify(BibleGetGlobal));
+  if(BibleGetProperties.LayoutPrefs.BookChapterFormat === BGET.FORMAT.USERLANG || BibleGetProperties.LayoutPrefs.BookChapterFormat === BGET.FORMAT.USERLANGABBREV){
+    let locale = getUserLocale();
+    BibleGetGlobal.l10n = getLocalizedBookNames(locale);
+    //the preceding statement will return the names and abbreviations of the books of the Bible localized in the specified locale
+    //which will be accessible in the properties BibleGetGlobal.l10n.biblebooks
+  }
   
   var versenum,
       newPar;  
@@ -591,7 +597,34 @@ function docInsert(json){
     //docLog("so far so good");
     
     if(newelement.newbook || newelement.newchapter){
-      let bkChStr = verses[i].book + " " + verses[i].chapter;
+      let bkChStr;
+      switch(BibleGetProperties.LayoutPrefs.BookChapterFormat){
+        case BGET.FORMAT.USERLANG:
+          bkChStr = BibleGetGlobal.l10n.biblebooks[verses[i].booknum] + " " + verses[i].chapter;
+          break;
+        case BGET.FORMAT.USERLANGABBREV:
+          bkChStr = BibleGetGlobal.l10n.abbreviations[verses[i].booknum] + " " + verses[i].chapter;
+          break;
+        case BGET.FORMAT.BIBLELANG:
+          bkChStr = verses[i].book + " " + verses[i].chapter;
+          break;
+        case BGET.FORMAT.BIBLELANGABBREV:
+          bkChStr = verses[i].bookabbrev + " " + verses[i].chapter;
+          break;
+      }
+      
+      if(BibleGetProperties.LayoutPrefs.BookChapterFullQuery){
+        //retrieve the orginal query from originalquery property in the json response received
+        let origQuery = verses[i].originalquery; //we need to remove the book name and chapter from this query
+        let regexA = hackRegex(/^[1-3]{0,1}((\p{L}\p{M}*)+)[1-9][0-9]{0,2}/); //match book and chapter
+        let regexB = hackRegex(/^[1-9][0-9]{0,2}/);                           //sometimes we will only have chapter and no book
+        if(verses[i].originalquery.match(regexA) === null){
+          bkChStr += verses[i].originalquery.replace(regexB,'');
+        }else{
+          bkChStr += verses[i].originalquery.replace(regexA,'');
+        }
+      } 
+      
       switch(BibleGetProperties.LayoutPrefs.BookChapterWrap){
         case BGET.WRAP.NONE:
           break;
@@ -663,13 +696,13 @@ function docInsert(json){
     //partial.setBold(false).setItalic(true).setFontSize(6).setForegroundColor("#FF0000");
     
     //before appending the verse text, we need to parse it to see if it contains special markup
-    if(/<[\/]{0,1}(?:sm|po|speaker|i)[f|l|s|i]{0,1}[f|l]{0,1}>/.test(verses[i].text)){
+    if(/<[\/]{0,1}(?:sm|po|speaker|i|pr)[f|l|s|i]{0,1}[f|l]{0,1}>/.test(verses[i].text)){
       consoleLog("looks like we have special formatting that we have to deal with in this verse... {"+verses[i].text+"}");      
       verses[i].text = verses[i].text.replace(/(\n|\r)/gm,"");
       
       if(BibleGetProperties.ParagraphStyles.NoVersionFormatting){
         //if user preferences ask to override version formatting, we just need to remove the formatting tags from the text
-        verses[i].text = verses[i].text.replace(/<[\/]{0,1}(?:po|speaker|i)[f|l|s|i]{0,1}[f|l]{0,1}>/g," "); 
+        verses[i].text = verses[i].text.replace(/<[\/]{0,1}(?:po|speaker|i|pr)[f|l|s|i]{0,1}[f|l]{0,1}>/g," "); 
         verses[i].text = verses[i].text.replace(/<[\/]{0,1}sm>/g,""); 
         let versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
         setTextStyles(versetext,BibleGetProperties,BGET.PTYPE.VERSETEXT);
@@ -883,7 +916,7 @@ function doNestedTagStuff(nestedTagObj,thisPar,BGProperties){
 
 function getNestedTagObj(formattingTagContents){
   let remainingText = formattingTagContents,
-      NABREfmt = /(.*?)<((sm|po|speaker|i)[f|l|s|i|3]{0,1}[f|l]{0,1})>(.*?)<\/\2>/g,
+      NABREfmt = /(.*?)<((sm|po|speaker|i|pr)[f|l|s|i|3]{0,1}[f|l]{0,1})>(.*?)<\/\2>/g,
       NABREfmtMatch,
       nestedTagObj = {"Before":"","Contents":"","After":"","Tag":""};
   
@@ -912,7 +945,7 @@ function getNestedTagObj(formattingTagContents){
 
 function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
   //otherwise we have to divide the text into sections and format each section accordingly...
-  let NABREfmt = /(.*?)<((sm|po|speaker|i)[f|l|s|i|3]{0,1}[f|l]{0,1})>(.*?)<\/\2>/g,
+  let NABREfmt = /(.*?)<((sm|po|speaker|i|pr)[f|l|s|i|3]{0,1}[f|l]{0,1})>(.*?)<\/\2>/g,
   //consoleLog(verses[i].text);
       NABREfmtMatch,
       lastNABREfmtMatch,
@@ -940,7 +973,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
       remainingText = remainingText.replace(NABREfmtMatch[1],"");
       
       //NABREfmtMatch[2] matches the opening tag; we will create a new paragraph if it's any tag besided "sm" or "i" (what about speaker tags?)
-      if(NABREfmtMatch[2] !== "sm" && NABREfmtMatch[2] !== "i"){
+      if(NABREfmtMatch[2] !== "sm" && NABREfmtMatch[2] !== "i" && NABREfmtMatch[2] !== "pr"){
         BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
         BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
       }
@@ -954,7 +987,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           nestedTagObj = {"Before":"","Contents":"","After":"","Tag":""},
           nabreStyleText;
       
-      if(/<[\/]{0,1}(?:sm|po|speaker|i)[f|l|s|i]{0,1}[f|l]{0,1}>/.test(formattingTagContents)){
+      if(/<[\/]{0,1}(?:sm|po|speaker|i|pr)[f|l|s|i]{0,1}[f|l]{0,1}>/.test(formattingTagContents)){
         nestedTag = true;
         nestedTagObj = getNestedTagObj(formattingTagContents);                
       }
@@ -1041,6 +1074,12 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           BibleGetGlobal.iterateNewPar = false;
           let italicText = BibleGetGlobal.currentPar.appendText(formattingTagContents);
           italicText.setItalic(true);
+          break;
+        case "pr":
+          //don't do anything, we don't need this information. 
+          //It means "paragraph align right" and usually contains 'selah' in the psalms
+          //which was probably an indication useful during liturgy while praying the psalms,
+          //so not technically a part of the verse text itself.
       }
       remainingText = remainingText.replace("<"+NABREfmtMatch[2]+">"+NABREfmtMatch[4]+"</"+NABREfmtMatch[2]+">", ""); 
       //consoleLog("remainingText: {"+remainingText+"}");

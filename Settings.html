@@ -819,11 +819,11 @@ switch('<?!=userProperties.LayoutPrefs.BookChapterFormat?>'){
     bkChptrPs11412 = '<?!=__('Ps114',locale)?>';
     break;
 }
-
+/*
 Number.prototype.map = function (in_min, in_max, out_min, out_max) {
   return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
-
+*/
 //We can't save the userProps obj unless we have all the user Properties in this object, this is why we need the object,
 //and need it fully populated, not only available to populate one at a time
 var passUserPropertiesServer2Client = function(propsobj){ 
@@ -920,12 +920,6 @@ userPropsUpdateSuccess = function(updatedProps){
   <? } ?>
   $('.spinner').fadeOut("fast");
 },
-/**
- * FUNCTION drawRuler
- * @ rulerLength (float) in Inches
- * @ convertToCM (boolean)
- *
-*/
 getPixelRatioVals = function(rulerLength,convertToCM){
   let inchesToCM = 2.54,
     dpr = window.devicePixelRatio,
@@ -962,6 +956,13 @@ triangleAt = function (x,context,pixelRatioVals,initialPadding,canvasWidth){
   context.stroke();
   context.fill();
 },
+/**
+ * FUNCTION drawRuler
+ * @ rulerLen (float) in Inches (e.g. 6.25)
+ * @ cvtToCM (boolean) whether to convert values from inches to centimeters
+ * @ lftindnt (float) in Inches, to set xPos of triangle for left indent
+ * @ rgtindnt (float) in Inches, to set xPos of triangle for right indent
+*/
 drawRuler = function(rulerLen, cvtToCM, lftindnt, rgtindnt){
   var pixelRatioVals = getPixelRatioVals(rulerLen,cvtToCM),
       initialPadding = 35,
@@ -972,11 +973,13 @@ drawRuler = function(rulerLen, cvtToCM, lftindnt, rgtindnt){
         canvasWidth = (rulerLen * 96 * pixelRatioVals.dpr) + (initialPadding*2);
     canvas.style.width = canvasWidth + 'px';
     canvas.style.height = '20px';
-    canvas.width = canvasWidth * pixelRatioVals.dpr;
-    canvas.height = 20 * pixelRatioVals.dpr;
+    canvas.width = Math.round(canvasWidth * pixelRatioVals.dpr);
+    canvas.height = Math.round(20 * pixelRatioVals.dpr);
+    canvas.style.width = Math.round(canvas.width / pixelRatioVals.dpr) + 'px';
+    canvas.style.height = Math.round(canvas.height / pixelRatioVals.dpr) + 'px';
 
     context.scale(pixelRatioVals.dpr,pixelRatioVals.dpr);
-    //context.translate(pixelRatioVals.dpr, 0);
+    context.translate(pixelRatioVals.dpr, 0);
       
     context.lineWidth = 0.5;
     context.strokeStyle = '#000';
@@ -991,7 +994,7 @@ drawRuler = function(rulerLen, cvtToCM, lftindnt, rgtindnt){
     let offset = 2;
 
     for(let interval = 0; interval <= pixelRatioVals.rulerLength; interval += pixelRatioVals.drawInterval){
-      let xPosA = interval*pixelRatioVals.dpi;
+      let xPosA = Math.round(interval*pixelRatioVals.dpi)+0.5;
     
       if(interval == Math.floor(interval) && interval > 0){
         if(currentWholeNumber+1 == 10){ offset+=4; }
@@ -1015,7 +1018,7 @@ drawRuler = function(rulerLen, cvtToCM, lftindnt, rgtindnt){
   
     triangleAt(lftindnt,context,pixelRatioVals,initialPadding,canvasWidth);
     triangleAt(pixelRatioVals.rulerLength-rgtindnt,context,pixelRatioVals,initialPadding,canvasWidth);
-    //context.translate(-pixelRatioVals.dpr, 0);
+    context.translate(-pixelRatioVals.dpr, -0);
 
   });
   

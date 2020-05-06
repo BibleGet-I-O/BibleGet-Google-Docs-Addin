@@ -203,8 +203,8 @@ function checkQuery(thisquery,indexes,thisbook){
   //docLog("Now running checkQuery on query = "+thisquery);
   thisbook = thisbook || '';
   try{
-    var regexA = hackRegex(/^[1-3]{0,1}((\p{L}\p{M}*)+)[1-9][0-9]{0,2}/);
-    var regexB = hackRegex(/^[1-3]{0,1}((\p{L}\p{M}*)+)/);
+    var regexA = hackRegex(/^[1-3]{0,1}((\p{L}\p{M}*)+)[1-9][0-9]{0,2}/); //match book followed by chapter
+    var regexB = hackRegex(/^[1-3]{0,1}((\p{L}\p{M}*)+)/);                //match just book
   }catch(e){
     alertMe('[checkQuery ERROR] '+e.message+' in '+e.fileName+' on line '+e.lineNumber);
   }

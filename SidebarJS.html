@@ -1,12 +1,7 @@
 <script>
-window.locale = '';
-google.script.run.withSuccessHandler(window.setLocaleVar).getUserLocale();
+var locale = '<?!=getUserLocale()?>';
 
-window.setLocaleVar = function(val){
-  window.locale = val;
-};
-
-window.queryServer = function(goodqueries){
+var queryServer = function(goodqueries){
   goodqueries = goodqueries || [];
   if(goodqueries.length===0){
     $('.spinner').hide();
@@ -24,9 +19,8 @@ window.queryServer = function(goodqueries){
       }
     }
   }
-}
-
-window.parseResponse = function(response){
+},
+parseResponse = function(response){
   if(response===false){
     $('.spinner').hide();
   }
@@ -39,18 +33,15 @@ window.parseResponse = function(response){
   if(myjson.hasOwnProperty("errors")){
     parseErrors(myjson.errors);
   }
-};
-
-window.parseResults = function(myjson){
+},
+parseResults = function(myjson){
     //google.script.run.docLog(JSON.stringify(myjson));
     google.script.run.withSuccessHandler(hideSpinner).docInsert(myjson);
-};
-
-window.hideSpinner = function(){
+},
+hideSpinner = function(){
     $('.spinner').hide();
-};
-
-window.parseErrors = function(errors){
+},
+parseErrors = function(errors){
     if(errors.length < 1){ return false; }
     else{
       var errmessage = '';
@@ -63,9 +54,8 @@ window.parseErrors = function(errors){
         alertMe('[Server Error Message] '+errmessage);
       }
     }
-};
-
-window.queryClean = function(query){
+},
+queryClean = function(query){
   // enforce query rules
   if(query===''){ 
     alertMe(__("I cannot send an empty query.",locale));
@@ -82,22 +72,19 @@ window.queryClean = function(query){
     query = query.replace(/:/g,',');
   }
   return query.split(';').filter(function(n){ return n !== ""; });
-};
-
-window.alertMe = function(errmex){
+}
+alertMe = function(errmex){
   $('.spinner').hide();
   google.script.run.alertMe(errmex); 
   return false; 
-};
-
-window.__ = function(str,ling){
+},
+__ = function(str,ling){
   if(translatables.hasOwnProperty(str) && translatables[str].hasOwnProperty(ling)){ 
     return translatables[str][ling]; 
   } 
   else{ return translatables[str].en; }
-};
-
-window.translatables = {
+}
+translatables = {
   "Please select a version.":{
     "en":"Please select a Bible version.",
     "it":"Si prega selezionare una versione della Bibbia.",
