@@ -1,4 +1,4 @@
-# BibleGet-Google-Docs-Addin
+# BibleGet-Google-Docs-Addon
 Google Docs Add-on for the BibleGet I/O Project
 
 The BibleGet I/O service is allows developers to submit complex queries for Scripture Quotations and receive in return structured data in various formats, the default being JSON. There are published online Bibles, but not services that give structured data responses; or if there are a few such services, they do not however accept complex queries. BibleGet I/O service wishes to provide such functionality.
