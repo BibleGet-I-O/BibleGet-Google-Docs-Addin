@@ -253,13 +253,13 @@ html>body div.tableContainer table {
 /* an element that has an overflow property set, the relative value translates into fixed.    */
 /* Ex: parent element DIV with a class of tableContainer has an overflow property set to auto */
 thead.fixedHeader tr {
-	position: relative
+	position: relative;
 }
 
 /* set THEAD element to have block level attributes. All other non-IE browsers            */
 /* this enables overflow to work on TBODY element. All other non-IE, non-Mozilla browsers */
 html>body thead.fixedHeader tr {
-	display: block
+	display: block;
 }
 
 /* make the TH elements pretty */
@@ -270,7 +270,7 @@ thead.fixedHeader th {
 	border-top: 1px solid #EB8;
 	font-weight: normal;
 	padding: 4px 3px;
-	text-align: left
+	text-align: left;
 }
 
 /* make the A elements pretty. makes for nice clickable headers                */
@@ -278,7 +278,7 @@ thead.fixedHeader a, thead.fixedHeader a:link, thead.fixedHeader a:visited {
 	color: #FFF;
 	display: block;
 	text-decoration: none;
-	width: 100%
+	width: 100%;
 }
 
 /* make the A elements pretty. makes for nice clickable headers                */
@@ -287,7 +287,7 @@ thead.fixedHeader a:hover {
 	color: #FFF;
 	display: block;
 	text-decoration: underline;
-	width: 100%
+	width: 100%;
 }
 
 /* define the table content to be scrollable                                              */
@@ -298,7 +298,7 @@ tbody.scrollContent {
 	display: block;
 	height: <? if(Object.size(versions) > 3){ ?>85<? }else{ ?>62<? } ?>px;
 	overflow: auto;
-	width: 100%
+	width: 100%;
 }
 
 /* make TD elements pretty. Provide alternating classes for striping the table */
@@ -498,22 +498,22 @@ span.ui-checkboxradio-icon { display: none; }
         </div>
         <div class="flexitem">
           <span id="paragraphalign" class="buttonset">
-            <input type="radio" id="paragraphalign-left" value="<?!=BGET.ALIGN.LEFT?>" name="paragraphalign" <? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.LEFT) { ?>CHECKED<? } ?>><label for="paragraphalign-left" title="ALIGN LEFT"><i class="material-icons md-18">format_align_left</i></label>
-            <input type="radio" id="paragraphalign-center" value="<?!=BGET.ALIGN.CENTER?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.CENTER) { ?>CHECKED<? } ?>><label for="paragraphalign-center" title="ALIGN CENTER"><i class="material-icons md-18">format_align_center</i></label>
-            <input type="radio" id="paragraphalign-right" value="<?!=BGET.ALIGN.RIGHT?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.RIGHT) { ?>CHECKED<? } ?>><label for="paragraphalign-right" title="ALIGN RIGHT"><i class="material-icons md-18">format_align_right</i></label>
-            <input type="radio" id="paragraphalign-justify" value="<?!=BGET.ALIGN.JUSTIFY?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.JUSTIFY) { ?>CHECKED<? } ?>><label for="paragraphalign-justify" title="JUSTIFY"><i class="material-icons md-18">format_align_justify</i></label>
+            <input type="radio" id="paragraphalign-left" value="<?!=BGET.ALIGN.LEFT?>" name="paragraphalign" <? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.LEFT) { ?>CHECKED<? } ?>><label for="paragraphalign-left" title="<?!=__('ALIGN LEFT',locale)?>"><i class="material-icons md-18">format_align_left</i></label>
+            <input type="radio" id="paragraphalign-center" value="<?!=BGET.ALIGN.CENTER?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.CENTER) { ?>CHECKED<? } ?>><label for="paragraphalign-center" title="<?!=__('ALIGN CENTER',locale)?>"><i class="material-icons md-18">format_align_center</i></label>
+            <input type="radio" id="paragraphalign-right" value="<?!=BGET.ALIGN.RIGHT?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.RIGHT) { ?>CHECKED<? } ?>><label for="paragraphalign-right" title="<?!=__('ALIGN RIGHT',locale)?>"><i class="material-icons md-18">format_align_right</i></label>
+            <input type="radio" id="paragraphalign-justify" value="<?!=BGET.ALIGN.JUSTIFY?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.ParagraphAlign==BGET.ALIGN.JUSTIFY) { ?>CHECKED<? } ?>><label for="paragraphalign-justify" title="<?!=__('Justify',locale).toUpperCase()?>"><i class="material-icons md-18">format_align_justify</i></label>
           </span>          
         </div>
         <div class="flexitem bibleget-font-family">
-          <select id="bibleget-font-family" class="bget-fontfamily-combobox" title="FONT"></select>
+          <select id="bibleget-font-family" class="bget-fontfamily-combobox" title="<?!=__('FONT',locale)?>"></select>
         </div>
         <div class="flexitem">
-          <span id="lineheightBtn" class="ui-button" title="LINEHEIGHT"><i class="material-icons md-18">format_line_spacing</i></span>
+          <span id="lineheightBtn" class="ui-button" title="<?!=__('Lineheight',locale).toUpperCase()?>"><i class="material-icons md-18">format_line_spacing</i></span>
           <select id="Lineheight-quote" class="selectmenu">
-            <option value="1.0"<? if(userProperties.ParagraphStyles.Lineheight=="1.0"){ ?> SELECTED<? } ?>>Single 1.0</option>
+            <option value="1.0"<? if(userProperties.ParagraphStyles.Lineheight=="1.0"){ ?> SELECTED<? } ?>><?!=__('Single',locale)?> 1.0</option>
             <option value="1.15"<? if(userProperties.ParagraphStyles.Lineheight=="1.15"){ ?> SELECTED<? } ?>>1.15</option>
             <option value="1.5"<? if(userProperties.ParagraphStyles.Lineheight=="1.5"){ ?> SELECTED<? } ?>>1&#189;</option>
-            <option value="2.0"<? if(userProperties.ParagraphStyles.Lineheight=="2.0"){ ?> SELECTED<? } ?>>Double 2.0</option>
+            <option value="2.0"<? if(userProperties.ParagraphStyles.Lineheight=="2.0"){ ?> SELECTED<? } ?>><?!=__('Double',locale)?> 2.0</option>
           </select>
         </div>
         <div class="flexitem">
@@ -528,24 +528,24 @@ span.ui-checkboxradio-icon { display: none; }
       <div class="toolbar ui-widget-header ui-corner-bottom">
         <div>
           <span id="bookchapterstyle" class="buttonset textstyles">
-            <input type="checkbox" id="BookChapterStyles-<?!=BGET.TEXTSTYLE.BOLD?>" value="<?!=BGET.TEXTSTYLE.BOLD?>" name="BookChapterStyles-<?!=BGET.TEXTSTYLE.BOLD?>" <? if (userProperties.BookChapterStyles.BOLD) { ?>CHECKED<? } ?>><label for="BookChapterStyles-<?!=BGET.TEXTSTYLE.BOLD?>" title="BOLD"><b><span><?!=__("B",locale)?></span></b></label>
-            <input type="checkbox" id="BookChapterStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" value="<?!=BGET.TEXTSTYLE.ITALIC?>" name="BookChapterStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" <? if (userProperties.BookChapterStyles.ITALIC) { ?>CHECKED<? } ?>><label for="BookChapterStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" title="ITALIC"><b><i><span><?!=__("I",locale)?></span></i></b></label>
-            <input type="checkbox" id="BookChapterStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" value="<?!=BGET.TEXTSTYLE.UNDERLINE?>" name="BookChapterStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" <? if (userProperties.BookChapterStyles.UNDERLINE) { ?>CHECKED<? } ?>><label for="BookChapterStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" title="UNDERLINE"><b><u><span><?!=__("U",locale)?></span></u></b></label>
-            <input type="checkbox" id="BookChapterStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" value="<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" name="BookChapterStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" <? if (userProperties.BookChapterStyles.STRIKETHROUGH) { ?>CHECKED<? } ?>><label for="BookChapterStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" title="STRIKETHROUGH"><b><del><span><?!=__("S",locale)?></span></del></b></label>
+            <input type="checkbox" id="BookChapterStyles-<?!=BGET.TEXTSTYLE.BOLD?>" value="<?!=BGET.TEXTSTYLE.BOLD?>" name="BookChapterStyles-<?!=BGET.TEXTSTYLE.BOLD?>" <? if (userProperties.BookChapterStyles.BOLD) { ?>CHECKED<? } ?>><label for="BookChapterStyles-<?!=BGET.TEXTSTYLE.BOLD?>" title="<?!=__("BOLD",locale)?>"><b><span><?!=__("B",locale)?></span></b></label>
+            <input type="checkbox" id="BookChapterStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" value="<?!=BGET.TEXTSTYLE.ITALIC?>" name="BookChapterStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" <? if (userProperties.BookChapterStyles.ITALIC) { ?>CHECKED<? } ?>><label for="BookChapterStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" title="<?!=__("ITALIC",locale)?>"><b><i><span><?!=__("I",locale)?></span></i></b></label>
+            <input type="checkbox" id="BookChapterStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" value="<?!=BGET.TEXTSTYLE.UNDERLINE?>" name="BookChapterStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" <? if (userProperties.BookChapterStyles.UNDERLINE) { ?>CHECKED<? } ?>><label for="BookChapterStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" title="<?!=__("UNDERLINE",locale)?>"><b><u><span><?!=__("U",locale)?></span></u></b></label>
+            <input type="checkbox" id="BookChapterStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" value="<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" name="BookChapterStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" <? if (userProperties.BookChapterStyles.STRIKETHROUGH) { ?>CHECKED<? } ?>><label for="BookChapterStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" title="<?!=__("STRIKETHROUGH",locale)?>"><b><del><span><?!=__("S",locale)?></span></del></b></label>
           </span>      
           <span id="bookchapteralignment" class="buttonset">
-            <input type="radio" id="bookchapter-normal" value="<?!=BGET.VALIGN.NORMAL?>" name="bookchapteralignment" <? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.NORMAL) { ?>CHECKED<? } ?>><label for="bookchapter-normal" title="NORMAL"><span><b>X</b></span></label>
-            <input type="radio" id="bookchapter-superscript" value="<?!=BGET.VALIGN.SUPERSCRIPT?>" name="bookchapteralignment"<? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.SUPERSCRIPT) { ?>CHECKED<? } ?>><label for="bookchapter-superscript" title="SUPERSCRIPT"><span><b>X</b><b style="position: relative; top: -0.8em; font-size: 50%;">2</b></span></label>
-            <input type="radio" id="bookchapter-subscript" value="<?!=BGET.VALIGN.SUBSCRIPT?>" name="bookchapteralignment"<? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.SUBSCRIPT) { ?>CHECKED<? } ?>><label for="bookchapter-subscript" title="SUBSCRIPT"><span><b>X</b><b style="position: relative; top: 0.2em; font-size: 50%;">2</b></span></label>
+            <input type="radio" id="bookchapter-normal" value="<?!=BGET.VALIGN.NORMAL?>" name="bookchapteralignment" <? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.NORMAL) { ?>CHECKED<? } ?>><label for="bookchapter-normal" title="<?!=__("NORMAL",locale)?>"><span><b>X</b></span></label>
+            <input type="radio" id="bookchapter-superscript" value="<?!=BGET.VALIGN.SUPERSCRIPT?>" name="bookchapteralignment"<? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.SUPERSCRIPT) { ?>CHECKED<? } ?>><label for="bookchapter-superscript" title="<?!=__("SUPERSCRIPT",locale)?>"><span><b>X</b><b style="position: relative; top: -0.8em; font-size: 50%;">2</b></span></label>
+            <input type="radio" id="bookchapter-subscript" value="<?!=BGET.VALIGN.SUBSCRIPT?>" name="bookchapteralignment"<? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.SUBSCRIPT) { ?>CHECKED<? } ?>><label for="bookchapter-subscript" title="<?!=__("SUBSCRIPT",locale)?>"><span><b>X</b><b style="position: relative; top: 0.2em; font-size: 50%;">2</b></span></label>
           </span>
-          <select id="bookchapter-fontsize" name="bookchapter-fontsize" class="fontsizes gapp-addon" title="FONT SIZE">
+          <select id="bookchapter-fontsize" name="bookchapter-fontsize" class="fontsizes gapp-addon" title="<?!=__("FONT SIZE",locale)?>">
           <? var ops=[8,9,10,11,12,14,18,24,30,36,48,60,72,96]; 
              for(var i=0;i<ops.length;i++){ ?>
              <option value=<?!= ops[i] ?><? if(userProperties.BookChapterStyles.FONT_SIZE == ops[i]){ ?> SELECTED<? } ?>><?= ops[i] ?></option>
           <? } ?>
           </select>
-          <input type="color" id="bookchapter-color" value="<?!= userProperties.BookChapterStyles.FOREGROUND_COLOR ?>" title="TEXT COLOR" />
-          <input type="color" id="bookchapter-bgcolor" value="<?!= userProperties.BookChapterStyles.BACKGROUND_COLOR ?>" title="HIGHLIGHT COLOR" />
+          <input type="color" id="bookchapter-color" value="<?!= userProperties.BookChapterStyles.FOREGROUND_COLOR ?>" title="<?!=__("TEXT COLOR",locale)?>" />
+          <input type="color" id="bookchapter-bgcolor" value="<?!= userProperties.BookChapterStyles.BACKGROUND_COLOR ?>" title="<?!=__("HIGHLIGHT COLOR",locale)?>" />
         </div>
       </div>    
 
@@ -553,24 +553,24 @@ span.ui-checkboxradio-icon { display: none; }
       <div class="toolbar ui-widget-header ui-corner-bottom">
         <div>
           <span id="versenumberstyle" class="buttonset textstyles">
-            <input type="checkbox" id="VerseNumberStyles-<?!=BGET.TEXTSTYLE.BOLD?>" value="<?!=BGET.TEXTSTYLE.BOLD?>" name="VerseNumberStyles-<?!=BGET.TEXTSTYLE.BOLD?>" <? if(userProperties.VerseNumberStyles.BOLD){ ?>CHECKED<? } ?>><label for="VerseNumberStyles-<?!=BGET.TEXTSTYLE.BOLD?>" title="BOLD"><b><span><?!=__("B",locale)?></span></b></label>
-            <input type="checkbox" id="VerseNumberStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" value="<?!=BGET.TEXTSTYLE.ITALIC?>" name="VerseNumberStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" <? if(userProperties.VerseNumberStyles.ITALIC){ ?>CHECKED<? } ?>><label for="VerseNumberStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" title="ITALIC"><b><i><span><?!=__("I",locale)?></span></i></b></label>
-            <input type="checkbox" id="VerseNumberStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" value="<?!=BGET.TEXTSTYLE.UNDERLINE?>" name="VerseNumberStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" <? if(userProperties.VerseNumberStyles.UNDERLINE){ ?>CHECKED<? } ?>><label for="VerseNumberStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" title="UNDERLINE"><b><u><span><?!=__("U",locale)?></span></u></b></label>
-            <input type="checkbox" id="VerseNumberStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" value="<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" name="VerseNumberStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" <? if (userProperties.VerseNumberStyles.STRIKETHROUGH) { ?>CHECKED<? } ?>><label for="VerseNumberStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" title="STRIKETHROUGH"><b><del><span><?!=__("S",locale)?></span></del></b></label>
+            <input type="checkbox" id="VerseNumberStyles-<?!=BGET.TEXTSTYLE.BOLD?>" value="<?!=BGET.TEXTSTYLE.BOLD?>" name="VerseNumberStyles-<?!=BGET.TEXTSTYLE.BOLD?>" <? if(userProperties.VerseNumberStyles.BOLD){ ?>CHECKED<? } ?>><label for="VerseNumberStyles-<?!=BGET.TEXTSTYLE.BOLD?>" title="<?!=__("BOLD",locale)?>"><b><span><?!=__("B",locale)?></span></b></label>
+            <input type="checkbox" id="VerseNumberStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" value="<?!=BGET.TEXTSTYLE.ITALIC?>" name="VerseNumberStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" <? if(userProperties.VerseNumberStyles.ITALIC){ ?>CHECKED<? } ?>><label for="VerseNumberStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" title="<?!=__("ITALIC",locale)?>"><b><i><span><?!=__("I",locale)?></span></i></b></label>
+            <input type="checkbox" id="VerseNumberStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" value="<?!=BGET.TEXTSTYLE.UNDERLINE?>" name="VerseNumberStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" <? if(userProperties.VerseNumberStyles.UNDERLINE){ ?>CHECKED<? } ?>><label for="VerseNumberStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" title="<?!=__("UNDERLINE",locale)?>"><b><u><span><?!=__("U",locale)?></span></u></b></label>
+            <input type="checkbox" id="VerseNumberStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" value="<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" name="VerseNumberStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" <? if (userProperties.VerseNumberStyles.STRIKETHROUGH) { ?>CHECKED<? } ?>><label for="VerseNumberStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" title="<?!=__("STRIKETHROUGH",locale)?>"><b><del><span><?!=__("S",locale)?></span></del></b></label>
           </span>
           <span id="versenumberalignment" class="buttonset">
-            <input type="radio" id="versenumber-normal" value="<?!=BGET.VALIGN.NORMAL?>" name="versenumberalignment" <? if(userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.NORMAL){ ?>CHECKED<? } ?>><label for="versenumber-normal" title="NORMAL"><span><b>X</b></span></label>
-            <input type="radio" id="versenumber-superscript" value="<?!=BGET.VALIGN.SUPERSCRIPT?>" name="versenumberalignment"  <? if(userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.SUPERSCRIPT){ ?>CHECKED<? } ?>><label for="versenumber-superscript" title="SUPERSCRIPT"><span><b>X</b><b style="position: relative; top: -0.8em; font-size: 50%;">2</b></span></label>
-            <input type="radio" id="versenumber-subscript" value="<?!=BGET.VALIGN.SUBSCRIPT?>" name="versenumberalignment" <? if(userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.SUBSCRIPT){ ?>CHECKED<? } ?>><label for="versenumber-subscript" title="SUBSCRIPT"><span><b>X</b><b style="position: relative; top: 0.2em; font-size: 50%;">2</b></span></label>
+            <input type="radio" id="versenumber-normal" value="<?!=BGET.VALIGN.NORMAL?>" name="versenumberalignment" <? if(userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.NORMAL){ ?>CHECKED<? } ?>><label for="versenumber-normal" title="<?!=__("NORMAL",locale)?>"><span><b>X</b></span></label>
+            <input type="radio" id="versenumber-superscript" value="<?!=BGET.VALIGN.SUPERSCRIPT?>" name="versenumberalignment"  <? if(userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.SUPERSCRIPT){ ?>CHECKED<? } ?>><label for="versenumber-superscript" title="<?!=__("SUPERSCRIPT",locale)?>"><span><b>X</b><b style="position: relative; top: -0.8em; font-size: 50%;">2</b></span></label>
+            <input type="radio" id="versenumber-subscript" value="<?!=BGET.VALIGN.SUBSCRIPT?>" name="versenumberalignment" <? if(userProperties.VerseNumberStyles.VALIGN==BGET.VALIGN.SUBSCRIPT){ ?>CHECKED<? } ?>><label for="versenumber-subscript" title="<?!=__("SUBSCRIPT",locale)?>"><span><b>X</b><b style="position: relative; top: 0.2em; font-size: 50%;">2</b></span></label>
           </span>
-          <select id="versenumber-fontsize" name="versenumber-fontsize" class="fontsizes gapp-addon" title="FONT SIZE">
+          <select id="versenumber-fontsize" name="versenumber-fontsize" class="fontsizes gapp-addon" title="<?!=__("FONT SIZE",locale)?>">
           <? var ops=[8,9,10,11,12,14,18,24,30,36,48,60,72,96]; 
              for(var i=0;i<ops.length;i++){ ?>
              <option value=<?= ops[i] ?><? if(userProperties.VerseNumberStyles.FONT_SIZE == ops[i]){ ?> SELECTED<? } ?>><?= ops[i] ?></option>
           <? } ?>
           </select>
-          <input type="color" id="versenumber-color" value="<?!= userProperties.VerseNumberStyles.FOREGROUND_COLOR ?>" title="TEXT COLOR" />
-          <input type="color" id="versenumber-bgcolor" value="<?!= userProperties.VerseNumberStyles.BACKGROUND_COLOR ?>" title="HIGHLIGHT COLOR" />
+          <input type="color" id="versenumber-color" value="<?!= userProperties.VerseNumberStyles.FOREGROUND_COLOR ?>" title="<?!=__("TEXT COLOR",locale)?>" />
+          <input type="color" id="versenumber-bgcolor" value="<?!= userProperties.VerseNumberStyles.BACKGROUND_COLOR ?>" title="<?!=__("HIGHLIGHT COLOR",locale)?>" />
         </div>
       </div>    
 
@@ -578,24 +578,24 @@ span.ui-checkboxradio-icon { display: none; }
       <div class="toolbar ui-widget-header ui-corner-bottom">
         <div>
           <span id="versetextstyle" class="buttonset textstyles">
-            <input type="checkbox" id="VerseTextStyles-<?!=BGET.TEXTSTYLE.BOLD?>" value="<?!=BGET.TEXTSTYLE.BOLD?>" name="VerseTextStyles-<?!=BGET.TEXTSTYLE.BOLD?>" <? if(userProperties.VerseTextStyles.BOLD){ ?>CHECKED<? } ?>><label for="VerseTextStyles-<?!=BGET.TEXTSTYLE.BOLD?>" title="BOLD"><b><span><?!=__("B",locale)?></span></b></label>
-            <input type="checkbox" id="VerseTextStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" value="<?!=BGET.TEXTSTYLE.ITALIC?>" name="VerseTextStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" <? if(userProperties.VerseTextStyles.ITALIC){ ?>CHECKED<? } ?>><label for="VerseTextStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" title="ITALIC"><b><i><span><?!=__("I",locale)?></span></i></b></label>
-            <input type="checkbox" id="VerseTextStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" value="<?!=BGET.TEXTSTYLE.UNDERLINE?>" name="VerseTextStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" <? if(userProperties.VerseTextStyles.UNDERLINE){ ?>CHECKED<? } ?>><label for="VerseTextStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" title="UNDERLINE"><b><u><span><?!=__("U",locale)?></span></u></b></label>
-            <input type="checkbox" id="VerseTextStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" value="<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" name="VerseTextStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" <? if (userProperties.VerseTextStyles.STRIKETHROUGH) { ?>CHECKED<? } ?>><label for="VerseTextStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" title="STRIKETHROUGH"><b><del><span><?!=__("S",locale)?></span></del></b></label>
+            <input type="checkbox" id="VerseTextStyles-<?!=BGET.TEXTSTYLE.BOLD?>" value="<?!=BGET.TEXTSTYLE.BOLD?>" name="VerseTextStyles-<?!=BGET.TEXTSTYLE.BOLD?>" <? if(userProperties.VerseTextStyles.BOLD){ ?>CHECKED<? } ?>><label for="VerseTextStyles-<?!=BGET.TEXTSTYLE.BOLD?>" title="<?!=__("BOLD",locale)?>"><b><span><?!=__("B",locale)?></span></b></label>
+            <input type="checkbox" id="VerseTextStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" value="<?!=BGET.TEXTSTYLE.ITALIC?>" name="VerseTextStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" <? if(userProperties.VerseTextStyles.ITALIC){ ?>CHECKED<? } ?>><label for="VerseTextStyles-<?!=BGET.TEXTSTYLE.ITALIC?>" title="<?!=__("ITALIC",locale)?>"><b><i><span><?!=__("I",locale)?></span></i></b></label>
+            <input type="checkbox" id="VerseTextStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" value="<?!=BGET.TEXTSTYLE.UNDERLINE?>" name="VerseTextStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" <? if(userProperties.VerseTextStyles.UNDERLINE){ ?>CHECKED<? } ?>><label for="VerseTextStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" title="<?!=__("UNDERLINE",locale)?>"><b><u><span><?!=__("U",locale)?></span></u></b></label>
+            <input type="checkbox" id="VerseTextStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" value="<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" name="VerseTextStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" <? if (userProperties.VerseTextStyles.STRIKETHROUGH) { ?>CHECKED<? } ?>><label for="VerseTextStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" title="<?!=__("STRIKETHROUGH",locale)?>"><b><del><span><?!=__("S",locale)?></span></del></b></label>
           </span>      
           <span id="versetextalignment" class="buttonset">
-            <input type="radio" id="versetext-normal" name="versetextalignment" value="<?!=BGET.VALIGN.NORMAL?>" <? if(userProperties.VerseTextStyles.VALIGN == BGET.VALIGN.NORMAL){ ?>CHECKED<? } ?>><label for="versetext-normal" title="NORMAL"><span><b>X</b></span></label>
-            <input type="radio" id="versetext-superscript" name="versetextalignment" value="<?!=BGET.VALIGN.SUPERSCRIPT?>" <? if(userProperties.VerseTextStyles.VALIGN == BGET.VALIGN.SUPERSCRIPT){ ?>CHECKED<? } ?>><label for="versetext-superscript" title="SUPERSCRIPT"><span><b>X</b><b style="position: relative; top: -0.8em; font-size: 50%;">2</b></span></label>
-            <input type="radio" id="versetext-subscript" name="versetextalignment" value="<?!=BGET.VALIGN.SUBSCRIPT?>" <? if(userProperties.VerseTextStyles.VALIGN == BGET.VALIGN.SUBSCRIPT){ ?>CHECKED<? } ?>><label for="versetext-subscript" title="SUBSCRIPT"><span><b>X</b><b style="position: relative; top: 0.2em; font-size: 50%;">2</b></span></label>
+            <input type="radio" id="versetext-normal" name="versetextalignment" value="<?!=BGET.VALIGN.NORMAL?>" <? if(userProperties.VerseTextStyles.VALIGN == BGET.VALIGN.NORMAL){ ?>CHECKED<? } ?>><label for="versetext-normal" title="<?!=__("NORMAL",locale)?>"><span><b>X</b></span></label>
+            <input type="radio" id="versetext-superscript" name="versetextalignment" value="<?!=BGET.VALIGN.SUPERSCRIPT?>" <? if(userProperties.VerseTextStyles.VALIGN == BGET.VALIGN.SUPERSCRIPT){ ?>CHECKED<? } ?>><label for="versetext-superscript" title="<?!=__("SUPERSCRIPT",locale)?>"><span><b>X</b><b style="position: relative; top: -0.8em; font-size: 50%;">2</b></span></label>
+            <input type="radio" id="versetext-subscript" name="versetextalignment" value="<?!=BGET.VALIGN.SUBSCRIPT?>" <? if(userProperties.VerseTextStyles.VALIGN == BGET.VALIGN.SUBSCRIPT){ ?>CHECKED<? } ?>><label for="versetext-subscript" title="<?!=__("SUBSCRIPT",locale)?>"><span><b>X</b><b style="position: relative; top: 0.2em; font-size: 50%;">2</b></span></label>
           </span>
-          <select id="versetext-fontsize" name="versetext-fontsize" class="fontsizes gapp-addon" title="FONT SIZE">
+          <select id="versetext-fontsize" name="versetext-fontsize" class="fontsizes gapp-addon" title="<?!=__("FONT SIZE",locale)?>">
             <? var ops=[8,9,10,11,12,14,18,24,30,36,48,60,72,96]; 
             for(var i=0;i<ops.length;i++){ ?>
             <option value=<?!= ops[i] ?><? if(userProperties.VerseTextStyles.FONT_SIZE == ops[i]){ ?> SELECTED<? } ?>><?= ops[i] ?></option>
             <? } ?>
           </select>
-          <input type="color" id="versetext-color" value="<?!= userProperties.VerseTextStyles.FOREGROUND_COLOR ?>" title="TEXT COLOR" />
-          <input type="color" id="versetext-bgcolor" value="<?!= userProperties.VerseTextStyles.BACKGROUND_COLOR ?>" title="HIGHLIGHT COLOR" />
+          <input type="color" id="versetext-color" value="<?!= userProperties.VerseTextStyles.FOREGROUND_COLOR ?>" title="<?!=__("TEXT COLOR",locale)?>" />
+          <input type="color" id="versetext-bgcolor" value="<?!= userProperties.VerseTextStyles.BACKGROUND_COLOR ?>" title="<?!=__("HIGHLIGHT COLOR",locale)?>" />
         </div>
       </div> <!-- END TOOLBAR WIDGET -->    
     </div> <!-- END ACCORDION  -->

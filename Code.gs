@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-const VERSION = 21; //corresponds with version in the store; local version is -1!
+const VERSION = 24; 
 const ADDONSTATE = {
   PRODUCTION: "production",
   DEVELOPMENT: "development"
@@ -14,6 +14,7 @@ const CURRENTSTATE = ADDONSTATE.DEVELOPMENT; //make sure to switch to PRODUCTION
 const REQUESTPARAMS = {"rettype":"json","appid":"googledocs"};
 const ENDPOINTURL = "https://query.bibleget.io/";
 const ENDPOINTURLMETADATA = "https://query.bibleget.io/metadata.php";
+const ENDPOINTURLSEARCH = "https://query.bibleget.io/search.php";
 const SETTINGSWINDOW = { HEIGHT: 580, WIDTH: 900 };
 
 //DEFINE CONSTANTS FOR USER PREFERENCES
@@ -149,27 +150,27 @@ function onInstall(e){
 }
 
 function onOpen(e) {
-  var locale = getUserLocale();
+  let locale = getUserLocale();
 
   if (e && (e.authMode == ScriptApp.AuthMode.NONE)) {
     //User has not yet granted permissions, we will just make a basic menu to start workflow
     DocumentApp.getUi().createAddonMenu()
-    .addItem(__('Start',locale), 'openSimpleSidebar')
+    .addItem(__('Start',locale),        'openSimpleSidebar')
     .addSeparator()
     .addItem(__('Instructions',locale), 'openHelpSidebar')
-    .addItem(__('Contribute',locale), 'openContributionModal')
+    .addItem(__('Contribute',locale),   'openContributionModal')
     .addToUi();
     //consoleLog('Permissions not yet granted');
   }
   else{ //(e && (e.authMode == ScriptApp.AuthMode.LIMITED || e.authMode == ScriptApp.AuthMode.FULL))
     // Initialize user preferences ONLY after user has granted permission to the Properties Service!
     DocumentApp.getUi().createAddonMenu()
-    .addItem(__('Start',locale), 'openMainSidebar')
+    .addItem(__('Start',locale),         'openMainSidebar')
     .addSeparator()
-    .addItem(__('Instructions',locale), 'openHelpSidebar')
-    .addItem(__('Settings',locale), 'openSettings')
+    .addItem(__('Instructions',locale),  'openHelpSidebar')
+    .addItem(__('Settings',locale),      'openSettings')
     .addItem(__('Send Feedback',locale), 'openSendFeedback')
-    .addItem(__('Contribute',locale), 'openContributionModal')
+    .addItem(__('Contribute',locale),    'openContributionModal')
     .addToUi();
     if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
       consoleLog('about to run setDefaultProperties from onOpen');
@@ -235,9 +236,22 @@ function openMainSidebar(){
 
 function openHelpSidebar(){
   let locale = getUserLocale();
-  let html = HtmlService.createTemplateFromFile('Help.html');
+  let html = HtmlService.createTemplateFromFile('Help');
   //docLog(html.evaluate().getContent());
   DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O - '+__('Instructions',locale)));
+}
+
+function openSearchResults($searchresults){
+  let locale = getUserLocale();
+  let html = HtmlService.createTemplateFromFile('SearchResults');
+  html.searchresults = JSON.stringify($searchresults);
+  consoleLog("stringified search results:");
+  consoleLog(JSON.stringify($searchresults));
+  let evaluated = html.evaluate()
+      .setWidth(SETTINGSWINDOW.WIDTH)
+      .setHeight(SETTINGSWINDOW.HEIGHT)
+      .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+  DocumentApp.getUi().showModalDialog(evaluated, __('Search Results',locale));
 }
 
 
@@ -256,29 +270,30 @@ function setDefaultUserProperties(){
     consoleLog('running function setDefaultUserProperties');
   }   
   let userProperties = PropertiesService.getUserProperties();
+  /*
   if(VERSION>20){
     userProperties.deleteAllProperties();
   }
-  
+  */
   let usrProperties = userProperties.getProperties();
   let checkedUserProperties = {};
   
   for(let [key,value] of Object.entries(DefaultUserProperties)){      
     if(!usrProperties.hasOwnProperty(key)){
       if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
-        consoleLog(key+'property not set, now getting from DefaultUserProperties');
+        consoleLog(key+' property not set, now getting from DefaultUserProperties');
       }   
       checkedUserProperties[key] = JSON.stringify(value);
     }
     else if(key=="RecentSelectedVersions"){
       if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
-        consoleLog(key+'property will be set based on current usrProperties else DefaultUserProperties');
+        consoleLog(key+' property will be set based on current usrProperties else DefaultUserProperties');
       }   
       checkedUserProperties[key] = (usrProperties[key] != DefaultUserProperties[key] ? usrProperties[key] : DefaultUserProperties[key]);
     }
     else{
       if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
-        consoleLog(key+'property will be JSON parsed and the obj value will be checked key by key');
+        consoleLog(key+' property will be JSON parsed and the obj value will be checked key by key');
       }   
       let decodedUserProperties = JSON.parse(usrProperties[key]);
       let propsObj = {};
@@ -321,7 +336,7 @@ function getUserProperties(nostringify=false){
   let userProperties = propsService.getProperties();
   let currentProperties = {};
   for(let [key, value] of Object.entries(userProperties)){
-    if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){ consoleLog('function getUserProperties will parse = ' + key + ' from saved user properties, with value ['+ (typeof value) +']: ' +value); }    
+    if(CURRENTSTATE === ADDONSTATE.DEVELOPMENT && nostringify===true){ consoleLog('function getUserProperties will parse = ' + key + ' from saved user properties, with value ['+ (typeof value) +']: ' +value); }    
     currentProperties[key] = (nostringify ? JSON.parse(value) : value);
     
     //for quality insurance and for good measure
@@ -338,7 +353,7 @@ function getUserProperties(nostringify=false){
         else if(BGET.TYPECASTING.STRINGARRAYS.includes(key1) && typeof currentProperties[key][key1] !== 'object') { currentProperties[key][key1] = JSON.parse(value1); }
       }
     }
-    if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT && nostringify===true){ consoleLog(key + ' parsed, result : '+currentProperties[key]); }
+    if(CURRENTSTATE === ADDONSTATE.DEVELOPMENT && nostringify===true){ consoleLog(key + ' parsed, result : '+currentProperties[key]); }
   }     
   return currentProperties;
 }
@@ -428,7 +443,7 @@ function sendMail(txt) {
 function fetchData(request){
   let {query,version} = request;
   let {rettype,appid} = REQUESTPARAMS;
-  var payload = {'query':query,'version':version,'return':rettype,'appid':appid,'pluginversion':VERSION};
+  let payload = {'query':query,'version':version,'return':rettype,'appid':appid,'pluginversion':VERSION};
   try{
     var response = UrlFetchApp.fetch(ENDPOINTURL,{'method':'post','payload':payload});
     var responsecode = response.getResponseCode();
@@ -448,11 +463,47 @@ function fetchData(request){
   }
 }
 
-//Function getUserLocale @ used in pretty much every UI in order to determine the Docs interface locale
-function getUserLocale(){
-  return Session.getActiveUserLocale();
+function fetchSearchResults(request){
+  let {query,version,keyword} = request;
+  let {rettype,appid} = REQUESTPARAMS;
+  let payload = {'query':query,'version':version,'return':rettype,'appid':appid,'pluginversion':VERSION,'keyword':keyword};
+  consoleLog(payload);
+  consoleLog(ENDPOINTURLSEARCH);
+  try{
+    var response = UrlFetchApp.fetch(ENDPOINTURLSEARCH,{'method':'post','payload':payload});
+    var responsecode = response.getResponseCode();
+    if(responsecode==200){
+      //consoleLog("Response code was 200.");
+      let content = response.getContentText();
+      consoleLog("Contents:");
+      consoleLog(content);
+      openSearchResults(content);
+    }
+    else{
+      alertMe('BIBLEGET SERVER ERROR (response '+responsecode+'). Please wait a few minutes and try again.');
+    }
+  }catch(e){
+    alertMe('ERROR in communication with BibleGet Server. Please wait a few minutes and try again. ('+e.message+')');
+    return false;
+  }
+  
 }
 
+//Function getUserLocale @ used in pretty much every UI in order to determine the Docs interface locale
+function getUserLocale(){
+  let locale = Session.getActiveUserLocale();
+  //if(locale.length > 2){
+  //  locale = locale.slice(0,2);
+  //}
+  //Logger.log(locale);
+  return locale; //if user locale is country specific (i.e. "pt_pt") return only the general language portion, two letter ISO code without country specification
+}
+//TODO: I think I need help from a Google representative. I cannot for the life of me get Portugal Portuguese to work. 
+//It is returning "pt_PT" as locale, rather than a two letter ISO code. If I try slice or substring or substr the add-on doesn't even load for some reason!
+//I get this error: "Google Apps Script: Exception: Argumento inválido: caption"
+//If I don't slice or substring, I get the add-on menu loaded but it's in English (my translatables don't recognize "pt_PT") and if I try to "Start" 
+//I get another blocking error: "pt_PT" is invalid language code or something like that. This can't be on my end because I handle invalid language codes.
+//It must be an error on Google's end.
 
 function makeUnique(str) {
   return String.prototype.concat(...new Set(str));
@@ -698,12 +749,20 @@ function docInsert(json){
     //before appending the verse text, we need to parse it to see if it contains special markup
     if(/<[\/]{0,1}(?:sm|po|speaker|i|pr)[f|l|s|i]{0,1}[f|l]{0,1}>/.test(verses[i].text)){
       consoleLog("looks like we have special formatting that we have to deal with in this verse... {"+verses[i].text+"}");      
-      verses[i].text = verses[i].text.replace(/(\n|\r)/gm,"");
+      //We replace newline or carriage return characters with a blank space in any case
+      verses[i].text = verses[i].text.replace(/(\r\n|\n|\r)/gm," "); 
+      //Now replace all multiple spaces with a single space
+      verses[i].text = verses[i].text.replace(/  +/g, ' ');
       
+      //However we will not deal with it in a special way if the user has chosen to override the special formatting
       if(BibleGetProperties.ParagraphStyles.NoVersionFormatting){
         //if user preferences ask to override version formatting, we just need to remove the formatting tags from the text
-        verses[i].text = verses[i].text.replace(/<[\/]{0,1}(?:po|speaker|i|pr)[f|l|s|i]{0,1}[f|l]{0,1}>/g," "); 
-        verses[i].text = verses[i].text.replace(/<[\/]{0,1}sm>/g,""); 
+        //We will first remove line breaks, operating on a multiline level, so that we have a single line of text to work with
+        verses[i].text = verses[i].text.replace(/<[\/]{0,1}(?:po|speaker|i|pr)[f|l|s|i]{0,1}[f|l]{0,1}>/g," "); //replace tags (whether opening or closing tags) with a blank space
+        verses[i].text = verses[i].text.replace(/<[\/]{0,1}sm>/g,""); //replace <sm> tags whether opening or closing
+        //I had to do the <sm> tag separately because it was not always being removed. However I have a theory that this is because of recursiveness
+        //when you have nested tags. We should do a recursive check for tags within tags.
+        //Now we're ready to append the text to the paragraph
         let versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
         setTextStyles(versetext,BibleGetProperties,BGET.PTYPE.VERSETEXT);
         consoleLog("NoVersionFormatting=true, simply removing the tags. Verse text is now : <"+verses[i].text+">");  
@@ -712,7 +771,15 @@ function docInsert(json){
       }
       
     }
+    //If we don't have special tags, we still want to check for newline characters however
+    //and deal with them according to the NoVersionFormatting user option
     else{
+      //We will still replace newline and carriage return characters even if we don't have special tags
+      //as long as the NoVersionFormatting override is active
+      if(BibleGetProperties.ParagraphStyles.NoVersionFormatting){
+        verses[i].text = verses[i].text.replace(/(\r\n|\n|\r)/gm," "); //We replace newline or carriage return characters with a blank space in any case
+        verses[i].text = verses[i].text.replace(/  +/g, ' ');
+      }
       BibleGetGlobal.firstFmtVerse = true;
       let versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
       setTextStyles(versetext,BibleGetProperties,BGET.PTYPE.VERSETEXT);

@@ -1,0 +1,79 @@
+<?
+  let locale = getUserLocale();
+?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+
+table, td, a {
+	color: #000;
+	font: normal normal 12px Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+/* define height and width of scrollable area. Add 16px to width for scrollbar */
+#tableContainer {
+	border: 1px solid #963;
+	overflow-y: auto;
+    max-height: 500px;
+}
+
+#tableContainer table {
+  width: 100%;
+}
+
+#tableContainer th, td { padding: 8px 16px; }
+
+#tableContainer thead th {
+	position: sticky;
+    top: 0;
+	background: #C96;
+	border-left: 1px solid #EB8;
+	border-right: 1px solid #B74;
+	border-top: 1px solid #EB8;
+	font-weight: normal;
+	text-align: center;
+    color: White;
+    font-weight: bold;
+}
+
+#tableContainer tbody td {
+  border-bottom: 1px groove White;
+  background-color: #EFEFEF;
+}
+
+mark {
+  font-weight: bold;
+}
+    </style>
+  </head>
+  <body>
+    <div id="tableContainer" class="tableContainer">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable" id="SearchResultsTable">
+        <thead class="fixedHeader">
+          <tr class="alternateRow"><th><?=__('BOOK',locale)?></th><th><?=__('CHAPTER',locale)?></th><th><?=__('VERSE',locale)?></th><th><?=__('VERSE TEXT',locale)?></th></tr>
+        </thead>
+        <tbody class="scrollContent">
+        </tbody>
+      </table>
+    </div>    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+      let locale = '<?!=getUserLocale()?>',
+          addMark = function(text,keyword){
+            return text.replace(new RegExp(keyword),'<mark>'+keyword+'</mark>');
+          },
+          populateTable = function(bibleBooksL10n){
+            let $searchresults = JSON.parse(<?!=searchresults?>);
+            if($searchresults.hasOwnProperty("results") && typeof $searchresults.results === 'object'){
+              for(let $result of $searchresults.results){
+                jQuery("#SearchResultsTable tbody").append('<tr><td>'+bibleBooksL10n.biblebooks[parseInt($result.book)-1].split('|')[0]+'</td><td>'+$result.chapter+'</td><td>'+$result.verse+'</td><td>'+addMark($result.text,$searchresults.info.keyword)+'</td></tr>');
+              }
+            }
+          };
+          google.script.run.withSuccessHandler(populateTable).getLocalizedBookNames(locale);
+    </script>
+  </body>
+</html>
+

@@ -113,11 +113,11 @@ var __ = function(str,ling){
       "Paragraph Styles":{"en":"Paragraph Styles","it":"Stili Paragrafo","es":"Estilos de Párrafo","fr":"Styles de Paragraphe","de":"Absatzstile","pt":"Estilos de Parágrafo"},
       "Lineheight":{"en":"Linespacing","it":"Interlinea","es":"Interlínea","fr":"Interligne","de":"Zeilenabstand","pt":"Altura da linha"},
       "Left Indent":{"en":"Left Indent","it":"Rientro Sinistro","es":"Sangría Izquierda","fr":"Retrait gauche","de":"Linker Einzug","pt":"Recuo Esquerda"},
-      "Left Indent increase":{"en":"Left Indent increase","it":"aumenta Rientro Sinistro","es":"aumenta Sangría Izquierda","fr":"augmente Retrait gauche","de":"Linker Einzug erhöhen","pt":"aumenta Recuo Esquerda"},
-      "Left Indent decrease":{"en":"Left Indent decrease","it":"diminuisci Rientro Sinistro","es":"disminuir Sangría Izquierda","fr":"diminuer Retrait gauche","de":"Linker Einzug verringern","pt":"desminuir Recuo Esquerda"},
+      "Left Indent increase":{"en":"Left Indent increase","it":"aumenta Rientro Sinistro","es":"aumentar Sangría Izquierda","fr":"augmente Retrait gauche","de":"Linker Einzug erhöhen","pt":"aumenta Recuo Esquerda"},
+      "Left Indent decrease":{"en":"Left Indent decrease","it":"diminuisci Rientro Sinistro","es":"reducir Sangría Izquierda","fr":"diminuer Retrait gauche","de":"Linker Einzug verringern","pt":"desminuir Recuo Esquerda"},
       "Right Indent":{"en":"Right Indent","it":"Rientro Destro","es":"Sangría Derecha","fr":"Retrait droit","de":"Richtiger Einzug","pt":"Recuo Direita"},
-      "Right Indent increase":{"en":"Right Indent increase","it":"aumenta Rientro Destro","es":"aumenta Sangría Derecha","fr":"augmente retrait droit","de":"rechten Einzug erhöhen","pt":"aumenta Recuo Direita"},
-      "Right Indent decrease":{"en":"Right Indent decrease","it":"diminuisci Rientro Destro","es":"disminuir Sangría Derecha","fr":"diminuer retrait droit","de":"rechten Einzug verringern","pt":"desminuir Recuo Direita"},
+      "Right Indent increase":{"en":"Right Indent increase","it":"aumenta Rientro Destro","es":"aumentar Sangría Derecha","fr":"augmente retrait droit","de":"rechten Einzug erhöhen","pt":"aumenta Recuo Direita"},
+      "Right Indent decrease":{"en":"Right Indent decrease","it":"diminuisci Rientro Destro","es":"reducir Sangría Derecha","fr":"diminuer retrait droit","de":"rechten Einzug verringern","pt":"desminuir Recuo Direita"},
       "Book / Chapter Format":{"en":"Book / Chapter Format","it":"Formato Libro / Capitolo","es":"Formato Libro / Capítulo","fr":"Format Livre / Chapitre","de":"Buchformat und Kapitel-Format","pt":"Formato Livro / Capítulo"},
       "Verse Number Format":{"en":"Verse Number Format","it":"Formato Numero del Versetto","es":"Formato Número de Versículo","fr":"Format Numéro du Verset","de":"Format der Vers Nummer","pt":"Formato Número de Versículo"},
       "Verse Text Format":{"en":"Verse Text Format","it":"Formato Testo del Versetto","es":"Formato Texto del Versículo","fr":"Format Texte du Verset","de":"Format der Verse Text","pt":"Formato Texto do Versículo"},
@@ -152,6 +152,16 @@ var __ = function(str,ling){
       "Insert citation":{"en":"Insert citation","it":"Inserisci citazione","es":"Inserta la cita","fr":"Entrez la citation","de":"Fügen Sie das Zitat","pt":"Inserir a cotação"},
       "Find verses by keyword":{"en":"Find verses by keyword","it":"Trova versetti per parola chiave","es":"Encontra versículos por palabra clave","fr":"Trouver des versets par mot-clé","de":"Finde Verse nach Stichwort","pt":"Encontre versículos por palavra-chave"},
       "Language":{"en":"Language","it":"Lingua","es":"Idioma","fr":"Langue","de":"Sprache","pt":"Linguagem"},
+      "Search Results":{"en":"Search Results","it":"Risultati della Ricerca","es":"Resultados de Búsqueda","fr":"Résultats de Recherche","de":"Suchergebnisse","pt":"Resultados de Pesquisa"},
+      "ALIGN LEFT":{"en":"ALIGN LEFT","it":"ALLINEA A SINISTRA","es":"ALINEA A IZQUIERDA","fr":"ALIGNEZ À GAUCHE","de":"LINKS AUSRICHTEN","pt":"ALINHA À ESQUERDA"},
+      "ALIGN CENTER":{"en":"ALIGN CENTER","it":"ALLINEA AL CENTRO","es":"ALINEA AL CENTRO","fr":"ALIGNEZ AU CENTRE","de":"MITTE AUSRICHTEN","pt":"ALINHA AO CENTRO"},
+      "ALIGN RIGHT":{"en":"ALIGN RIGHT","it":"ALLINEA A DESTRA","es":"ALINEA A DERECHA","fr":"ALIGNEZ À DROIT","de":"RECHTS AUSRICHTEN","pt":"ALINHA À DIREITA"},
+      "FONT":{"en":"FONT","it":"CARATTERE","es":"FUENTE","fr":"POLICE","de":"SCHRIFTART","pt":"FONTE"},
+      "Single":{"en":"Single","it":"Singola","es":"Sencillo","fr":"Unique","de":"Single","pt":"Única"},
+      "Double":{"en":"Double","it":"Doppia","es":"Doble","fr":"Double","de":"Doppelt","pt":"Dupla"},
+      "FONT SIZE":{"en":"FONT SIZE","it":"GRANDEZZA CARATTERE","es":"TAMAÑO DEL FUENTE","fr":"TAILLE DE CARACTÈRE ","de":"GRÖSSENZEICHEN","pt":"TAMANHO DA FONTE"},
+      "TEXT COLOR":{"en":"TEXT COLOR","it":"COLORE DEL TESTO","es":"COLOR DE TEXTO","fr":"COULEUR DU TEXTE","de":"TEXTFARBE","pt":"COR DO TEXTO"},
+      "HIGHLIGHT COLOR":{"en":"HIGHLIGHT COLOR","it":"COLORE DI SFONDO","es":"COLOR DE FONDO","fr":"COULEUR DU FOND","de":"HINTERGRUNDFARBE","pt":"COR DE FUNDO"},
       "":{"en":"","it":"","es":"","fr":"","de":"","pt":""},
       "":{"en":"","it":"","es":"","fr":"","de":"","pt":""},
       "DocInterfaceInCM":{"en":"My Docs interface is in centimeters","it":"La mia interfaccia di Google Documenti è in centimetri","es":"Mi interfaz de Google Docs está en centímetros.","fr":"Mon interface Google Docs est en centimètres","de":"Meine Google Text & Tabellen-Oberfläche ist in Zentimetern angegeben","pt":"A interface do Google Docs está em centímetros"},
@@ -159,6 +169,13 @@ var __ = function(str,ling){
       "I":{"en":"I","it":"C","es":"C","fr":"I","de":"K","pt":"I"}, //ITALIC
       "U":{"en":"U","it":"S","es":"S","fr":"S","de":"U","pt":"S"}, //UNDERLINE
       "S":{"en":"S","it":"B","es":"T","fr":"B","de":"D","pt":"T"}, //STRIKETHROUGH
+      "BOLD":{"en":"BOLD","it":"GRASSETTO","es":"NEGRITA","fr":"GRAS","de":"FETTER","pt":"NEGRITO"}, //BOLD
+      "ITALIC":{"en":"ITALIC","it":"CORSIVO","es":"CURSIVA","fr":"ITALIQUE","de":"KURSIVER","pt":"ITÁLICO"}, //ITALIC
+      "UNDERLINE":{"en":"UNDERLINE","it":"SOTTOLINEATO","es":"SUBRAYADA","fr":"SOULIGNÉ","de":"UNTERSTRICHENER","pt":"SUBLINHADO"}, //UNDERLINE
+      "STRIKETHROUGH":{"en":"STRIKETHROUGH","it":"BARRATO","es":"TACHADA","fr":"BARRÉ","de":"DURCHGESTRICHEN","pt":"TACHADO"}, //STRIKETHROUGH
+      "NORMAL":{"en":"NORMAL","it":"NORMALE","es":"NORMAL","fr":"ORDINAIRE","de":"NORMAL","pt":"NORMAL"},
+      "SUPERSCRIPT":{"en":"SUPERSCRIPT","it":"APICE","es":"SUPERÍNDICE","fr":"EXPOSANT","de":"SUPERSCRIPT","pt":"SOBRESCRITO"},
+      "SUBSCRIPT":{"en":"SUBSCRIPT","it":"PEDICE","es":"SUBÍNDICE","fr":"INDICE","de":"INDEX","pt":"SUBSCRITO"},
       "Versions and Languages":{"en":"Supported Versions and Languages","it":"Versioni e Lingue supportate","es":"Versiones y Idiomas compatibles","fr":"Versions et Idiomes compatibles","de":"Unterstützte Versionen und Sprachen","pt":"Versões e idiomas compatíveis"},
       "Preview":{"en":"Preview","it":"Anteprima","es":"Vista previa","fr":"Aperçu","de":"Vorschau","pt":"Pré-visualização"},
       "ISamuelis2":{"en":"1 Samuel 2","it":"1 Samuele 2","es":"1 Samuel 2","fr":"1 Samuel 2","de":"1 Samuel 2","pt":"1 Samuel 2"},
@@ -318,7 +335,7 @@ var __ = function(str,ling){
         "es":"Libros / Abreviaturas",
         "fr":"Livres / Abréviations",
         "de":"Bücher / Abkürzungen",
-        "pt":""
+        "pt":"Livros / Abreviações"
       },
       "BOOK":{
         "en":"BOOK",
@@ -326,7 +343,31 @@ var __ = function(str,ling){
         "es":"LIBRO",
         "fr":"LIVRE",
         "de":"BUCH",
+        "pt":"LIVRO"
+      },
+      "CHAPTER":{
+        "en":"CHAPTER",
+        "it":"CAPITOLO",
+        "es":"CAPÍTULO",
+        "fr":"CHAPITRE",
+        "de":"KAPITEL",
+        "pt":"CAPÍTULO"
+      },
+      "VERSE":{
+        "en":"VERSE",
+        "it":"VERSETTO",
+        "es":"VERSÍCULO",
+        "fr":"VERSET",
+        "de":"VERS",
         "pt":""
+      },
+      "VERSE TEXT":{
+        "en":"VERSE TEXT",
+        "it":"TESTO DEL VERSETTO",
+        "es":"TEXTO DEL VERSÍCULO",
+        "fr":"TEXTE DU VERSET",
+        "de":"TEXT DES VERSES",
+        "pt":"TEXTO DO VERSÍCULO"
       },
       "ABBREVIATION":{
         "en":"ABBREVIATION",
@@ -334,9 +375,9 @@ var __ = function(str,ling){
         "es":"ABREVIATURA",
         "fr":"ABRÉVIATION",
         "de":"ABKÜRZUNG",
-        "pt":""
+        "pt":"ABREVIAÇÃO"
       },
-      "Full Name":{
+      "Full Name":{ //referred to the bible version
         "en":"Full Title",
         "it":"Titolo Completo",
         "es":"Título Completo",
@@ -398,6 +439,38 @@ var __ = function(str,ling){
         "es":"Ignorar el formato de la versión bíblica",
         "fr":"Ignorer la mise en forme de la version biblique",
         "de":"Ignorieren Sie die Formatierung der biblischen Version",
+        "pt":""
+      },
+      "Please select a version.":{
+        "en":"Please select a Bible version.",
+        "it":"Si prega selezionare una versione della Bibbia.",
+        "es":"Por favor seleccionar una versión de la Biblia.",
+        "fr":"Se il vous plaît sélectionner une version de la Bible.",
+        "de":"Bitte wählen Sie eine Version der Bibel.",
+        "pt":""
+      },
+      "I cannot send an empty query.":{
+        "en":"I cannot send an empty query.",
+        "it":"Non posso inviare una richiesta vuota.",
+        "es":"No puedo enviar una consulta vacía.",
+        "fr":"Je ne peux pas envoyer une requête vide.",
+        "de":"Ich kann eine leere Abfrage nicht senden.",
+        "pt":""
+      },
+      "Mixed notations have been detected. Please use either english notation or european notation.":{
+        "en":"Mixed notations have been detected. Please use either english notation or european notation.",
+        "it":"Sono state rilevate notazioni multiple. Si prega utilizzare o la notazione inglese, o la notazione europea.",
+        "es":"Se han detectado varias notaciónes. Por favor, utilice o la notación Inglés, o la notación internacional.",
+        "fr":"Notations multiples ont été détectées. Se il vous plaît utiliser ou la notation anglaise, ou la notation européenne.",
+        "de":"Multiple Notationen erkannt wurden. Bitte benutzen Sie entweder Englisch Notation oder europäische Notation.",
+        "pt":""
+      },
+      "When doing a search by keyword, you cannot select more than one version":{
+        "en":"When doing a search by keyword, you cannot select more than one version",
+        "it":"Quando effettui una ricerca per parola chiave, non puoi selezionare più di una versione",
+        "es":"",
+        "fr":"",
+        "de":"",
         "pt":""
       }
     },
@@ -849,4 +922,5 @@ var __ = function(str,ling){
 				"de":"Vietnamesisch",
                 "pt":""
 		}
-};
+},
+    ISOcodeFromLang = {"Afrikaans":"af","Akan":"ak","Albanian":"sq","Amharic":"am","Arabic":"ar","Armenian":"hy","Azerbaijani":"az","Basque":"eu","Belarusian":"be","Bengali":"bn","Bihari":"bh","Bosnian":"bs","Breton":"br","Bulgarian":"bg","Cambodian":"km","Catalan":"ca","Chichewa":"ny","Chinese":"zh","Corsican":"co","Croatian":"hr","Czech":"cs","Danish":"da","Dutch":"nl","English":"en","Esperanto":"eo","Estonian":"et","Faroese":"fo","Filipino":"tl","Finnish":"fi","French":"fr","Frisian":"fy","Galician":"gl","Georgian":"ka","German":"de","Greek":"el","Guarani":"gn","Gujarati":"gu","Haitian Creole":"ht","Hausa":"ha","Hebrew":"iw","Hindi":"hi","Hungarian":"hu","Icelandic":"is","Igbo":"ig","Indonesian":"id","Interlingua":"ia","Irish":"ga","Italian":"it","Japanese":"ja","Javanese":"jw","Kannada":"kn","Kazakh":"kk","Kinyarwanda":"rw","Kirundi":"rn","Kongo":"kg","Korean":"ko","Kurdish":"ku","Kyrgyz":"ky","Laothian":"lo","Latin":"la","Latvian":"lv","Lingala":"ln","Lithuanian":"lt","Luganda":"lg","Macedonian":"mk","Malagasy":"mg","Malay":"ms","Malayalam":"ml","Maltese":"mt","Maori":"mi","Marathi":"mr","Moldavian":"mo","Mongolian":"mn","Nepali":"ne","Norwegian":"no","Occitan":"oc","Oriya":"or","Oromo":"om","Pashto":"ps","Persian":"fa","Polish":"pl","Portuguese":"pt","Punjabi":"pa","Quechua":"qu","Romanian":"ro","Romansh":"rm","Russian":"ru","Scots Gaelic":"gd","Serbian":"sr","Serbo-Croatian":"sh","Sesotho":"st","Setswana":"tn","Shona":"sn","Sindhi":"sd","Sinhalese":"si","Slovak":"sk","Slovenian":"sl","Somali":"so","Spanish":"es","Sundanese":"su","Swahili":"sw","Swedish":"sv","Tajik":"tg","Tamil":"ta","Tatar":"tt","Telugu":"te","Thai":"th","Tigrinya":"ti","Tonga":"to","Turkish":"tr","Turkmen":"tk","Twi":"tw","Uighur":"ug","Ukrainian":"uk","Urdu":"ur","Uzbek":"uz","Vietnamese":"vi","Welsh":"cy","Wolof":"wo","Xhosa":"xh","Yiddish":"yi","Yoruba":"yo","Zulu":"zu"};
