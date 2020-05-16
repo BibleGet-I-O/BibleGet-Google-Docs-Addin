@@ -2,14 +2,14 @@
  * @OnlyCurrentDoc
  */
 
-const VERSION = 24; 
+const VERSION = 33; 
 const ADDONSTATE = {
   PRODUCTION: "production",
   DEVELOPMENT: "development"
 };
 
-const CURRENTSTATE = ADDONSTATE.DEVELOPMENT; //make sure to switch to PRODUCTION before publishing!
-//const CURRENTSTATE = ADDONSTATE.PRODUCTION;
+//const CURRENTSTATE = ADDONSTATE.DEVELOPMENT; //make sure to switch to PRODUCTION before publishing!
+const CURRENTSTATE = ADDONSTATE.PRODUCTION;
 
 const REQUESTPARAMS = {"rettype":"json","appid":"googledocs"};
 const ENDPOINTURL = "https://query.bibleget.io/";
@@ -131,7 +131,6 @@ const DefaultUserProperties = {
     BookChapterFormat:     BGET.FORMAT.BIBLELANG,//const will resolve to INT    (use ENUM, e.g. BGET.FORMAT.BIBLELANG
     BookChapterFullQuery:  false,                //false: just the name of the book and the chapter will be shown (i.e. 1 John 4)
                                                  //true: the full reference including the verses will be shown (i.e. 1 John 4:7-8) 
-                                                 //[great idea btw, but now how to tackle it practically during docInsert!!!]
     ShowVerseNumbers:      BGET.VISIBILITY.SHOW  //const will resolve to INT    (use ENUM, e.g. BGET.VISIBILITY.SHOW)
   },
   //Will be handled from the Sidebar UI when sending queries
@@ -164,19 +163,36 @@ function onOpen(e) {
   }
   else{ //(e && (e.authMode == ScriptApp.AuthMode.LIMITED || e.authMode == ScriptApp.AuthMode.FULL))
     // Initialize user preferences ONLY after user has granted permission to the Properties Service!
-    DocumentApp.getUi().createAddonMenu()
-    .addItem(__('Start',locale),         'openMainSidebar')
-    .addSeparator()
-    .addItem(__('Instructions',locale),  'openHelpSidebar')
-    .addItem(__('Settings',locale),      'openSettings')
-    .addItem(__('Send Feedback',locale), 'openSendFeedback')
-    .addItem(__('Contribute',locale),    'openContributionModal')
-    .addToUi();
+    
+    // Check if preferences have been set, if not set defaults (check will be done one by one against default prefs)
     if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
       consoleLog('about to run setDefaultProperties from onOpen');
     }   
-    // Check if preferences have been set, if not set defaults (check will be done one by one against default prefs)
-    setDefaultUserProperties();
+    //Don't add the Settings / Preferences menu item if we don't have access to the PropertiesService
+    if(setDefaultUserProperties() === false){
+      
+      alertMe('The BibleGet add-on cannot access the UserProperties of the Apps Script PropertiesService. User preferences will not be available.');
+      
+      DocumentApp.getUi().createAddonMenu()
+      .addItem(__('Start',locale),         'openMainSidebar')
+      .addSeparator()
+      .addItem(__('Instructions',locale),  'openHelpSidebar')
+      .addItem(__('Send Feedback',locale), 'openSendFeedback')
+      .addItem(__('Contribute',locale),    'openContributionModal')
+      .addToUi();
+      
+    }
+    else{
+      DocumentApp.getUi().createAddonMenu()
+      .addItem(__('Start',locale),         'openMainSidebar')
+      .addSeparator()
+      .addItem(__('Instructions',locale),  'openHelpSidebar')
+      .addItem(__('Settings',locale),      'openSettings')
+      .addItem(__('Send Feedback',locale), 'openSendFeedback')
+      .addItem(__('Contribute',locale),    'openContributionModal')
+      .addToUi();
+    }
+    
   }
 }
 
@@ -269,45 +285,75 @@ function setDefaultUserProperties(){
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
     consoleLog('running function setDefaultUserProperties');
   }   
-  let userProperties = PropertiesService.getUserProperties();
+  let propsService = PropertiesService.getUserProperties(),
+      usrProperties = null;
+  if(propsService !== null){
+    let usrProperties = propsService.getProperties();
+    //Check if there are old properties that we no longer need, if so clean up to avoid trouble
+    if(usrProperties.hasOwnProperty('RientroSinistro') || usrProperties.hasOwnProperty('BookChapterAlignment') || usrProperties.hasOwnProperty('VerseNumberAlignment') || usrProperties.hasOwnProperty('VerseTextAlignment') || usrProperties.hasOwnProperty('Interlinea') ){
+      propsService.deleteAllProperties();
+    }
+    
+    let checkedUserProperties = {};
+    for(let [key,value] of Object.entries(DefaultUserProperties)){      
+      if(!usrProperties.hasOwnProperty(key)){
+        if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+          consoleLog(key+' property not set, now getting from DefaultUserProperties');
+        }   
+        checkedUserProperties[key] = JSON.stringify(value);
+      }
+      //if we do already have a value set in the user properties service
+      else if(key=="RecentSelectedVersions"){  //we will handle RecentSelectedVersions separately because it is an array, not an object ?
+        if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+          consoleLog(key+' property will be set based on current usrProperties else DefaultUserProperties');
+        }   
+        try{
+          checkedUserProperties[key] = (JSON.parse(usrProperties[key]) != DefaultUserProperties[key] ? usrProperties[key] : JSON.stringify(DefaultUserProperties[key]));
+        }catch(e){
+          alertMe('error while checking against RecentSelectedVersions in User Properties Service from setDefaultUserProperties function: '+e);
+          return false;
+        }
+      }
+      else{
+        if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+          consoleLog(key+' property will be JSON parsed and the obj value will be checked key by key');
+        }   
+        let decodedUserProperties;
+        if(typeof usrProperties[key] === 'string' && usrProperties[key].includes("{") && usrProperties[key].includes("}")){
+          try{
+            decodedUserProperties = JSON.parse(usrProperties[key]);
+          }catch(e){
+            alertMe('error while checking against property '+key+' in User Properties Service from setDefaultUserProperties function: '+e);
+            return false;
+          }
+          let propsObj = {};
+          for(let [key1,value1] of Object.entries(DefaultUserProperties[key])){
+            if(!decodedUserProperties.hasOwnProperty(key1) || decodedUserProperties[key1] === null || decodedUserProperties[key1] == ""){ propsObj[key1] = value1; }
+            else{ propsObj[key1] = decodedUserProperties[key1]; }
+          }
+          checkedUserProperties[key] = JSON.stringify(propsObj);
+        }
+        else{
+          checkedUserProperties[key] = JSON.stringify(DefaultUserProperties[key]);
+        }
+      }
+    }    
+    propsService.setProperties(checkedUserProperties); 
+    if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
+      consoleLog('userProperties have now been set with the newly populated object between saved user preferences and default user preferences');
+    }
+    return true;
+    
+  }
+  else{
+    return false;
+  }
   /*
   if(VERSION>20){
     userProperties.deleteAllProperties();
   }
   */
-  let usrProperties = userProperties.getProperties();
-  let checkedUserProperties = {};
   
-  for(let [key,value] of Object.entries(DefaultUserProperties)){      
-    if(!usrProperties.hasOwnProperty(key)){
-      if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
-        consoleLog(key+' property not set, now getting from DefaultUserProperties');
-      }   
-      checkedUserProperties[key] = JSON.stringify(value);
-    }
-    else if(key=="RecentSelectedVersions"){
-      if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
-        consoleLog(key+' property will be set based on current usrProperties else DefaultUserProperties');
-      }   
-      checkedUserProperties[key] = (usrProperties[key] != DefaultUserProperties[key] ? usrProperties[key] : DefaultUserProperties[key]);
-    }
-    else{
-      if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
-        consoleLog(key+' property will be JSON parsed and the obj value will be checked key by key');
-      }   
-      let decodedUserProperties = JSON.parse(usrProperties[key]);
-      let propsObj = {};
-      for(let [key1,value1] of Object.entries(DefaultUserProperties[key])){
-        if(!decodedUserProperties.hasOwnProperty(key1) || decodedUserProperties[key1] === null || decodedUserProperties[key1] == ""){ propsObj[key1] = value1; }
-        else{ propsObj[key1] = decodedUserProperties[key1]; }
-      }
-      checkedUserProperties[key] = JSON.stringify(propsObj);
-    }
-  }    
-  userProperties.setProperties(checkedUserProperties); 
-  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
-    consoleLog('userProperties have now been set with the newly populated object between saved user preferences and default user preferences');
-  }   
 }
 
 /*
@@ -333,29 +379,50 @@ function getDefaultUserProperties(nostringify=false){
 function getUserProperties(nostringify=false){
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){ consoleLog('function getUserProperties starting with nostringify = ' + nostringify.toString()); }   
   let propsService = PropertiesService.getUserProperties();
-  let userProperties = propsService.getProperties();
-  let currentProperties = {};
-  for(let [key, value] of Object.entries(userProperties)){
-    if(CURRENTSTATE === ADDONSTATE.DEVELOPMENT && nostringify===true){ consoleLog('function getUserProperties will parse = ' + key + ' from saved user properties, with value ['+ (typeof value) +']: ' +value); }    
-    currentProperties[key] = (nostringify ? JSON.parse(value) : value);
-    
-    //for quality insurance and for good measure
-    //let's just double check that JSON.parse is actually giving us the right typecasting
-    //and enforce it if not
-    if(nostringify){
-      for(let [key1, value1] of Object.entries(currentProperties[key])){
-        //we don't worry about string values, just ints, floats and booleans
-        //let's start with booleans
-        if(BGET.TYPECASTING.FLOATVALS.includes(key1)         && typeof currentProperties[key][key1] !== 'float')  { currentProperties[key][key1] = parseFloat(value1); }
-        else if(BGET.TYPECASTING.INTVALS.includes(key1)      && typeof currentProperties[key][key1] !== 'int')    { currentProperties[key][key1] = parseInt(value1);   }
-        else if(BGET.TYPECASTING.BOOLEANVALS.includes(key1)  && typeof currentProperties[key][key1] !== 'boolean'){ currentProperties[key][key1] = JSON.parse(value1); }
-        else if(BGET.TYPECASTING.STRINGVALS.includes(key1)   && typeof currentProperties[key][key1] !== 'string') { currentProperties[key][key1] = value1.toString();  }
-        else if(BGET.TYPECASTING.STRINGARRAYS.includes(key1) && typeof currentProperties[key][key1] !== 'object') { currentProperties[key][key1] = JSON.parse(value1); }
+  if(propsService !== null){
+    let userProperties = propsService.getProperties();
+    let currentProperties = {};
+    for(let [key, value] of Object.entries(userProperties)){
+      if(CURRENTSTATE === ADDONSTATE.DEVELOPMENT && nostringify===true){ consoleLog('function getUserProperties will parse = ' + key + ' from saved user properties, with value ['+ (typeof value) +']: ' +value); }    
+      if(nostringify){
+        try{
+          currentProperties[key] = JSON.parse(value);
+        }
+        catch(e){
+          alertMe('getUserProperties function: error while parsing key = '+key+' from User Properties Service, with string value = '+value+'. '+e);
+          sendMail('DEBUG INFO: User Properties from Properties Service = '+JSON.stringify(userProperties));
+          return false;
+        }
       }
-    }
-    if(CURRENTSTATE === ADDONSTATE.DEVELOPMENT && nostringify===true){ consoleLog(key + ' parsed, result : '+currentProperties[key]); }
-  }     
-  return currentProperties;
+      else{
+        currentProperties[key] = value;
+      }
+      
+      //for quality insurance and for good measure
+      //let's just double check that JSON.parse is actually giving us the right typecasting
+      //and enforce it if not
+      if(nostringify){
+        for(let [key1, value1] of Object.entries(currentProperties[key])){
+          if(BGET.TYPECASTING.FLOATVALS.includes(key1)         && typeof currentProperties[key][key1] !== 'float')  { currentProperties[key][key1] = parseFloat(value1); }
+          else if(BGET.TYPECASTING.INTVALS.includes(key1)      && typeof currentProperties[key][key1] !== 'int')    { currentProperties[key][key1] = parseInt(value1);   }
+          else if(BGET.TYPECASTING.BOOLEANVALS.includes(key1)  && typeof currentProperties[key][key1] !== 'boolean'){ try{ currentProperties[key][key1] = JSON.parse(value1); }catch(e){
+            alertMe('getUserProperties function: error while enforcing boolean type for key = '+key+' & key1 = '+key1+'. '+e);
+            return false;
+          } }
+          else if(BGET.TYPECASTING.STRINGVALS.includes(key1)   && typeof currentProperties[key][key1] !== 'string') { currentProperties[key][key1] = value1.toString();  }
+          else if(BGET.TYPECASTING.STRINGARRAYS.includes(key1) && typeof currentProperties[key][key1] !== 'object') { try{ currentProperties[key][key1] = JSON.parse(value1); }catch(e){
+            alertMe('getUserProperties function: error while enforcing boolean type for key = '+ket+' & key1 = '+key1+'. '+e);
+            return false;
+          } }
+        }
+      }
+      if(CURRENTSTATE === ADDONSTATE.DEVELOPMENT && nostringify===true){ consoleLog(key + ' parsed, result : '+currentProperties[key]); }
+    }     
+    return currentProperties;
+  }
+  else{
+    return false;
+  }
 }
 
 

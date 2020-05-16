@@ -19,8 +19,13 @@
   //consoleLog(propVersions);
   var versions = JSON.parse(propVersions);
   
-  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){ consoleLog('now running getUserProperties from within Settings.html'); }   
+  if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){ consoleLog('now running getUserProperties from within Settings.html'); }  
+  
   var userProperties = getUserProperties(true); //will be a pure JSON obj, without any stringified values (nostringify=true)
+  if(userProperties === false){
+    //there has been some error in getting or setting properties in the properties service, we will resort to default values to avoid blocking the ui completely
+    userProperties = DefaultUserProperties;
+  }
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){ consoleLog('getUserProperties has been run from within Settings.html'); }
   
   //DEFINE devicePixelRatio constant useful for drawing the canvas with image of ruler precisely, correctly, sharply
