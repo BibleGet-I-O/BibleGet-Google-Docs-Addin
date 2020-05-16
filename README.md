@@ -27,10 +27,14 @@ If you have any feedback for bugs that you may have found in the BibleGet I/O se
 
 _______
 
-POST-INSTALL TIP
+## POST-INSTALL TIP
+
 Insert a quote from the Bible into your document. First set your preferred styles using “Add-ons > BibleGet I/O > Settings”, then go to “Add-ons > BibleGet I/O > Start” where you can type in your desired scripture reference and click on “Get”. The text of the Bible quote will be injected into your document at the current cursor position with the preferred stylings you set previously.
+
 Inserisci una citazione biblica nel tuo documento. Prima imposta la formattazione desiderata da “Componenti aggiuntivi > BibleGet I/O > Preferenze”. Poi apri la barra laterale da “Componenti aggiuntivi > BibleGet I/O > Avvia”. Scrivi la citazione desiderata e fai clic su “Inserisci”, il testo della citazione verrà inserito nel documento alla posizione attuale del puntatore.
 
-TEXT DESCRIPTION
+## TEXT DESCRIPTION
+
 “BibleGet I/O” allows you to easily and quickly insert Bible quotes into your document, using standard Bible citation notation. Even complex citations with multiple book, verse and chapter ranges can be obtained.
+
 “BibleGet I/O” ti permette di effettuare citazioni bibliche nel tuo documento con facilità e rapidità, usando la notazione biblica standard. Si possono effettuare anche citazioni multiple e complesse.
