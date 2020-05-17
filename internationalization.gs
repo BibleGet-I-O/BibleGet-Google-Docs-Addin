@@ -2,7 +2,7 @@ var include = filename => HtmlService.createHtmlOutputFromFile(filename).getCont
 
 var __ = function(str,ling){
       if(translatables.hasOwnProperty(str)){
-        if(translatables[str].hasOwnProperty(ling)){
+        if(translatables[str].hasOwnProperty(ling) && translatables[str][ling] != ""){
           return translatables[str][ling]; 
         }
         else if(translatables[str].hasOwnProperty("en")){
@@ -33,7 +33,7 @@ var __ = function(str,ling){
     },
     _r = function(str,ling){
       if(errormessages.hasOwnProperty(str)){ 
-        if(errormessages[str].hasOwnProperty(ling)){
+        if(errormessages[str].hasOwnProperty(ling) && errormessages[str][ling] != ""){
           return errormessages[str][ling]; 
         }
         else if(errormessages[str].hasOwnProperty("en")){
@@ -48,10 +48,10 @@ var __ = function(str,ling){
     translatables = {
       //TEMPLATE: "":{"en":"","it":"","es":"","fr":"","de":"", "pt":""},
       "Start":{"en":"Start","it":"Avvia","es":"Inicia","fr":"Lance","de":"Starten","pt":"Inicia"},
-      "Instructions":{"en":"Instructions","it":"Istruzioni","es":"Instrucciones","fr":"Instructions","de":"Anleitung","pt":""},
-      "Settings":{"en":"Settings","it":"Preferenze","es":"Ajustes","fr":"Paramètres","de":"Einstellungen","pt":""},
-      "Send Feedback":{"en":"Send Feedback","it":"Invia Feedback","es":"Enviar Comentarios","fr":"Envoyer des Commentaires","de":"Feedback Schicken","pt":""},
-      "Contribute":{"en":"Contribute","it":"Contribuisci","es":"Contribuir","fr":"Contribuer","de":"Beitragen","pt":""},
+      "Instructions":{"en":"Instructions","it":"Istruzioni","es":"Instrucciones","fr":"Instructions","de":"Anleitung","pt":"Instruções"},
+      "Settings":{"en":"Settings","it":"Preferenze","es":"Ajustes","fr":"Paramètres","de":"Einstellungen","pt":"Definições"},
+      "Send Feedback":{"en":"Send Feedback","it":"Invia Feedback","es":"Enviar Comentarios","fr":"Envoyer des Commentaires","de":"Feedback Schicken","pt":"Envia comentários"},
+      "Contribute":{"en":"Contribute","it":"Contribuisci","es":"Contribuir","fr":"Contribuer","de":"Beitragen","pt":"Contribuir"},
       "Support BibleGet I/O":{
         "en":"Support the BibleGet I/O Project",
         "it":"Sostieni il Progetto BibleGet I/O",
@@ -162,8 +162,8 @@ var __ = function(str,ling){
       "FONT SIZE":{"en":"FONT SIZE","it":"GRANDEZZA CARATTERE","es":"TAMAÑO DEL FUENTE","fr":"TAILLE DE CARACTÈRE ","de":"GRÖSSENZEICHEN","pt":"TAMANHO DA FONTE"},
       "TEXT COLOR":{"en":"TEXT COLOR","it":"COLORE DEL TESTO","es":"COLOR DE TEXTO","fr":"COULEUR DU TEXTE","de":"TEXTFARBE","pt":"COR DO TEXTO"},
       "HIGHLIGHT COLOR":{"en":"HIGHLIGHT COLOR","it":"COLORE DI SFONDO","es":"COLOR DE FONDO","fr":"COULEUR DU FOND","de":"HINTERGRUNDFARBE","pt":"COR DE FUNDO"},
-      "":{"en":"","it":"","es":"","fr":"","de":"","pt":""},
-      "":{"en":"","it":"","es":"","fr":"","de":"","pt":""},
+      //"":{"en":"","it":"","es":"","fr":"","de":"","pt":""},
+      //"":{"en":"","it":"","es":"","fr":"","de":"","pt":""},
       "DocInterfaceInCM":{"en":"My Docs interface is in centimeters","it":"La mia interfaccia di Google Documenti è in centimetri","es":"Mi interfaz de Google Docs está en centímetros.","fr":"Mon interface Google Docs est en centimètres","de":"Meine Google Text & Tabellen-Oberfläche ist in Zentimetern angegeben","pt":"A interface do Google Docs está em centímetros"},
       "B":{"en":"B","it":"G","es":"N","fr":"G","de":"F","pt":"N"}, //BOLD
       "I":{"en":"I","it":"C","es":"C","fr":"I","de":"K","pt":"I"}, //ITALIC
@@ -468,10 +468,10 @@ var __ = function(str,ling){
       "When doing a search by keyword, you cannot select more than one version":{
         "en":"When doing a search by keyword, you cannot select more than one version",
         "it":"Quando effettui una ricerca per parola chiave, non puoi selezionare più di una versione",
-        "es":"",
-        "fr":"",
-        "de":"",
-        "pt":""
+        "es":"Al realizar una búsqueda por palabra clave, no puede seleccionar más de una versión",
+        "fr":"Lorsque vous effectuez une recherche par mot-clé, vous ne pouvez pas sélectionner plusieurs versions",
+        "de":"Bei der Suche nach Schlüsselwörtern können Sie nicht mehr als eine Version auswählen",
+        "pt":"Ao fazer uma pesquisa por palavra-chave, você não pode selecionar mais de uma versão"
       }
     },
     errormessages = {
@@ -481,7 +481,7 @@ var __ = function(str,ling){
         "es":"Tiene que haber una indicación válida del libro en el inicio de la consulta.",
         "fr":"Il doit y avoir une indication valable de la livre au début de la requête.",
         "de":"Es muss eine gültige Anzeige des Buches zu Beginn der Abfrage sein.",
-        "pt":""
+        "pt":"Deve haver um indicador de livro válido no início da consulta."
       },
       "Every book indicator must be followed by a valid chapter indicator.":{
         "en":"Every book indicator must be followed by a valid chapter indicator.",
@@ -489,15 +489,15 @@ var __ = function(str,ling){
         "es":"Cada indicador de libro debe ser seguido por un indicador del capítulo válido.",
         "fr":"Chaque indicateur de livre doit être suivi par un indicateur de chapitre valide.",
         "de":"Jedes Buch-Indikator muss durch eine gültige Kapitel-Indikator folgen.",
-        "pt":""
+        "pt":"Todo indicador de livro deve ser seguido por um indicador de capítulo válido."
       },
       "The query does not have a valid book or book abbreviation: ":{
         "en":"The query does not have a valid book or book abbreviation: ",
-        "it":"La richiesta non contiene un libro valido oppure una valida abbreviazione di libro.",
-        "es":"La consulta no contiene un libro válido o una abreviatura de libro válida.",
-        "fr":"La requête ne contient pas un livre ou une abréviation de livre valide.",
-        "de":"Die Abfrage enthält keine gültige Buch oder eine gültige Abkürzung Buch enthalten.",
-        "pt":""
+        "it":"La richiesta non contiene un libro valido oppure una valida abbreviazione di libro: ",
+        "es":"La consulta no contiene un libro válido o una abreviatura de libro válida: ",
+        "fr":"La requête ne contient pas un livre ou une abréviation de livre valide: ",
+        "de":"Die Abfrage enthält keine gültige Buch oder eine gültige Abkürzung Buch enthalten: ",
+        "pt":"A consulta não possui um livro ou abreviação de livro válido: "
       },
       "A query that doesn't start with a book indicator must however start with a valid chapter indicator!":{
         "en":"A query that doesn't start with a book indicator must however start with a valid chapter indicator!",
@@ -505,7 +505,7 @@ var __ = function(str,ling){
         "es":"Sin embargo, una consulta que no se inicia con un indicador de libro debe comenzar con un indicador de capítulo válido!",
         "fr":"Une requête qui ne commence pas par un indicateur du livre doit cependant commencer avec un indicateur de chapitre valide!",
         "de":"Eine Abfrage, die nicht mit einem Buch-Anzeige wird anfangen müssen jedoch mit einer gültigen Kapitel Anzeige beginnen!",
-        "pt":""
+        "pt":"Uma consulta que não começa com um indicador de livro deve, no entanto, começar com um indicador de capítulo válido!"
       },
       "You cannot use a period if you haven't first used a comma.":{
         "en":"You cannot use a period if you haven't first used a comma.",
@@ -513,7 +513,7 @@ var __ = function(str,ling){
         "es":"No se puede utilizar un punto, si no se ha utilizado primeramente una coma.",
         "fr":"Vous ne pouvez pas utiliser un point, si vous ne avez pas utilisé d'abord une virgule.",
         "de":"Sie können nicht einen Punkt, wenn Sie nicht zuerst ein Komma verwendet haben.",
-        "pt":""
+        "pt":"Você não pode usar um ponto se não tiver usado uma vírgula."
       },
       "You cannot have more commas than you have periods.":{
         "en":"You cannot have more commas than you have periods.",
@@ -521,7 +521,7 @@ var __ = function(str,ling){
         "es":"No se puede tener más comas que puntos.",
         "fr":"Vous ne pouvez pas avoir plus de virgules que vous avez des points.",
         "de":"Sie können nicht mehr Kommas haben als Sie Punkten haben.",
-        "pt":""
+        "pt":"Você não pode ter mais vírgulas do que pontos."
       },
       "Every period must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.":{
         "en":"Every period must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.",
@@ -529,7 +529,7 @@ var __ = function(str,ling){
         "es":"Cada punto debe estar precedido y seguido de un número que tiene de uno a tres dígitos de los cuales el primer dígito no puede ser 0.",
         "fr":"Chaque point doit être précédée et suivie d'un nombre ayant une à trois chiffres dont le premier chiffre ne peut pas être 0.",
         "de":"Jede Punkt ist durch eine Zahl mit einer bis drei Stellen, von denen die erste Ziffer nicht 0 sein kann vorausgehen und folgen.",
-        "pt":""
+        "pt":"Todo período deve ser precedido e seguido por um número com um a três dígitos, dos quais o primeiro dígito não pode ser 0."
       },
       "Every comma must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.":{
         "en":"Every comma must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.",
@@ -537,7 +537,7 @@ var __ = function(str,ling){
         "es":"Cada coma debe estar precedida y seguida de un número que tiene de uno a tres dígitos de los cuales el primer dígito no puede ser 0.",
         "fr":"Chaque virgule doit être précédée et suivie d'un nombre ayant une à trois chiffres dont le premier chiffre ne peut pas être 0.",
         "de":"Jede Komma ist durch eine Zahl mit einer bis drei Stellen, von denen die erste Ziffer nicht 0 sein kann vorausgehen und folgen.",
-        "pt":""
+        "pt":"Cada vírgula deve ser precedida e seguida por um número com um a três dígitos, dos quais o primeiro dígito não pode ser 0."
       },
       "You cannot have more than one dash in the query if there are not at least as many commas minus one.":{
         "en":"You cannot have more than one dash in the query if there are not at least as many commas minus one.",
@@ -545,7 +545,7 @@ var __ = function(str,ling){
         "es":"No se puede tener más de un guión en la consulta si no hay al menos tantos puntos menos uno.",
         "fr":"Vous ne pouvez pas avoir plus d'un trait d'union dans la requête, si il n'y a pas au moins autant de points moins un.",
         "de":"Sie können nicht mehr als ein Bindestrich in der Abfrage, wenn es nicht mindestens so viele Punkten minus eins.",
-        "pt":""
+        "pt":"Você não pode ter mais de um traço na consulta se não houver pelo menos tantas vírgulas menos um."
       },
       "Every dash must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.":{
         "en":"Every dash must be preceded and followed by a number having from one to three digits of which the first digit cannot be 0.",
@@ -553,7 +553,7 @@ var __ = function(str,ling){
         "es":"Cada guión debe estar precedido y seguido de un número que tiene de uno a tres dígitos de los cuales el primer dígito no puede ser 0.",
         "fr":"Chaque trait d'unione doit être précédé et suivi d'un nombre ayant une à trois chiffres dont le premier chiffre ne peut pas être 0.",
         "de":"Jede Bindestrich ist durch eine Zahl mit einer bis drei Stellen, von denen die erste Ziffer nicht 0 sein kann vorausgehen und folgen.",
-        "pt":""
+        "pt":"Todo traço deve ser precedido e seguido por um número com um a três dígitos, dos quais o primeiro dígito não pode ser 0."
       },
       "If a dash is followed by a comma construct, then it must also be preceded by a comma construct.":{
         "en":"If a dash is followed by a comma construct, then it must also be preceded by a comma construct.",
@@ -561,7 +561,7 @@ var __ = function(str,ling){
         "es":"Si un guión es seguido por una construcción de coma, entonces debe también estar precedido por una construcción de coma.",
         "fr":"Si un trait d'union est suivi par une construction de virgule, il doit également être précédée d'une construction d'virgule.",
         "de":"Wenn ein Bindestrich durch ein Komma Konstrukt gefolgt, dann muss es auch durch ein Komma Konstrukt vorangestellt werden.",
-        "pt":""
+        "pt":"Se um traço for seguido por uma construção de vírgula, também deverá ser precedido por uma construção de vírgula."
       },
       "A chapter in the query is out of bounds: there is no chapter <{0}> in <{1}> in the requested version <{2}>, the last possible chapter is {3}":{
         "en":"A chapter in the query is out of bounds: there is no chapter <{0}> in <{1}> in the requested version <{2}>, the last possible chapter is {3}",
@@ -569,7 +569,7 @@ var __ = function(str,ling){
         "es":"Un capítulo en la consulta no es válido: no hay un capítulo <{0}> en <{1}> en la versión solicitada <{2}>, el último capítulo posible es {3}",
         "fr":"Un chapitre dans la requête n'est pas valide: il n'ya pas un chapitre <{0}> dans <{1}> dans la version sollicité <{2}>, le dernier chapitre possible est {3}",
         "de":"Ein Kapitel in der Abfrage ist ungültig: Es gibt nein Kapitel <{0}> in <{1}> zum der Version angefordert <{2}>, das letzte Kapitel die ist möglich, ist {3}",
-        "pt":""
+        "pt":"Um capítulo na consulta está fora dos limites: não há capítulo <{0}> em <{1}> na versão solicitada <{2}>, o último capítulo possível é {3}"
       },
       "You cannot have more than one colon and not have a dash!":{
         "en":"You cannot have more than one colon and not have a dash!",
@@ -577,7 +577,7 @@ var __ = function(str,ling){
         "es":"No se puede tener más de una coma y no tener un guión!",
         "fr":"Vous ne pouvez pas avoir plus d'une virgule et ne pas avoir un trait d'union!",
         "de":"Sie können nicht mehr als ein Komma und keinen Bindestrich!",
-        "pt":""
+        "pt":"Você não pode ter mais de um ponto e não ter um traço!"
       },
       "You seem to have a malformed querystring, there should be only one dash.":{
         "en":"You seem to have a malformed querystring, there should be only one dash.",
@@ -585,7 +585,7 @@ var __ = function(str,ling){
         "es":"La consulta parece estar mal formada, sólo debe haber un guión.",
         "fr":"La requête semble être malformé, il devrait y avoir seulement un trait d'union.",
         "de":"Die Query-String erscheint ungültiger werden, es sollte nur ein Strich sein.",
-        "pt":""
+        "pt":"Você parece ter uma string de consulta malformada, deve haver apenas um traço."
       },
       "A verse in the query is out of bounds: there is no verse <{0}> in <{1}> chapter <{2}> in the requested version <{3}>, the last possible verse is {4}":{
         "en":"A verse in the query is out of bounds: there is no verse <{0}> in <{1}> chapter <{2}> in the requested version <{3}>, the last possible verse is {4}",
@@ -593,7 +593,7 @@ var __ = function(str,ling){
         "es":"Un versículo de la consulta no es válido: no hay un versículo <{0}> en <{1}> capítulo <{2}> en la versión solicitada <{3}>, el último versículo que es posible es {4}",
         "fr":"Un verset de la requête ne est pas valide: il n'ya pas un verset <{0}> dans <{1}> chapitre <{2}> dans la Version sollicité <{3}>, le dernier verset qui est possible est {4}",
         "de":"Ein Vers der Abfrage ist ungültig: Es gibt nein Vers <{0}> in <{1}> Kapitel <{2}> zum der Version angefordert <{3}>, die letzte Strophe die ist möglich, ist <{4}>",
-        "pt":""
+        "pt":"Um verso na consulta está fora dos limites: não há verso <{0}> no <{1}> capítulo <{2}> na versão solicitada <{3}>, o último verso possível é {4}"
       },
       "the values chained by the dot must be consecutive, instead {0} >= {1} in the expression <{2}>":{
         "en":"the values chained by the dot must be consecutive, instead {0} >= {1} in the expression <{2}>",
@@ -601,7 +601,7 @@ var __ = function(str,ling){
         "es":"los valores encadenados por el punto deben ser consecutivos, mientras {0} >= {1} en la expresión <{2}>",
         "fr":"les valeurs enchaînés par le point doivent être consécutives, tandis que {0}> = {1} dans l'expression <{2}>",
         "de":"die Werte durch die Punkt-Strich müssen fortlaufend sein, anstatt {0} >= {1} in dem Ausdruck <{2}>",
-        "pt":""
+        "pt":"os valores encadeados pelo ponto devem ser consecutivos; em vez disso, {0} >= {1} na expressão <{2}>"
       }
     },
     langcodes={
@@ -736,7 +736,7 @@ var __ = function(str,ling){
 				"es":"Afrikáans",
 				"fr":"Afrikaans",
 				"de":"Afrikaans",
-                "pt":""
+                "pt":"Afrikaans"
 		},
 		"Albanian":{
 				"en":"Albanian",
@@ -744,7 +744,7 @@ var __ = function(str,ling){
 				"es":"Albanés",
 				"fr":"Albanais",
 				"de":"Albanisch",
-                "pt":""
+                "pt":"Albanês"
 		},
 		"Arabic":{
 				"en":"Arabic",
@@ -752,7 +752,7 @@ var __ = function(str,ling){
 				"es":"Árabe",
 				"fr":"Arabe",
 				"de":"Arabisch",
-                "pt":""
+                "pt":"Árabe"
 		},
 		"Chinese":{
 				"en":"Chinese",
@@ -760,7 +760,7 @@ var __ = function(str,ling){
 				"es":"Chino",
 				"fr":"Chinois",
 				"de":"Chinesische",
-                "pt":""
+                "pt":"Chinês"
 		},
 		"Croatian":{
 				"en":"Croatian",
@@ -768,7 +768,7 @@ var __ = function(str,ling){
 				"es":"Croata",
 				"fr":"Croate",
 				"de":"Kroatisch",
-                "pt":""
+                "pt":"Croata"
 		},
 		"Czech":{
 				"en":"Czech",
@@ -776,7 +776,7 @@ var __ = function(str,ling){
 				"es":"Checo",
 				"fr":"Tchèque",
 				"de":"Tschechisch",
-                "pt":""
+                "pt":"Tcheco"
 		},
 		"English":{
 				"en":"English",
@@ -784,7 +784,7 @@ var __ = function(str,ling){
 				"es":"Inglés",
 				"fr":"Anglais",
 				"de":"Englisch",
-                "pt":""
+                "pt":"Inglês"
 		},
 		"French":{
 				"en":"French",
@@ -792,7 +792,7 @@ var __ = function(str,ling){
 				"es":"Francés",
 				"fr":"Français",
 				"de":"Französisch",
-                "pt":""
+                "pt":"Francês"
 		},
 		"German":{
 				"en":"German",
@@ -800,7 +800,7 @@ var __ = function(str,ling){
 				"es":"Alemán",
 				"fr":"Allemand",
 				"de":"Deutsch",
-                "pt":""
+                "pt":"Alemão"
 		},
 		"Greek":{
 				"en":"Greek",
@@ -808,7 +808,7 @@ var __ = function(str,ling){
 				"es":"Griego",
 				"fr":"Grec",
 				"de":"Griechisch",
-                "pt":""
+                "pt":"Grego"
 		},
 		"Hungarian":{
 				"en":"Hungarian",
@@ -816,7 +816,7 @@ var __ = function(str,ling){
 				"es":"Húngaro",
 				"fr":"Hongrois",
 				"de":"Ungarisch",
-                "pt":""
+                "pt":"Húngaro"
 		},
 		"Italian":{
 				"en":"Italian",
@@ -824,7 +824,7 @@ var __ = function(str,ling){
 				"es":"Italiano",
 				"fr":"Italien",
 				"de":"Italienisch",
-                "pt":""
+                "pt":"Italiano"
 		},
 		"Japanese":{
 				"en":"Japanese",
@@ -832,7 +832,7 @@ var __ = function(str,ling){
 				"es":"Japonés",
 				"fr":"Japonais",
 				"de":"Japanisch",
-                "pt":""
+                "pt":"Japonês"
 		},
 		"Korean":{
 				"en":"Korean",
@@ -840,7 +840,7 @@ var __ = function(str,ling){
 				"es":"Coreano",
 				"fr":"Coréen",
 				"de":"Koreanisch",
-                "pt":""
+                "pt":"Coreano"
 		},
 		"Latin":{
 				"en":"Latin",
@@ -848,7 +848,7 @@ var __ = function(str,ling){
 				"es":"Latín",
 				"fr":"Latin",
 				"de":"Lateinisch",
-                "pt":""
+                "pt":"Latim"
 		},
 		"Polish":{
 				"en":"Polish",
@@ -856,7 +856,7 @@ var __ = function(str,ling){
 				"es":"Polaco",
 				"fr":"Polonais",
 				"de":"Russisch",
-                "pt":""
+                "pt":"Polonês"
 		},
 		"Portuguese":{
 				"en":"Portuguese",
@@ -864,7 +864,7 @@ var __ = function(str,ling){
 				"es":"Portugués",
 				"fr":"Portugais",
 				"de":"Portugiesisch",
-                "pt":""
+                "pt":"Português"
 		},
 		"Romanian":{
 				"en":"Romanian",
@@ -872,7 +872,7 @@ var __ = function(str,ling){
 				"es":"Rumano",
 				"fr":"Roumain",
 				"de":"Rumänischen",
-                "pt":""
+                "pt":"Romena"
 		},
 		"Russian":{
 				"en":"Russian",
@@ -880,7 +880,7 @@ var __ = function(str,ling){
 				"es":"Ruso",
 				"fr":"Russe",
 				"de":"Russisch",
-                "pt":""
+                "pt":"Russo"
 		},
 		"Spanish":{
 				"en":"Spanish",
@@ -888,7 +888,7 @@ var __ = function(str,ling){
 				"es":"Español",
 				"fr":"Espagnol",
 				"de":"Spanisch",
-                "pt":""
+                "pt":"Espanhol"
 		},
 		"Tagalog":{
 				"en":"Tagalog",
@@ -896,7 +896,7 @@ var __ = function(str,ling){
 				"es":"Tagalo",
 				"fr":"Tagalog",
 				"de":"Tagalog",
-                "pt":""
+                "pt":"Tagalo"
 		},
 		"Tamil":{
 				"en":"Tamil",
@@ -904,7 +904,7 @@ var __ = function(str,ling){
 				"es":"Tamil",
 				"fr":"Tamoul",
 				"de":"Tamilisch",
-                "pt":""
+                "pt":"Tâmil"
 		},
 		"Thai":{
 				"en":"Thai",
@@ -912,7 +912,7 @@ var __ = function(str,ling){
 				"es":"Thai",
 				"fr":"Thaï",
 				"de":"Thailändisch",
-                "pt":""
+                "pt":"Tailandês"
 		},
 		"Vietnamese":{
 				"en":"Vietnamese",
@@ -920,7 +920,7 @@ var __ = function(str,ling){
 				"es":"Vietnamita",
 				"fr":"Vietnamien",
 				"de":"Vietnamesisch",
-                "pt":""
+                "pt":"Vietnamita"
 		}
 },
     ISOcodeFromLang = {"Afrikaans":"af","Akan":"ak","Albanian":"sq","Amharic":"am","Arabic":"ar","Armenian":"hy","Azerbaijani":"az","Basque":"eu","Belarusian":"be","Bengali":"bn","Bihari":"bh","Bosnian":"bs","Breton":"br","Bulgarian":"bg","Cambodian":"km","Catalan":"ca","Chichewa":"ny","Chinese":"zh","Corsican":"co","Croatian":"hr","Czech":"cs","Danish":"da","Dutch":"nl","English":"en","Esperanto":"eo","Estonian":"et","Faroese":"fo","Filipino":"tl","Finnish":"fi","French":"fr","Frisian":"fy","Galician":"gl","Georgian":"ka","German":"de","Greek":"el","Guarani":"gn","Gujarati":"gu","Haitian Creole":"ht","Hausa":"ha","Hebrew":"iw","Hindi":"hi","Hungarian":"hu","Icelandic":"is","Igbo":"ig","Indonesian":"id","Interlingua":"ia","Irish":"ga","Italian":"it","Japanese":"ja","Javanese":"jw","Kannada":"kn","Kazakh":"kk","Kinyarwanda":"rw","Kirundi":"rn","Kongo":"kg","Korean":"ko","Kurdish":"ku","Kyrgyz":"ky","Laothian":"lo","Latin":"la","Latvian":"lv","Lingala":"ln","Lithuanian":"lt","Luganda":"lg","Macedonian":"mk","Malagasy":"mg","Malay":"ms","Malayalam":"ml","Maltese":"mt","Maori":"mi","Marathi":"mr","Moldavian":"mo","Mongolian":"mn","Nepali":"ne","Norwegian":"no","Occitan":"oc","Oriya":"or","Oromo":"om","Pashto":"ps","Persian":"fa","Polish":"pl","Portuguese":"pt","Punjabi":"pa","Quechua":"qu","Romanian":"ro","Romansh":"rm","Russian":"ru","Scots Gaelic":"gd","Serbian":"sr","Serbo-Croatian":"sh","Sesotho":"st","Setswana":"tn","Shona":"sn","Sindhi":"sd","Sinhalese":"si","Slovak":"sk","Slovenian":"sl","Somali":"so","Spanish":"es","Sundanese":"su","Swahili":"sw","Swedish":"sv","Tajik":"tg","Tamil":"ta","Tatar":"tt","Telugu":"te","Thai":"th","Tigrinya":"ti","Tonga":"to","Turkish":"tr","Turkmen":"tk","Twi":"tw","Uighur":"ug","Ukrainian":"uk","Urdu":"ur","Uzbek":"uz","Vietnamese":"vi","Welsh":"cy","Wolof":"wo","Xhosa":"xh","Yiddish":"yi","Yoruba":"yo","Zulu":"zu"};

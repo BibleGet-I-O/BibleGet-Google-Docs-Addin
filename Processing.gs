@@ -162,7 +162,9 @@ function toProperCase(txt){
 function processQueries(queries,versions){
   var goodqueries = [];
   var thisbook;
-  var locale = getUserLocale();  
+  let locale = 'en';
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   var scriptProperties = PropertiesService.getScriptProperties();
   if(scriptProperties.getProperty(versions[0]+"IDX")===null){
     setScriptProps();
@@ -198,7 +200,9 @@ function processQueries(queries,versions){
  * @var thisquery
  */
 function checkQuery(thisquery,indexes,thisbook){
-  var locale = getUserLocale();
+  let locale = 'en';
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   var msg;
   //docLog("Now running checkQuery on query = "+thisquery);
   thisbook = thisbook || '';
@@ -480,7 +484,9 @@ function setScriptProps(){
 
 function refreshData(){
   setScriptProps();
-  let locale = getUserLocale();
+  let locale = 'en';
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   //there is no way to test if modal window is open, so we're gonna pretend it's open and refresh it anyway
   let html1 = HtmlService.createTemplateFromFile('Sidebar');
   DocumentApp.getUi().showSidebar(html1.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O'));

@@ -3,7 +3,9 @@
   //WHEN OPENING THE SETTINGS DIALOG, ABOUT AN UNEXPEXTED 'u' CHARACTER???
   //ONLY SEEMS TO HAPPEN WITH THE BIBLEGET ACCOUNT AND NOT OTHER ACCOUNTS
     
-  var locale = getUserLocale();
+  let locale = 'en';
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   
   var scriptProperties = PropertiesService.getScriptProperties();
   if(scriptProperties.getProperty("languages")===null || scriptProperties.getProperty("versions")===null){

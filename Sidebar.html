@@ -9,7 +9,9 @@
   }
   //Logger.log("recentSelectedVersions = "+recentSelectedVersions.join(','));
   
-  var locale = getUserLocale();
+  let locale = 'en';
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   
   var scriptProperties = PropertiesService.getScriptProperties();
   if(scriptProperties.getProperty("versions")===null){

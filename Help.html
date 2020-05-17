@@ -1,5 +1,7 @@
 <? 
-let locale = getUserLocale();
+  let locale = 'en';
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
 let {biblebooks,abbreviations,languages} = getLocalizedBookNames(locale); //it also returns a list of supported languages
 ?>
 <!DOCTYPE html>

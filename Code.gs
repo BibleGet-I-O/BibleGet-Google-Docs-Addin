@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-const VERSION = 33; 
+const VERSION = 34; 
 const ADDONSTATE = {
   PRODUCTION: "production",
   DEVELOPMENT: "development"
@@ -149,7 +149,9 @@ function onInstall(e){
 }
 
 function onOpen(e) {
-  let locale = getUserLocale();
+  let locale = 'en';
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
 
   if (e && (e.authMode == ScriptApp.AuthMode.NONE)) {
     //User has not yet granted permissions, we will just make a basic menu to start workflow
@@ -200,7 +202,10 @@ function onOpen(e) {
 /*     UI CREATION FUNCTIONS (SIDEBARS, MODALS)    */
 /***************************************************/
 function openSettings(){
-  let locale = getUserLocale();
+  let locale = "en";
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
+
   let html = HtmlService.createTemplateFromFile('Settings');
   //docLog(html.getCode());
   
@@ -218,7 +223,9 @@ function openSettings(){
  * (email body from custom dialog prompt) 
  */
 function openSendFeedback(){
-  let locale = getUserLocale();
+  let locale = "en";
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   let html = HtmlService.createTemplateFromFile('Feedback')
       .evaluate()
       .setWidth(400)
@@ -230,7 +237,9 @@ function openSendFeedback(){
 
 
 function openContributionModal(){
-  let locale = getUserLocale();
+  let locale = "en";
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   let html = HtmlService.createTemplateFromFile('Contribute')
       .evaluate()
       .setWidth(400)
@@ -251,14 +260,18 @@ function openMainSidebar(){
 }
 
 function openHelpSidebar(){
-  let locale = getUserLocale();
+  let locale = "en";
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   let html = HtmlService.createTemplateFromFile('Help');
   //docLog(html.evaluate().getContent());
   DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O - '+__('Instructions',locale)));
 }
 
 function openSearchResults($searchresults){
-  let locale = getUserLocale();
+  let locale = "en";
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   let html = HtmlService.createTemplateFromFile('SearchResults');
   html.searchresults = JSON.stringify($searchresults);
   consoleLog("stringified search results:");
@@ -470,7 +483,9 @@ function getUserProperty(propKey,nostringify=false){
 }
 
 function resetUserProperties(nostringify=false){
-  let locale = getUserLocale();
+  let locale = "en";
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   let userProperties = PropertiesService.getUserProperties();
   userProperties.deleteAllProperties();
   //when we set the properties in the properties service, they must be stringified
@@ -559,9 +574,10 @@ function fetchSearchResults(request){
 //Function getUserLocale @ used in pretty much every UI in order to determine the Docs interface locale
 function getUserLocale(){
   let locale = Session.getActiveUserLocale();
-  //if(locale.length > 2){
-  //  locale = locale.slice(0,2);
-  //}
+  
+  if(locale.length > 2){
+    locale = locale.slice(0,2);
+  }
   //Logger.log(locale);
   return locale; //if user locale is country specific (i.e. "pt_pt") return only the general language portion, two letter ISO code without country specification
 }
@@ -646,12 +662,14 @@ function docInsert(json){
   
   BibleGetGlobal.body = DocumentApp.getActiveDocument().getBody();
   BibleGetGlobal.idx = getCursorIndex();
-  BibleGetGlobal.locale = getUserLocale();
+  BibleGetGlobal.locale = "en";
+  try{ BibleGetGlobal.locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   BibleGetGlobal.firstFmtVerse = false;
   BibleGetGlobal.stack = { bibleversion: [], bookchapter: [] };
   //docLog("got results from server, now preparing to elaborate... BibleGetGlobal object = "+JSON.stringify(BibleGetGlobal));
   if(BibleGetProperties.LayoutPrefs.BookChapterFormat === BGET.FORMAT.USERLANG || BibleGetProperties.LayoutPrefs.BookChapterFormat === BGET.FORMAT.USERLANGABBREV){
-    let locale = getUserLocale();
+    let locale = BibleGetGlobal.locale;
     BibleGetGlobal.l10n = getLocalizedBookNames(locale);
     //the preceding statement will return the names and abbreviations of the books of the Bible localized in the specified locale
     //which will be accessible in the properties BibleGetGlobal.l10n.biblebooks
@@ -905,7 +923,9 @@ function getCursorIndex(){
       doc = DocumentApp.getActiveDocument(),
       body = doc.getBody(),
       cursor = doc.getCursor(),
-      locale = getUserLocale();
+      locale = 'en';
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
 
   if(cursor){  
     var cursorEl = cursor.getElement();
@@ -1306,13 +1326,16 @@ function consoleLog(str){
 
 //Function docLog @ can be used to help debug scripts when it becomes difficult to know what exactly Apps Script is choking on
 function docLog(str){
-  var locale = getUserLocale();
-  var doc = DocumentApp.getActiveDocument();
-  var body = doc.getBody();
-  var cursor = doc.getCursor();
-  var idx;  
+  let locale = 'en';
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
+  
+  let doc = DocumentApp.getActiveDocument();
+  let body = doc.getBody();
+  let cursor = doc.getCursor();
+  let idx;  
   if(cursor){  
-    var cursorEl = cursor.getElement();
+    let cursorEl = cursor.getElement();
   
     if(cursorEl.getType() == "TEXT"){ // seems that we can't get a page index or insert paragraphs from the position of an element of type Text?
       cursorEl = cursorEl.getParent(); // so let's get it's parent to avoid getting nasty error messages
@@ -1321,10 +1344,10 @@ function docLog(str){
     idx = body.getChildIndex(cursorEl);
   }
   else{ //if for example there is a selection, so we can't get a cursor POSITION
-    var selection = doc.getSelection();
+    let selection = doc.getSelection();
     if(selection){
-      var elements = selection.getRangeElements();
-      var element = elements[0].getElement();
+      let elements = selection.getRangeElements();
+      let element = elements[0].getElement();
       if(element.getType() == 'TEXT'){
         element = element.getParent();
       }
@@ -1334,7 +1357,7 @@ function docLog(str){
       DocumentApp.getUi().alert(__('Cannot insert text at this document location.',locale));
     }
   }
-  var newPar;
+  let newPar;
   if (newPar = body.insertParagraph(idx,"")) { // we'll be inserting our paragraph below the current position because we've had to choose the parent element...
     newPar.appendText(str);
   }
