@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-const VERSION = 34; 
+const VERSION = 35; 
 const ADDONSTATE = {
   PRODUCTION: "production",
   DEVELOPMENT: "development"
@@ -274,8 +274,8 @@ function openSearchResults($searchresults){
   catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   let html = HtmlService.createTemplateFromFile('SearchResults');
   html.searchresults = JSON.stringify($searchresults);
-  consoleLog("stringified search results:");
-  consoleLog(JSON.stringify($searchresults));
+  //consoleLog("stringified search results:");
+  //consoleLog(JSON.stringify($searchresults));
   let evaluated = html.evaluate()
       .setWidth(SETTINGSWINDOW.WIDTH)
       .setHeight(SETTINGSWINDOW.HEIGHT)
@@ -549,16 +549,16 @@ function fetchSearchResults(request){
   let {query,version,keyword} = request;
   let {rettype,appid} = REQUESTPARAMS;
   let payload = {'query':query,'version':version,'return':rettype,'appid':appid,'pluginversion':VERSION,'keyword':keyword};
-  consoleLog(payload);
-  consoleLog(ENDPOINTURLSEARCH);
+  //consoleLog(payload);
+  //consoleLog(ENDPOINTURLSEARCH);
   try{
     var response = UrlFetchApp.fetch(ENDPOINTURLSEARCH,{'method':'post','payload':payload});
     var responsecode = response.getResponseCode();
     if(responsecode==200){
       //consoleLog("Response code was 200.");
       let content = response.getContentText();
-      consoleLog("Contents:");
-      consoleLog(content);
+      //consoleLog("Contents:");
+      //consoleLog(content);
       openSearchResults(content);
     }
     else{
@@ -833,7 +833,7 @@ function docInsert(json){
     
     //before appending the verse text, we need to parse it to see if it contains special markup
     if(/<[\/]{0,1}(?:sm|po|speaker|i|pr)[f|l|s|i]{0,1}[f|l]{0,1}>/.test(verses[i].text)){
-      consoleLog("looks like we have special formatting that we have to deal with in this verse... {"+verses[i].text+"}");      
+      //consoleLog("looks like we have special formatting that we have to deal with in this verse... {"+verses[i].text+"}");      
       //We replace newline or carriage return characters with a blank space in any case
       verses[i].text = verses[i].text.replace(/(\r\n|\n|\r)/gm," "); 
       //Now replace all multiple spaces with a single space
@@ -850,7 +850,7 @@ function docInsert(json){
         //Now we're ready to append the text to the paragraph
         let versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
         setTextStyles(versetext,BibleGetProperties,BGET.PTYPE.VERSETEXT);
-        consoleLog("NoVersionFormatting=true, simply removing the tags. Verse text is now : <"+verses[i].text+">");  
+        //consoleLog("NoVersionFormatting=true, simply removing the tags. Verse text is now : <"+verses[i].text+">");  
       }else{
         BibleGetGlobal = formatSections(verses[i].text,BibleGetProperties,newelement,BibleGetGlobal);
       }

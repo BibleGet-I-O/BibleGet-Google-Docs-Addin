@@ -64,7 +64,7 @@ mark {
     <script>
       let locale = '<?!=getUserLocale()?>',
           addMark = function(text,keyword){
-            return text.replace(new RegExp(keyword),'<mark>'+keyword+'</mark>');
+            return text.replace(new RegExp("("+keyword+")", "gi"),'<mark>$1</mark>');
           },
           populateTable = function(bibleBooksL10n){
             let $searchresults = JSON.parse(<?!=searchresults?>);

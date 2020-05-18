@@ -212,7 +212,7 @@ runKeywordSearch = function(keyword){
     return false;
   }
   else{
-    let payload = {'query':'keywordsearch','version':version[0],'keyword':keyword.replace(/\W/g, '')};
+    let payload = {'query':'keywordsearch','version':version[0],'keyword':keyword.replace(/\W/g, '')}; //remove non-word characters
     google.script.run.withSuccessHandler(hideSpinner).fetchSearchResults(payload);
   }
 };
