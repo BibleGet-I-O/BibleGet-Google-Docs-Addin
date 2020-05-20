@@ -247,9 +247,14 @@ $(document).ready(function(){
     });
     
     $('#btn-bible-search').on('click',function(){
-      $('.spinner').show();
       let $keyword = $('#bibleget-fulltextsearch').val();
-      runKeywordSearch($keyword);
+      if($keyword.length < 3){  
+        alertMe('<?!=__('Please use at least 3 characters when searching for words or partial word matches.',locale)?>');
+      }
+      else{
+        $('.spinner').show();
+        runKeywordSearch($keyword);
+      }
     });
     
     $('#RESET_DEFAULT_USERPROPS').on('click',function(){

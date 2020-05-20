@@ -51,6 +51,7 @@ mark {
     </style>
   </head>
   <body>
+    <div id="searchResultsInfo"></div>
     <div id="tableContainer" class="tableContainer">
       <table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable" id="SearchResultsTable">
         <thead class="fixedHeader">
@@ -67,13 +68,39 @@ mark {
             return text.replace(new RegExp("("+keyword+")", "gi"),'<mark>$1</mark>');
           },
           populateTable = function(bibleBooksL10n){
-            let $searchresults = JSON.parse(<?!=searchresults?>);
+            let $searchresults = JSON.parse(<?!=searchresults?>),
+                numResultsStr;
             if($searchresults.hasOwnProperty("results") && typeof $searchresults.results === 'object'){
+              if($searchresults.results.length === 1){
+                numResultsStr = '<?!=__('There is {n} result for the keyword {k} in the version {v}.',locale)?>';
+              }
+              else{
+                numResultsStr = '<?!=__('There are {n} results for the keyword {k} in the version {v}.',locale)?>';
+              }
+              jQuery('#searchResultsInfo').html(numResultsStr.formatUnicorn({n:'<b>'+$searchresults.results.length+'</b>',k:'<b>'+$searchresults.info.keyword+'</b>',v:'<b>'+$searchresults.info.version+'</b>'}));
               for(let $result of $searchresults.results){
                 jQuery("#SearchResultsTable tbody").append('<tr><td>'+bibleBooksL10n.biblebooks[parseInt($result.book)-1].split('|')[0]+'</td><td>'+$result.chapter+'</td><td>'+$result.verse+'</td><td>'+addMark($result.text,$searchresults.info.keyword)+'</td></tr>');
               }
             }
           };
+          String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
+            function () {
+              "use strict";
+              var str = this.toString();
+              if (arguments.length) {
+                var t = typeof arguments[0];
+                var key;
+                var args = ("string" === t || "number" === t) ?
+                Array.prototype.slice.call(arguments)
+                : arguments[0];
+                
+                for (key in args) {
+                  str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+                }
+              }
+              
+              return str;
+            };
           google.script.run.withSuccessHandler(populateTable).getLocalizedBookNames(locale);
     </script>
   </body>

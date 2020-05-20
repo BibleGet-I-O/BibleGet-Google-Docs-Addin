@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-const VERSION = 35; 
+const VERSION = 38; 
 const ADDONSTATE = {
   PRODUCTION: "production",
   DEVELOPMENT: "development"
@@ -153,17 +153,7 @@ function onOpen(e) {
   try{ locale = getUserLocale(); }
   catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
 
-  if (e && (e.authMode == ScriptApp.AuthMode.NONE)) {
-    //User has not yet granted permissions, we will just make a basic menu to start workflow
-    DocumentApp.getUi().createAddonMenu()
-    .addItem(__('Start',locale),        'openSimpleSidebar')
-    .addSeparator()
-    .addItem(__('Instructions',locale), 'openHelpSidebar')
-    .addItem(__('Contribute',locale),   'openContributionModal')
-    .addToUi();
-    //consoleLog('Permissions not yet granted');
-  }
-  else{ //(e && (e.authMode == ScriptApp.AuthMode.LIMITED || e.authMode == ScriptApp.AuthMode.FULL))
+  if(e && (e.authMode == ScriptApp.AuthMode.LIMITED || e.authMode == ScriptApp.AuthMode.FULL)){
     // Initialize user preferences ONLY after user has granted permission to the Properties Service!
     
     // Check if preferences have been set, if not set defaults (check will be done one by one against default prefs)
@@ -195,6 +185,16 @@ function onOpen(e) {
       .addToUi();
     }
     
+  }
+  else { //if (e && (e.authMode == ScriptApp.AuthMode.NONE)) 
+    //User has not yet granted permissions, we will just make a basic menu to start workflow
+    let locale = "en";
+    try{ 
+      locale = getUserLocale(); 
+      alertMe(__('You must grant the correct permissions in order to use this add-on. To fix this, remove the add-on and install it again, granting the requested permissions.',locale));  
+    }
+    catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
+    //I think that we can't even use the html service if user has not granted permissions!
   }
 }
 
@@ -247,11 +247,6 @@ function openContributionModal(){
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   DocumentApp.getUi() // Or DocumentApp or FormApp.
       .showModalDialog(html,__('Support BibleGet I/O',locale));
-}
-
-function openSimpleSidebar(){
-  let html = HtmlService.createTemplateFromFile('SimpleSidebar');
-  DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O'));
 }
 
 function openMainSidebar(){
@@ -549,6 +544,9 @@ function fetchSearchResults(request){
   let {query,version,keyword} = request;
   let {rettype,appid} = REQUESTPARAMS;
   let payload = {'query':query,'version':version,'return':rettype,'appid':appid,'pluginversion':VERSION,'keyword':keyword};
+  let locale = "en";
+  try{ locale = getUserLocale(); }
+  catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
   //consoleLog(payload);
   //consoleLog(ENDPOINTURLSEARCH);
   try{
@@ -556,10 +554,20 @@ function fetchSearchResults(request){
     var responsecode = response.getResponseCode();
     if(responsecode==200){
       //consoleLog("Response code was 200.");
-      let content = response.getContentText();
+      let content = response.getContentText("UTF-8"),
+          contentObj;
+      try{ 
+        contentObj = JSON.parse(content); 
+        if(contentObj.hasOwnProperty('results') && contentObj.results.length === 0){
+          alertMe(__('There were no results for the keyword {k} in the version {v}',locale).formatUnicorn({k:contentObj.info.keyword,v:contentObj.info.version}) );
+        }
+        else{
+          openSearchResults(content);
+        }
+      }
+      catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
       //consoleLog("Contents:");
       //consoleLog(content);
-      openSearchResults(content);
     }
     else{
       alertMe('BIBLEGET SERVER ERROR (response '+responsecode+'). Please wait a few minutes and try again.');
@@ -1313,6 +1321,25 @@ function getLocalizedBookNames(locale){
   }
   return {biblebooks:biblebooks,abbreviations:abbreviations,languages:languages};
 }
+
+String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
+    function () {
+        "use strict";
+        var str = this.toString();
+        if (arguments.length) {
+            var t = typeof arguments[0];
+            var key;
+            var args = ("string" === t || "number" === t) ?
+                Array.prototype.slice.call(arguments)
+                : arguments[0];
+
+            for (key in args) {
+                str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+            }
+        }
+
+        return str;
+    };
 
 /***********************************************/
 /* FUNCTIONS USEFUL FOR DEBUGGING PURPOSES     */
