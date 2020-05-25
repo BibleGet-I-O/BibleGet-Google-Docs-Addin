@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-const VERSION = 38; 
+const VERSION = 39; 
 const ADDONSTATE = {
   PRODUCTION: "production",
   DEVELOPMENT: "development"
@@ -140,9 +140,6 @@ const DefaultUserProperties = {
 
 function onInstall(e){
 
-  // Show instructions for usage only on first install
-  openHelpSidebar();
-
   // Add plugin menu to the toolbar (according to AuthMode)
   onOpen(e); 
 
@@ -163,18 +160,19 @@ function onOpen(e) {
     //Don't add the Settings / Preferences menu item if we don't have access to the PropertiesService
     if(setDefaultUserProperties() === false){
       
-      alertMe('The BibleGet add-on cannot access the UserProperties of the Apps Script PropertiesService. User preferences will not be available.');
+      //The BibleGet add-on cannot access PropertiesService yet, but it can from the menu items. Just be sure to check and set default preferences from the clicked menu items...
       
       DocumentApp.getUi().createAddonMenu()
-      .addItem(__('Start',locale),         'openMainSidebar')
+      .addItem(__('Start',locale),         'openDeferredSidebar')
       .addSeparator()
       .addItem(__('Instructions',locale),  'openHelpSidebar')
+      .addItem(__('Settings',locale),      'openDeferredSettings')
       .addItem(__('Send Feedback',locale), 'openSendFeedback')
       .addItem(__('Contribute',locale),    'openContributionModal')
       .addToUi();
       
     }
-    else{
+    else{ //if we can access the PropertiesService, create UI's that take for granted that default user properties have been s
       DocumentApp.getUi().createAddonMenu()
       .addItem(__('Start',locale),         'openMainSidebar')
       .addSeparator()
@@ -187,14 +185,22 @@ function onOpen(e) {
     
   }
   else { //if (e && (e.authMode == ScriptApp.AuthMode.NONE)) 
-    //User has not yet granted permissions, we will just make a basic menu to start workflow
+    //User has not yet granted permissions, we don't yet have access to PropertiesService
+    //But we should still be able to create menu items, and clicked menu items should be able to create UI and access PropertiesService
+    //So just check for PropertiesService in the UI file that is created from HtmlService and make sure to check and set defaults from there
     let locale = "en";
     try{ 
       locale = getUserLocale(); 
-      alertMe(__('You must grant the correct permissions in order to use this add-on. To fix this, remove the add-on and install it again, granting the requested permissions.',locale));  
+      DocumentApp.getUi().createAddonMenu()
+      .addItem(__('Start',locale),         'openDeferredSidebar')
+      .addSeparator()
+      .addItem(__('Instructions',locale),  'openHelpSidebar')
+      .addItem(__('Settings',locale),      'openDeferredSettings')
+      .addItem(__('Send Feedback',locale), 'openSendFeedback')
+      .addItem(__('Contribute',locale),    'openContributionModal')
+      .addToUi();
     }
     catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
-    //I think that we can't even use the html service if user has not granted permissions!
   }
 }
 
@@ -216,6 +222,27 @@ function openSettings(){
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   DocumentApp.getUi().showModalDialog(evaluated, __('Settings',locale));
   
+}
+
+function openDeferredSettings(){
+  if(setDefaultUserProperties() === false){
+    alertMe('The BibleGet add-on cannot access the PropertiesService. This means that only it cannot store your user preferences, it cannot even handle Bible quotes because it cannot store any information about available Bible versions and their indexes.',locale);
+  }
+  else{
+    let locale = "en";
+    try{ locale = getUserLocale(); }
+    catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
+
+    let html = HtmlService.createTemplateFromFile('Settings');
+    //docLog(html.getCode());
+  
+    html.activetab = 0;
+    let evaluated = html.evaluate()
+      .setWidth(SETTINGSWINDOW.WIDTH)
+      .setHeight(SETTINGSWINDOW.HEIGHT)
+      .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+    DocumentApp.getUi().showModalDialog(evaluated, __('Settings',locale));
+  }
 }
 
 /** 
@@ -252,6 +279,16 @@ function openContributionModal(){
 function openMainSidebar(){
   let html = HtmlService.createTemplateFromFile('Sidebar');
   DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O'));
+}
+
+function openDeferredSidebar(){
+  if(setDefaultUserProperties() === false){
+    alertMe('The BibleGet add-on cannot access the PropertiesService. This means that only it cannot store your user preferences, it cannot even handle Bible quotes because it cannot store any information about available Bible versions and their indexes.',locale);
+  }
+  else{
+    let html = HtmlService.createTemplateFromFile('Sidebar');
+    DocumentApp.getUi().showSidebar(html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('BibleGet I/O'));  
+  }
 }
 
 function openHelpSidebar(){
@@ -502,7 +539,7 @@ function resetUserProperties(nostringify=false){
 /* FUNCTIONS THAT RUN FROM THE UI SCRIPTS      */
 /***********************************************/
 
-//Function alertMe @ used in SidebarJS.html and Processing.gs and in other scripts here in Code.gs to show error messages to the end user
+//Function alertMe @ shortcut for DocumentApp.getUi().alert() to show error messages to the end user
 function alertMe(str){
   DocumentApp.getUi().alert(str);
 }
