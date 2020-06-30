@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-const VERSION = 39; 
+const VERSION = 40; 
 const ADDONSTATE = {
   PRODUCTION: "production",
   DEVELOPMENT: "development"
@@ -188,9 +188,7 @@ function onOpen(e) {
     //User has not yet granted permissions, we don't yet have access to PropertiesService
     //But we should still be able to create menu items, and clicked menu items should be able to create UI and access PropertiesService
     //So just check for PropertiesService in the UI file that is created from HtmlService and make sure to check and set defaults from there
-    let locale = "en";
     try{ 
-      locale = getUserLocale(); 
       DocumentApp.getUi().createAddonMenu()
       .addItem(__('Start',locale),         'openDeferredSidebar')
       .addSeparator()
@@ -722,7 +720,8 @@ function docInsert(json){
   
   var versenum,
       newPar;  
-    
+  let bookChapterPar, versionPar;
+  
   for(var i=0;i<verses.length;i++){
     
     verses[i].verse = parseInt(verses[i].verse);
@@ -745,6 +744,24 @@ function docInsert(json){
           break;
       }
       if(BibleGetProperties.LayoutPrefs.ShowBibleVersion === BGET.VISIBILITY.SHOW){
+        if(BibleGetGlobal.stack.bookchapter.length > 0){
+          switch(BibleGetProperties.LayoutPrefs.BookChapterPosition){
+            case BGET.POS.BOTTOM:
+            case BGET.POS.TOP:
+              if((BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties) ) === false){ 
+                DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
+                return; 
+              }
+              BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
+              bookChapterPargr = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bookchapter.shift());
+              break;
+            case BGET.POS.BOTTOMINLINE:
+              bookChapterPargr = BibleGetGlobal.currentPar.appendText(' '+BibleGetGlobal.stack.bookchapter.shift());
+              break;
+          }
+          setTextStyles(bookChapterPargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
+          BibleGetGlobal.firstFmtVerse = false; //why are we using this again?
+        }
         switch(BibleGetProperties.LayoutPrefs.BibleVersionPosition){
           case BGET.POS.BOTTOM:
             BibleGetGlobal.stack.bibleversion.push(verses[i].version);
@@ -757,8 +774,8 @@ function docInsert(json){
                 return; 
               }
               BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BibleVersionAlignment);
-              let versionpargr = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bibleversion.shift()); 
-              setTextStyles(versionpargr,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
+              versionPar = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bibleversion.shift()); 
+              setTextStyles(versionPar,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
               BibleGetGlobal.firstFmtVerse = false;
             }
             break;
@@ -769,8 +786,8 @@ function docInsert(json){
             }
             BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BibleVersionAlignment);
           
-            let versionpargr = BibleGetGlobal.currentPar.appendText(verses[i].version); 
-            setTextStyles(versionpargr,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
+            versionPar = BibleGetGlobal.currentPar.appendText(verses[i].version); 
+            setTextStyles(versionPar,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
             BibleGetGlobal.firstFmtVerse = false;
         }
       }
@@ -829,8 +846,8 @@ function docInsert(json){
               return; 
             }
             BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
-            let bookpargr = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bookchapter.shift()); 
-            setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
+            bookChapterPar = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bookchapter.shift()); 
+            setTextStyles(bookChapterPar,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
             BibleGetGlobal.firstFmtVerse = false;
           }
           break;
@@ -841,8 +858,8 @@ function docInsert(json){
           }
           BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
           
-          let bookpargr = BibleGetGlobal.currentPar.appendText(bkChStr); 
-          setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
+          bookChapterPar = BibleGetGlobal.currentPar.appendText(bkChStr); 
+          setTextStyles(bookChapterPar,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
           BibleGetGlobal.firstFmtVerse = false;
           break;
         case BGET.POS.BOTTOMINLINE:
@@ -851,8 +868,8 @@ function docInsert(json){
             //if we have started accumulating more than one element at this point, 
             //then we print one from the top of the stack (array.shift) to the document 
             //(i.e. if this is the first element we encounter we don't print anything yet)
-            let bookpargr = BibleGetGlobal.currentPar.appendText(' '+BibleGetGlobal.stack.bookchapter.shift()); 
-            setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
+            bookChapterPar = BibleGetGlobal.currentPar.appendText(' '+BibleGetGlobal.stack.bookchapter.shift()); 
+            setTextStyles(bookChapterPar,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
             BibleGetGlobal.firstFmtVerse = false; //TODO: double check what we're doing with this variable, is it needed only when creating paragraphs? so perhaps not here?
           }          
       }
@@ -930,16 +947,16 @@ function docInsert(json){
           return; 
         }
         BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
-        let bookpargr = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bookchapter.shift()); 
-        setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
+        bookChapterPar = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bookchapter.shift()); 
+        setTextStyles(bookChapterPar,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
         BibleGetGlobal.firstFmtVerse = false;
       }
       break;
     case BGET.POS.BOTTOMINLINE:
       if(BibleGetGlobal.stack.bookchapter.length > 0){
         //if we still have something on the stack, then we print it to the document 
-        let bookpargr = BibleGetGlobal.currentPar.appendText(' '+BibleGetGlobal.stack.bookchapter.shift()); 
-        setTextStyles(bookpargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
+        bookChapterPar = BibleGetGlobal.currentPar.appendText(' '+BibleGetGlobal.stack.bookchapter.shift()); 
+        setTextStyles(bookChapterPar,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
         BibleGetGlobal.firstFmtVerse = false; //TODO: double check what we're doing with this variable, is it needed only when creating paragraphs? so perhaps not here?
       }          
   }
@@ -953,8 +970,8 @@ function docInsert(json){
         return; 
       }
       BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BibleVersionAlignment);
-      let versionpargr = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bibleversion.shift()); 
-      setTextStyles(versionpargr,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
+      versionPar = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bibleversion.shift()); 
+      setTextStyles(versionPar,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
       BibleGetGlobal.firstFmtVerse = false; //not necessary at this point?
     }
   }
