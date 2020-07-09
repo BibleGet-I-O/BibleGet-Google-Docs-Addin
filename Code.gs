@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-const VERSION = 40; 
+const VERSION = 41; 
 const ADDONSTATE = {
   PRODUCTION: "production",
   DEVELOPMENT: "development"
@@ -172,7 +172,7 @@ function onOpen(e) {
       .addToUi();
       
     }
-    else{ //if we can access the PropertiesService, create UI's that take for granted that default user properties have been s
+    else{ //if we can access the PropertiesService, create UI's that take for granted that default user properties have been set
       DocumentApp.getUi().createAddonMenu()
       .addItem(__('Start',locale),         'openMainSidebar')
       .addSeparator()
@@ -307,7 +307,7 @@ function openSearchResults($searchresults){
   //consoleLog("stringified search results:");
   //consoleLog(JSON.stringify($searchresults));
   let evaluated = html.evaluate()
-      .setWidth(SETTINGSWINDOW.WIDTH)
+      .setWidth(SETTINGSWINDOW.WIDTH+200)
       .setHeight(SETTINGSWINDOW.HEIGHT)
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   DocumentApp.getUi().showModalDialog(evaluated, __('Search Results',locale));

@@ -7,7 +7,53 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <?!= include("Stylesheet"); ?>
     <style>
+
+button.action.gapp-addon {
+  width: auto;
+}
+
+#searchResultsContainer {
+  display: flex;
+  justify-content: space-around;
+}
+
+#searchResultsControlPanel {
+  min-width: 20%;
+  max-width: 25%;
+  margin-right: 23px;
+  padding-top: 23px;
+  border: 1px groove White;
+  text-align: center;
+  box-shadow: 10px 2px 10px Gray;
+}
+
+#searchResultsControlPanel .controlComponent {
+  margin: 33px 0px;
+}
+
+#searchResultsControlPanel .controlComponent label {
+  display: block;
+}
+
+#searchResultsControlPanel .controlComponent button {
+  margin: 10px 0px;
+}
+
+button i.material-icons {
+  vertical-align: middle;
+  margin-right: 3px;
+  position: relative;
+  bottom: 1px;
+}
+
+#searchResultsContents {
+  min-width: 75%;
+}
+.searchResultsFlexChild {
+
+}
 
 table, td, a {
 	color: #000;
@@ -18,7 +64,7 @@ table, td, a {
 #tableContainer {
 	border: 1px solid #963;
 	overflow-y: auto;
-    max-height: 500px;
+    max-height: 535px;
 }
 
 #tableContainer table {
@@ -42,7 +88,12 @@ table, td, a {
 
 #tableContainer tbody td {
   border-bottom: 1px groove White;
+  border-right: 1px groove White;
   background-color: #EFEFEF;
+}
+
+#tableContainer tbody td:last-child {
+  border-right: 0px;
 }
 
 mark {
@@ -51,25 +102,49 @@ mark {
     </style>
   </head>
   <body>
-    <div id="searchResultsInfo"></div>
-    <div id="tableContainer" class="tableContainer">
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable" id="SearchResultsTable">
-        <thead class="fixedHeader">
-          <tr class="alternateRow"><th><?=__('BOOK',locale)?></th><th><?=__('CHAPTER',locale)?></th><th><?=__('VERSE',locale)?></th><th><?=__('VERSE TEXT',locale)?></th></tr>
-        </thead>
-        <tbody class="scrollContent">
-        </tbody>
-      </table>
-    </div>    
+    <div class="spinner lds-ring" id="spinner-gif"><div></div><div></div><div></div><div></div></div>
+    <div class="spinner" id="spinner-bg"></div>
+
+    <div id="searchResultsContainer"> <!-- this is our flex container -->
+      <div id="searchResultsControlPanel" class="searchResultsFlexChild">
+        <div class="controlComponent">
+          <label><?!=__('Filter by keyword',locale)?><input type="text" id="keywordFilter" /></label>
+          <button class="action gapp-addon" id="APPLY_FILTER"><i class="material-icons md-18">filter_alt</i><span class="label"><?=__('Apply filter',locale)?></span></button>
+        </div>
+        <div class="controlComponent">
+          <button class="action gapp-addon" id="ORDER_RESULTS_BY"><i class="material-icons md-18">sort_by_alpha</i><span class="label"><?=__('Order results by reference',locale)?></span></button>
+        </div>
+      </div>
+      <div id="searchResultsContents" class="searchResultsFlexChild">
+        <div id="searchResultsInfo"></div>
+        <div id="tableContainer" class="tableContainer">
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable" id="SearchResultsTable">
+            <thead class="fixedHeader">
+              <tr class="alternateRow"><th><?=__('ACTION',locale)?></th><th><?=__('REFERENCE',locale)?></th><th><?=__('VERSE TEXT',locale)?></th></tr>
+            </thead>
+            <tbody class="scrollContent">
+            </tbody>
+          </table>
+        </div> <!-- END tableContainer  -->
+      </div> <!-- END searchResultsContents  -->
+    </div> <!-- END searchResultsContainer  -->
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
       let locale = '<?!=getUserLocale()?>',
+          $searchresults = JSON.parse(<?!=searchresults?>),
+          $searchresultsOrderedByReference = JSON.parse(<?!=searchresults?>),
+          numResultsStr,
+          $bibleBooksL10n,
           addMark = function(text,keyword){
-            return text.replace(new RegExp("("+keyword+")", "gi"),'<mark>$1</mark>');
+            if(typeof keyword === 'string'){
+              keyword = [keyword];
+            }
+            return text.replace(new RegExp("("+keyword.join('|')+")", "gi"),'<mark>$1</mark>');
           },
           populateTable = function(bibleBooksL10n){
-            let $searchresults = JSON.parse(<?!=searchresults?>),
-                numResultsStr;
+            $bibleBooksL10n = bibleBooksL10n;
+            let counter = 0;
             if($searchresults.hasOwnProperty("results") && typeof $searchresults.results === 'object'){
               if($searchresults.results.length === 1){
                 numResultsStr = '<?!=__('There is {n} result for the keyword {k} in the version {v}.',locale)?>';
@@ -79,9 +154,66 @@ mark {
               }
               jQuery('#searchResultsInfo').html(numResultsStr.formatUnicorn({n:'<b>'+$searchresults.results.length+'</b>',k:'<b>'+$searchresults.info.keyword+'</b>',v:'<b>'+$searchresults.info.version+'</b>'}));
               for(let $result of $searchresults.results){
-                jQuery("#SearchResultsTable tbody").append('<tr><td>'+bibleBooksL10n.biblebooks[parseInt($result.book)-1].split('|')[0]+'</td><td>'+$result.chapter+'</td><td>'+$result.verse+'</td><td>'+addMark($result.text,$searchresults.info.keyword)+'</td></tr>');
+                jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="'+encodeURIComponent(JSON.stringify($result))+'" /></td><td>'+bibleBooksL10n.biblebooks[parseInt($result.univbooknum)-1].split('|')[0]+' '+$result.chapter+':'+$result.verse+'</td><td>'+addMark($result.text,$searchresults.info.keyword)+'</td></tr>');
+                if(++counter == $searchresults.results.length){ hideSpinner(); }
               }
             }
+          },
+          refreshTable = function(options,bibleBooksL10n){
+            let counter = 0;
+            jQuery("#SearchResultsTable tbody").empty();
+            switch(options.ORDER_BY){
+              case 'importance':
+                for(let $result of $searchresults.results){
+                  if(options.FILTER_BY == ''){
+                    jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="'+encodeURIComponent(JSON.stringify($result))+'" /></td><td>'+bibleBooksL10n.biblebooks[parseInt($result.univbooknum)-1].split('|')[0]+' '+$result.chapter+':'+$result.verse+'</td><td>'+addMark($result.text,$searchresults.info.keyword)+'</td></tr>');
+                  }
+                  else{
+                    if( $result.text.includes(options.FILTER_BY) ){
+                      jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="'+encodeURIComponent(JSON.stringify($result))+'" /></td><td>'+bibleBooksL10n.biblebooks[parseInt($result.univbooknum)-1].split('|')[0]+' '+$result.chapter+':'+$result.verse+'</td><td>'+addMark($result.text,[$searchresults.info.keyword,options.FILTER_BY])+'</td></tr>');
+                      ++counter;
+                    }
+                  }
+                }
+                break;
+              case 'reference':
+                for(let $result of $searchresultsOrderedByReference.results){
+                  if(options.FILTER_BY == ''){
+                    jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="'+encodeURIComponent(JSON.stringify($result))+'" /></td><td>'+bibleBooksL10n.biblebooks[parseInt($result.univbooknum)-1].split('|')[0]+' '+$result.chapter+':'+$result.verse+'</td><td>'+addMark($result.text,$searchresults.info.keyword)+'</td></tr>');
+                  }
+                  else{
+                    if( $result.text.includes(options.FILTER_BY) ){
+                      jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="'+encodeURIComponent(JSON.stringify($result))+'" /></td><td>'+bibleBooksL10n.biblebooks[parseInt($result.univbooknum)-1].split('|')[0]+' '+$result.chapter+':'+$result.verse+'</td><td>'+addMark($result.text,[$searchresults.info.keyword,options.FILTER_BY])+'</td></tr>');
+                      ++counter;
+                    }
+                  }
+                }
+                break;
+            }
+            if(options.FILTER_BY == ''){
+              if($searchresults.results.length === 1){
+                numResultsStr = '<?!=__('There is {n} result for the keyword {k} in the version {v}.',locale)?>';
+              }
+              else{
+                numResultsStr = '<?!=__('There are {n} results for the keyword {k} in the version {v}.',locale)?>';
+              }
+              jQuery('#searchResultsInfo').html(numResultsStr.formatUnicorn({n:'<b>'+$searchresults.results.length+'</b>',k:'<b>'+$searchresults.info.keyword+'</b>',v:'<b>'+$searchresults.info.version+'</b>'}));
+            }
+            else{
+              if(counter == 1){
+                numResultsStr = '<?!=__('There is {n} result for the keyword {k} filtered by {f} in the version {v}.',locale)?>';
+              }
+              else if(counter > 1){
+                numResultsStr = '<?!=__('There are {n} results for the keyword {k} filtered by {f} in the version {v}.',locale)?>';
+              }
+              jQuery('#searchResultsInfo').html(numResultsStr.formatUnicorn({n:'<b>'+counter+'</b>',k:'<b>'+$searchresults.info.keyword+'</b>',f:'<b>'+options.FILTER_BY+'</b>',v:'<b>'+$searchresults.info.version+'</b>'}));
+            }
+          },
+          hideSpinner = function(){
+            $('.spinner').hide();
+          },
+          showSpinner = function(){
+            $('.spinner').show();
           };
           String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
             function () {
@@ -101,7 +233,97 @@ mark {
               
               return str;
             };
+            
+          if($searchresultsOrderedByReference.hasOwnProperty("results") && typeof $searchresultsOrderedByReference.results === 'object'){
+            if($searchresultsOrderedByReference.results.length > 1){
+              $searchresultsOrderedByReference.results.sort(function(a,b){ return a.booknum - b.booknum; });
+            }
+          }
           google.script.run.withSuccessHandler(populateTable).getLocalizedBookNames(locale);
+          
+          $(document).ready(function(){
+            $(document).on('click','button',function(){
+              //First check the context of the button that was clicked: control panel or searchResultsContents
+              let $filterLabel,
+                  $orderbyLabel,
+                  $keywordFilter,
+                  $ORDER_BY,
+                  $FILTER_BY,
+                  REFRESH = false;
+              switch($(this).parents('.searchResultsFlexChild').attr('id')){
+                case 'searchResultsControlPanel':
+                  $orderbyLabel = $('#ORDER_RESULTS_BY').find('span.label');
+                  if($orderbyLabel.text() == '<?=__('Order results by reference',locale)?>' ){
+                    $ORDER_BY = 'importance';
+                  }
+                  else if($orderbyLabel.text() == '<?=__('Order results by importance',locale)?>' ){
+                    $ORDER_BY = 'reference';
+                  }
+                  
+                  $filterLabel = $('#APPLY_FILTER').find('span.label');
+                  $keywordFilter = $('#keywordFilter').val() !== '' && $('#keywordFilter').val().length > 2 ? $('#keywordFilter').val() : '';
+                  
+                  switch( $(this).attr('id') ){
+                    case 'ORDER_RESULTS_BY':
+                      REFRESH = true;
+                      if( $orderbyLabel.text() == '<?=__('Order results by reference',locale)?>' ){
+                        $ORDER_BY = 'reference';
+                        $orderbyLabel.text('<?=__('Order results by importance',locale)?>');
+                      }
+                      else{
+                        $ORDER_BY = 'importance';
+                        $orderbyLabel.text('<?=__('Order results by reference',locale)?>');
+                      }
+                    break;
+                    case 'APPLY_FILTER':
+                      
+                      if($filterLabel.text() == '<?=__('Apply filter',locale)?>' ){
+                        if($keywordFilter != '' && $keywordFilter.length > 2){
+                          REFRESH = true;
+                          $filterLabel.text('<?=__('Remove filter',locale)?>');
+                          $('#keywordFilter').prop('readonly',true);
+                        }
+                        else{
+                          if($keywordFilter == ''){ alert('Cannot filter by an empty string!'); }
+                          else if($keywordFilter.length < 3){ alert('Keyword must be at least three characters long'); }
+                        }
+                      }
+                      else{
+                        $('#keywordFilter').val('');
+                        $keywordFilter = '';
+                        REFRESH = true;
+                        $filterLabel.text('<?=__('Apply filter',locale)?>');
+                        $('#keywordFilter').prop('readonly',false);
+                      }
+                    break;
+                  }
+                  
+                  if(REFRESH){ refreshTable({ORDER_BY: $ORDER_BY,FILTER_BY: $keywordFilter},$bibleBooksL10n); }
+                  
+                break;
+                case 'searchResultsContents':
+                  //alert('button was clicked! it is in the context of the searchResultsContents');
+                  $(this).addClass('disabled').prop('disabled',true);
+                  //alert($(this).next().prop('tagName') );
+                  if($(this).next('input[type=hidden]').length != 0){
+                    showSpinner();
+                    let $inputval = $(this).next('input[type=hidden]').val();
+                    let $resultsStr = decodeURIComponent($inputval);
+                    //alert($resultsStr);
+                    let $result = JSON.parse($resultsStr);
+                    let $resultsObj = {};
+                    $resultsObj.results = [$result];
+                    $resultsObj.errors = $searchresults.errors;
+                    $resultsObj.info = $searchresults.info;
+                    google.script.run.withSuccessHandler(hideSpinner).docInsert($resultsObj);
+                  }
+                  else{
+                    alert('could not select next hidden input');
+                  }
+                break;
+              }
+            });
+          });
     </script>
   </body>
 </html>
