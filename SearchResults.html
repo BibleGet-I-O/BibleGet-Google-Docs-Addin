@@ -169,7 +169,8 @@ mark {
                     jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="'+encodeURIComponent(JSON.stringify($result))+'" /></td><td>'+bibleBooksL10n.biblebooks[parseInt($result.univbooknum)-1].split('|')[0]+' '+$result.chapter+':'+$result.verse+'</td><td>'+addMark($result.text,$searchresults.info.keyword)+'</td></tr>');
                   }
                   else{
-                    if( $result.text.includes(options.FILTER_BY) ){
+                    let $filter = new RegExp(options.FILTER_BY,"i");
+                    if( $filter.test($result.text) ){
                       jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="'+encodeURIComponent(JSON.stringify($result))+'" /></td><td>'+bibleBooksL10n.biblebooks[parseInt($result.univbooknum)-1].split('|')[0]+' '+$result.chapter+':'+$result.verse+'</td><td>'+addMark($result.text,[$searchresults.info.keyword,options.FILTER_BY])+'</td></tr>');
                       ++counter;
                     }
@@ -182,7 +183,8 @@ mark {
                     jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="'+encodeURIComponent(JSON.stringify($result))+'" /></td><td>'+bibleBooksL10n.biblebooks[parseInt($result.univbooknum)-1].split('|')[0]+' '+$result.chapter+':'+$result.verse+'</td><td>'+addMark($result.text,$searchresults.info.keyword)+'</td></tr>');
                   }
                   else{
-                    if( $result.text.includes(options.FILTER_BY) ){
+                    let $filter = new RegExp(options.FILTER_BY,"i");
+                    if( $filter.test($result.text) ){
                       jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="'+encodeURIComponent(JSON.stringify($result))+'" /></td><td>'+bibleBooksL10n.biblebooks[parseInt($result.univbooknum)-1].split('|')[0]+' '+$result.chapter+':'+$result.verse+'</td><td>'+addMark($result.text,[$searchresults.info.keyword,options.FILTER_BY])+'</td></tr>');
                       ++counter;
                     }
