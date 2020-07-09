@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-const VERSION = 41; 
+const VERSION = 42; 
 const ADDONSTATE = {
   PRODUCTION: "production",
   DEVELOPMENT: "development"
