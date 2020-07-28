@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-const VERSION = 43; 
+const VERSION = 45; 
 const ADDONSTATE = {
   PRODUCTION: "production",
   DEVELOPMENT: "development"
@@ -16,6 +16,8 @@ const ENDPOINTURL = "https://query.bibleget.io/";
 const ENDPOINTURLMETADATA = "https://query.bibleget.io/metadata.php";
 const ENDPOINTURLSEARCH = "https://query.bibleget.io/search.php";
 const SETTINGSWINDOW = { HEIGHT: 580, WIDTH: 900 };
+
+let AUTHMODE = null;
 
 //DEFINE CONSTANTS FOR USER PREFERENCES
 //these will be used throughout scripts
@@ -149,7 +151,9 @@ function onOpen(e) {
   let locale = 'en';
   try{ locale = getUserLocale(); }
   catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
-
+  if(e){
+    AUTHMODE = e.authMode;
+  }
   if(e && (e.authMode == ScriptApp.AuthMode.LIMITED || e.authMode == ScriptApp.AuthMode.FULL)){
     // Initialize user preferences ONLY after user has granted permission to the Properties Service!
     
@@ -1445,7 +1449,16 @@ function docLog(str){
 }
 
 function getEffectiveUserEM() {
-  //Put user email into html when it loads for determining whether user is the authorized user
-  return Session.getEffectiveUser().getEmail();
+  let locale = 'en';
+  try{ locale = getUserLocale(); }
+  catch(e){ return "Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber; }
+  
+  if(AUTHMODE == ScriptApp.AuthMode.LIMITED || AUTHMODE == ScriptApp.AuthMode.FULL){
+    //Put user email into html when it loads for determining whether user is the authorized user
+    return Session.getEffectiveUser().getEmail();
+  }
+  else{
+    return __('Not authorized',locale);
+  }
 }
 

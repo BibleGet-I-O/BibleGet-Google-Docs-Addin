@@ -474,6 +474,13 @@ span.ui-checkboxradio-icon { display: none; }
 #otherSettingsTab1 .ui-button {
   font-size: .8em;
 }
+  
+#messageToUser {
+  border: 1px solid Gray;
+  background-color: pink;
+  color: Gray;
+  padding: 12px;
+}
 
 <?
   if(CURRENTSTATE == ADDONSTATE.DEVELOPMENT){
@@ -483,6 +490,25 @@ span.ui-checkboxradio-icon { display: none; }
 </style>
 </head>
 <body>
+<div id="messageToUser"></div>
+<input id="idAccountOfEffectiveUsr" type="hidden" style="display:none" value="<?!= Session.getEffectiveUser().getEmail(); ?>"/>
+<script>
+let failedAcctTest = function(rtrn) {
+  $('.spinner').hide();
+  let usrWhoLoaded = document.getElementById('idAccountOfEffectiveUsr').textContent;
+
+  if (usrWhoLoaded !== rtrn) {
+    document.getElementById('messageToUser').textContent = "<?=__('The Add-on loaded under the account:',locale)?>" + " <" + usrWhoLoaded + ">" +
+      "\n\n" + "<?=__('However you are also logged into another account in this browser:',locale)?>" + " <" + rtrn + ">" +
+      "\n\n" + "<?=__('Being logged into multiple accounts in the same browser session causes authorization errors.',locale)?>" +
+      "\n\n" + "<?=__('In order to proceed, you must either log out of all accounts, and log back into the account that installed the add-on, or open an incognito window, log in with the account that installed the add-on and use the add-on from that window.',locale)?>" +
+      "\n\n" + "<?=__('The best practice to avoid these problems is to login to your accounts using the browser\'s own account manager. That way you have a different browser session for each account that you would like to use.',locale)?>";
+  }
+},
+successAcctTest = function(rtrn) {
+  $('#messageToUser').hide();
+};
+</script>
 <div class="spinner lds-ring" id="spinner-gif"><div></div><div></div><div></div><div></div></div>
 <div class="spinner" id="spinner-bg"></div>
 <input type="hidden" id="activetab" value="<?!=activetab?>" />
@@ -1034,6 +1060,7 @@ drawRuler = function(rulerLen, cvtToCM, lftindnt, rgtindnt){
 
 //Start our page manipulation and event handling
 jQuery(document).ready(function(){
+    google.script.run.withFailureHandler(failedAcctTest).withSuccessHandler(successAcctTest).getEffectiveUserEM();
     //we will try to get a pure JSON obj, so we don't need to parse every value
     google.script.run.withSuccessHandler(passUserPropertiesServer2Client).getUserProperties(true); 
     

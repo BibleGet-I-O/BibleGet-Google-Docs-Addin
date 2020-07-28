@@ -472,6 +472,54 @@ var __ = function(str,ling){
         "fr":"Lorsque vous effectuez une recherche par mot-clé, vous ne pouvez pas sélectionner plusieurs versions",
         "de":"Bei der Suche nach Schlüsselwörtern können Sie nicht mehr als eine Version auswählen",
         "pt":"Ao fazer uma pesquisa por palavra-chave, você não pode selecionar mais de uma versão"
+      },
+      "The Add-on loaded under the account:" : {
+        "en":"The Add-on loaded under the account:",
+        "it":"Il componente aggiuntivo è stato caricato con l'account:",
+        "es":"El complemento cargó con la cuenta:",
+        "fr":"Le module complémentaire a été téléchargé en utilisant le compte",
+        "de":"Das Add-On wurde über das Konto geladen:",
+        "pt":"O complemento foi carregado através da conta:"
+      },
+      "However you are also logged into another account in this browser:" : {
+        "en":"However you are also logged into another account in this browser:",
+        "it":"Tuttavia hai effettuato accesso anche ad un altro account in questo browser:",
+        "es":"Sin embargo, también ha iniciado sesión en otra cuenta en este navegador:",
+        "fr":"Cependant, vous êtes également connecté à un autre compte dans ce navigateur:",
+        "de":"Sie sind jedoch auch in diesem Browser bei einem anderen Konto angemeldet:",
+        "pt":"No entanto, você também está conectado a outra conta neste navegador:"
+      },
+      "Being logged into multiple accounts in the same browser session causes authorization errors." : {
+        "en":"Being logged into multiple accounts in the same browser session causes authorization errors.",
+        "it":"Effettuare accesso a più account nella stessa sessione di navigazione provoca errori di autorizzazione.",
+        "es":"Iniciar sesión con varias cuentas en la misma sesión del navegador provoca errores de autorización.",
+        "fr":"La connexion avec plusieurs comptes dans la même session de navigateur entraîne des erreurs d'autorisation.",
+        "de":"Das Anmelden mit mehreren Konten in derselben Browsersitzung führt zu Autorisierungsfehlern.",
+        "pt":"O login com várias contas na mesma sessão do navegador causa erros de autorização."
+      },
+      "In order to proceed, you must either log out of all accounts, and log back into the account that installed the add-on, or open an incognito window, log in with the account that installed the add-on and use the add-on from that window." : {
+        "en":"In order to proceed, you must either log out of all accounts, and log back into the account that installed the add-on, or open an incognito window, log in with the account that installed the add-on and use the add-on from that window.",
+        "it":"Per poter procedere, dovresti uscire da tutti gli account ed effettuare l'accesso con l'account che ha installato l'estensione, oppure aprire una finestra in incognito ed effettuare da là l'accesso all'account che ha installato l'estensione.",
+        "es":"Para continuar, debe cerrar la sesión de todas las cuentas, y volver a iniciar sesión en la cuenta que instaló el complemento, o abrir una ventana de incógnito, iniciar sesión con la cuenta que instaló el complemento y usar el complemento desde esa ventana.",
+        "fr":"Pour continuer, vous devez soit vous déconnecter de tous les comptes et vous reconnecter au compte qui a installé le module complémentaire, soit ouvrir une fenêtre de navigation privée, vous connecter avec le compte qui a installé le module complémentaire et utiliser le module complémentaire à partir de cette fenêtre.",
+        "de":"Um fortzufahren, müssen Sie sich entweder von allen Konten abmelden und wieder bei dem Konto anmelden, das das Add-On installiert hat, oder ein Inkognito-Fenster öffnen, sich mit dem Konto anmelden, das das Add-On installiert hat, und das Add-On verwenden aus diesem Fenster.",
+        "pt":"Para continuar, você deve sair de todas as contas e fazer login novamente na conta que instalou o complemento ou abrir uma janela anônima, fazer login com a conta que instalou o complemento e usar o complemento dessa janela."
+      },
+      "The best practice to avoid these problems is to login to your accounts using the browser's own account manager. That way you have a different browser session for each account that you would like to use." : {
+        "en":"The best practice to avoid these problems is to login to your accounts using the browser's own account manager. That way you have a different browser session for each account that you would like to use.",
+        "it":"La migliore pratica per evitare questi problemi è accedere ai tuoi account usando il gestore degli account del browser. In questo modo hai una sessione del browser diversa per ogni account che usi.",
+        "es":"La mejor práctica para evitar estos problemas es iniciar sesión en sus cuentas utilizando el administrador de cuentas propio del navegador. De esa manera, tendrá una sesión de navegador diferente para cada cuenta que use.",
+        "fr":"La meilleure pratique pour éviter ces problèmes consiste à vous connecter à vos comptes à l'aide du gestionnaire de compte du navigateur. De cette façon, vous avez une session de navigateur différente pour chaque compte que vous utilisez.",
+        "de":"Die beste Vorgehensweise, um diese Probleme zu vermeiden, besteht darin, sich mit dem eigenen Account Manager Ihres Browsers bei Ihren Konten anzumelden. Auf diese Weise haben Sie für jedes Konto, das Sie verwenden, eine andere Browsersitzung.",
+        "pt":"A melhor prática para evitar esses problemas é fazer login nas suas contas usando o gerente de contas próprio do navegador. Dessa forma, você terá uma sessão de navegador diferente para cada conta que usar."
+      },
+      "Not authorized" : {
+        "en":"Not authorized",
+        "it":"Non autorizzato",
+        "es":"No autorizado",
+        "fr":"Pas autorisé",
+        "de":"Nicht genehmigt",
+        "pt":"Não autorizado"
       }
     },
     errormessages = {
