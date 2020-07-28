@@ -77,9 +77,24 @@
   </style>
 </head>
 <body>
+<div id="messageToUser"></div>
+<input id="idAccountOfEffectiveUsr" type="hidden" style="display:none" value="<?!= Session.getEffectiveUser().getEmail(); ?>"/>
+<script>
+let failedAcctTest = function(rtrn) {
+  $('.spinner').hide();
+  var usrWhoLoaded = document.getElementById('idAccountOfEffectiveUsr').textContent;
+
+  if (usrWhoLoaded !== rtrn) {
+    document.getElementById('messageToUser').textContent = "The Add-on loaded under the account: z" + usrWhoLoaded + ">" +
+      "\n\nBut you are also logged into another account: <" + rtrn + ">" +
+      "\n\nYou are logged into multiple accounts, which has caused an authorization error." +
+      "\n\nYou must either log out of all accounts, and log back into the account that installed the add-on, " +
+      "or open an incognito window, log in with the account that installed the add-on and use the add-on from that window.";
+  }
+}
+</script>
 <div class="spinner lds-ring" id="spinner-gif"><div></div><div></div><div></div><div></div></div>
 <div class="spinner" id="spinner-bg"></div>
-
 <div class="sidebar branding-below">
     <h3><?=__("Get bible quotes",locale)?></h3>
     <div class="block form-group">
@@ -218,7 +233,9 @@ runKeywordSearch = function(keyword){
 };
 
 $(document).ready(function(){
+    google.script.run.withFailureHandler(failedAcctTest).getEffectiveUserEM();
     $('.spinner').hide();
+    
     $('#text-version').change(function(){
       let selectedversions = $(this).val();
       if(selectedversions===null){

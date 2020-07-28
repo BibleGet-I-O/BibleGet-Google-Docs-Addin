@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-const VERSION = 42; 
+const VERSION = 43; 
 const ADDONSTATE = {
   PRODUCTION: "production",
   DEVELOPMENT: "development"
@@ -1443,3 +1443,9 @@ function docLog(str){
     newPar.appendText(str);
   }
 }
+
+function getEffectiveUserEM() {
+  //Put user email into html when it loads for determining whether user is the authorized user
+  return Session.getEffectiveUser().getEmail();
+}
+
