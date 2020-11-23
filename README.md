@@ -1,3 +1,5 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/bibleget-i-o/bibleget-google-docs-addin/badge)](https://www.codefactor.io/repository/github/bibleget-i-o/bibleget-google-docs-addin)
+
 # BibleGet-Google-Docs-Addon
 Google Docs Add-on for the BibleGet I/O Project
 
