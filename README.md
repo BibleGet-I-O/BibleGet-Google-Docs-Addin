@@ -6,12 +6,13 @@ Google Docs Add-on for the BibleGet I/O Project
 The BibleGet I/O service is allows developers to submit complex queries for Scripture Quotations and receive in return structured data in various formats, the default being JSON. There are published online Bibles, but not services that give structured data responses; or if there are a few such services, they do not however accept complex queries. BibleGet I/O service wishes to provide such functionality.
 
 The BibleGet I/O service (https://www.bibleget.io) supports multiple versions of the Bible. Currently the following Bible versions are supported:
-* **CEI2008** (italian) as can be found at http://www.bibbiaedu.it
-* **LUZZI** (italian), the “Luzzi / Riveduta” version
-* **NVBSE** (latin) the Latin version “Nova Vulgata Bibliorum Sacrorum Editio” as can be found at http://www.vatican.va/archive/bible/nova_vulgata/documents/nova-vulgata_index_lt.html
-* **NABRE** (english) the Catholic edition of the USCCB as can be found at http://www.usccb.org/bible/books-of-the-bible/index.cfm
-* **VLGCL** (latin) the “Vulgata Clementina” version
-* **DRB** (english) the “Douay Rheims Bible”
+* **CEI2008** (Italian) as can be found at http://www.bibbiaedu.it
+* **LUZZI** (Italian), the “Luzzi / Riveduta” version
+* **NVBSE** (Latin) the Latin version “Nova Vulgata Bibliorum Sacrorum Editio” as can be found at http://www.vatican.va/archive/bible/nova_vulgata/documents/nova-vulgata_index_lt.html
+* **VLGCL** (Latin) the “Vulgata Clementina” version
+* **NABRE** (English) the Catholic edition of the USCCB as can be found at http://www.usccb.org/bible/books-of-the-bible/index.cfm
+* **DRB** (English) the “Douay Rheims Bible”
+* **BLPD** (Spanish) the “Libro del Pueblo de Dios” Argentinian Bible
 
 A Google Docs add-on is the perfect example for a utilization of this service. The “BibleGet I/O” add-on let’s you insert Bible quotes into your document using standard Bible citation queries.
 
