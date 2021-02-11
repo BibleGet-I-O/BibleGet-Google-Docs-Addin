@@ -218,6 +218,7 @@ queryClean = function(query){
     }
     query = query.replace(/:/g,',');
   }
+  query = query.replace('/[\u2011-\u2015|\u2212|\u23AF]/g',String.fromCharCode(45));
   return query.split(';').filter(function(n){ return n !== ""; });
 },
 alertMe = function(errmex){
