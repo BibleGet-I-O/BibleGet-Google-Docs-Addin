@@ -67,11 +67,15 @@ const BGET = {
     VERSENUMBER:     3,
     VERSETEXT:       4
   },
+  PREFERORIGIN: {        //PREFER ORIGIN : most catholic editions of the Bible have texts based both on the Greek and on the Hebrew versions of the Bible
+    GREEK:           1,  //  resulting in duplicate verses, which can be both be quoted with the same reference (e.g. Esther 1,1-10)
+    HEBREW:          2   //  Even though some Catholic editions place the Greek version in separate "books", for simplicity the BibleGet project places them as quotable verses following the CEI2008 layout. This preference allows the user to define which origin to prefer (if available) when making the quote
+  },
   TYPECASTING: {        //just for quality assurance and good measure, let's explicitly define typecasting of our UserProperties, don't just rely on JSON.parse
                         //this way we know that floats will be floats and ints will be ints and we don't have to worry about it every time in our code when we use the values
     BOOLEANVALS : ["NOVERSIONFORMATTING","BOLD","ITALIC","UNDERLINE","STRIKETHROUGH","BOOKCHAPTERFULLQUERY","INTERFACEINCM"],
     FLOATVALS   : ["LINEHEIGHT","LEFTINDENT","RIGHTINDENT"],
-    INTVALS     : ["FONT_SIZE","VALIGN","SHOWBIBLEVERSION","BIBLEVERSIONPOSITION","BIBLEVERSIONWRAP","BOOKCHAPTERPOSITION","BOOKCHAPTERWRAP","BOOKCHAPTERFORMAT","SHOWVERSENUMBERS"],
+    INTVALS     : ["FONT_SIZE","VALIGN","SHOWBIBLEVERSION","BIBLEVERSIONPOSITION","BIBLEVERSIONWRAP","BOOKCHAPTERPOSITION","BOOKCHAPTERWRAP","BOOKCHAPTERFORMAT","SHOWVERSENUMBERS","PREFERORIGIN"],
     STRINGVALS  : ["FONT_FAMILY","PARAGRAPHALIGN","FOREGROUND_COLOR","BACKGROUND_COLOR","BIBLEVERSIONALIGNMENT","BOOKCHAPTERALIGNMENT"],
     STRINGARRAYS: ["RecentSelectedVersions"]
   }
@@ -133,7 +137,8 @@ const DefaultUserProperties = {
     BOOKCHAPTERFORMAT:     BGET.FORMAT.BIBLELANG,//const will resolve to INT    (use ENUM, e.g. BGET.FORMAT.BIBLELANG
     BOOKCHAPTERFULLQUERY:  false,                //false: just the name of the book and the chapter will be shown (i.e. 1 John 4)
                                                  //true: the full reference including the verses will be shown (i.e. 1 John 4:7-8) 
-    SHOWVERSENUMBERS:      BGET.VISIBILITY.SHOW  //const will resolve to INT    (use ENUM, e.g. BGET.VISIBILITY.SHOW)
+    SHOWVERSENUMBERS:      BGET.VISIBILITY.SHOW, //const will resolve to INT    (use ENUM, e.g. BGET.VISIBILITY.SHOW)
+    PREFERORIGIN:          BGET.PREFERORIGIN.HEBREW //const will resolve to INT (use ENUM, e.g. BGET.PREFERORIGIN.HEBREW)
   },
   //Will be handled from the Sidebar UI when sending queries
   RecentSelectedVersions:  []                    //Array of STRING values
