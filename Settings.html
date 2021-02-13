@@ -530,19 +530,19 @@ successAcctTest = function(rtrn) {
           </span>
         </div>
         <div class="flexitem">
-          <span id="PARAGRAPHALIGN" class="buttonset">
-            <input type="radio" id="PARAGRAPHALIGN-left" value="<?!=BGET.ALIGN.LEFT?>" name="PARAGRAPHALIGN" <? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.LEFT) { ?>CHECKED<? } ?>><label for="PARAGRAPHALIGN-left" title="<?!=__('ALIGN LEFT',locale)?>"><i class="material-icons md-18">format_align_left</i></label>
-            <input type="radio" id="PARAGRAPHALIGN-center" value="<?!=BGET.ALIGN.CENTER?>" name="PARAGRAPHALIGN"<? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.CENTER) { ?>CHECKED<? } ?>><label for="PARAGRAPHALIGN-center" title="<?!=__('ALIGN CENTER',locale)?>"><i class="material-icons md-18">format_align_center</i></label>
-            <input type="radio" id="PARAGRAPHALIGN-right" value="<?!=BGET.ALIGN.RIGHT?>" name="PARAGRAPHALIGN"<? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.RIGHT) { ?>CHECKED<? } ?>><label for="PARAGRAPHALIGN-right" title="<?!=__('ALIGN RIGHT',locale)?>"><i class="material-icons md-18">format_align_right</i></label>
-            <input type="radio" id="PARAGRAPHALIGN-justify" value="<?!=BGET.ALIGN.JUSTIFY?>" name="PARAGRAPHALIGN"<? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.JUSTIFY) { ?>CHECKED<? } ?>><label for="PARAGRAPHALIGN-justify" title="<?!=__('Justify',locale).toUpperCase()?>"><i class="material-icons md-18">format_align_justify</i></label>
+          <span id="paragraphalign" class="buttonset">
+            <input type="radio" id="paragraphalign-left" value="<?!=BGET.ALIGN.LEFT?>" name="paragraphalign" <? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.LEFT) { ?>CHECKED<? } ?>><label for="paragraphalign-left" title="<?!=__('ALIGN LEFT',locale)?>"><i class="material-icons md-18">format_align_left</i></label>
+            <input type="radio" id="paragraphalign-center" value="<?!=BGET.ALIGN.CENTER?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.CENTER) { ?>CHECKED<? } ?>><label for="paragraphalign-center" title="<?!=__('ALIGN CENTER',locale)?>"><i class="material-icons md-18">format_align_center</i></label>
+            <input type="radio" id="paragraphalign-right" value="<?!=BGET.ALIGN.RIGHT?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.RIGHT) { ?>CHECKED<? } ?>><label for="paragraphalign-right" title="<?!=__('ALIGN RIGHT',locale)?>"><i class="material-icons md-18">format_align_right</i></label>
+            <input type="radio" id="paragraphalign-justify" value="<?!=BGET.ALIGN.JUSTIFY?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.JUSTIFY) { ?>CHECKED<? } ?>><label for="paragraphalign-justify" title="<?!=__('Justify',locale).toUpperCase()?>"><i class="material-icons md-18">format_align_justify</i></label>
           </span>          
         </div>
         <div class="flexitem bibleget-font-family">
           <select id="bibleget-font-family" class="bget-fontfamily-combobox" title="<?!=__('FONT',locale)?>"></select>
         </div>
         <div class="flexitem">
-          <span id="LINEHEIGHTBtn" class="ui-button" title="<?!=__('LINEHEIGHT',locale).toUpperCase()?>"><i class="material-icons md-18">format_line_spacing</i></span>
-          <select id="LINEHEIGHT-quote" class="selectmenu">
+          <span id="lineheightBtn" class="ui-button" title="<?!=__('Lineheight',locale).toUpperCase()?>"><i class="material-icons md-18">format_line_spacing</i></span>
+          <select id="lineheight-quote" class="selectmenu">
             <option value="1.0"<? if(userProperties.ParagraphStyles.LINEHEIGHT=="1.0"){ ?> SELECTED<? } ?>><?!=__('Single',locale)?> 1.0</option>
             <option value="1.15"<? if(userProperties.ParagraphStyles.LINEHEIGHT=="1.15"){ ?> SELECTED<? } ?>>1.15</option>
             <option value="1.5"<? if(userProperties.ParagraphStyles.LINEHEIGHT=="1.5"){ ?> SELECTED<? } ?>>1&#189;</option>
