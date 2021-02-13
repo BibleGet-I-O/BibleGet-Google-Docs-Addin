@@ -342,7 +342,7 @@ function setDefaultUserProperties(){
   if(propsService !== null){
     let usrProperties = propsService.getProperties();
     //Check if there are old properties that we no longer need, if so clean up to avoid trouble
-    if(usrProperties.hasOwnProperty('RientroSinistro') || usrProperties.hasOwnProperty('BOOKCHAPTERALIGNMENT') || usrProperties.hasOwnProperty('VerseNumberAlignment') || usrProperties.hasOwnProperty('VerseTextAlignment') || usrProperties.hasOwnProperty('Interlinea') ){
+    if(usrProperties.hasOwnProperty('RientroSinistro') || usrProperties.hasOwnProperty('BookChapterAlignment') || usrProperties.hasOwnProperty('VerseNumberAlignment') || usrProperties.hasOwnProperty('VerseTextAlignment') || usrProperties.hasOwnProperty('Interlinea') ){
       propsService.deleteAllProperties();
     }
     
