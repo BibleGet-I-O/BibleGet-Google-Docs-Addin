@@ -12,9 +12,9 @@ const ADDONSTATE = {
 const CURRENTSTATE = ADDONSTATE.PRODUCTION;
 
 const REQUESTPARAMS = {"rettype":"json","appid":"googledocs"};
-const ENDPOINTURL = "https://query.bibleget.io/";
-const ENDPOINTURLMETADATA = "https://query.bibleget.io/metadata.php";
-const ENDPOINTURLSEARCH = "https://query.bibleget.io/search.php";
+const ENDPOINTURL = "https://query.bibleget.io/v3/";
+const ENDPOINTURLMETADATA = "https://query.bibleget.io/v3/metadata.php";
+const ENDPOINTURLSEARCH = "https://query.bibleget.io/v3/search.php";
 const SETTINGSWINDOW = { HEIGHT: 580, WIDTH: 900 };
 
 let AUTHMODE = null;
