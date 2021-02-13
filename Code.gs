@@ -69,10 +69,10 @@ const BGET = {
   },
   TYPECASTING: {        //just for quality assurance and good measure, let's explicitly define typecasting of our UserProperties, don't just rely on JSON.parse
                         //this way we know that floats will be floats and ints will be ints and we don't have to worry about it every time in our code when we use the values
-    BOOLEANVALS : ["NoVersionFormatting","BOLD","ITALIC","UNDERLINE","STRIKETHROUGH","BookChapterFullQuery","InterfaceInCM"],
-    FLOATVALS   : ["Lineheight","LeftIndent","RightIndent"],
-    INTVALS     : ["FONT_SIZE","VALIGN","ShowBibleVersion","BibleVersionPosition","BibleVersionWrap","BookChapterPosition","BookChapterWrap","BookChapterFormat","ShowVerseNumbers"],
-    STRINGVALS  : ["FONT_FAMILY","ParagraphAlign","FOREGROUND_COLOR","BACKGROUND_COLOR","BibleVersionAlignment","BookChapterAlignment"],
+    BOOLEANVALS : ["NOVERSIONFORMATTING","BOLD","ITALIC","UNDERLINE","STRIKETHROUGH","BOOKCHAPTERFULLQUERY","INTERFACEINCM"],
+    FLOATVALS   : ["LINEHEIGHT","LEFTINDENT","RIGHTINDENT"],
+    INTVALS     : ["FONT_SIZE","VALIGN","SHOWBIBLEVERSION","BIBLEVERSIONPOSITION","BIBLEVERSIONWRAP","BOOKCHAPTERPOSITION","BOOKCHAPTERWRAP","BOOKCHAPTERFORMAT","SHOWVERSENUMBERS"],
+    STRINGVALS  : ["FONT_FAMILY","PARAGRAPHALIGN","FOREGROUND_COLOR","BACKGROUND_COLOR","BIBLEVERSIONALIGNMENT","BOOKCHAPTERALIGNMENT"],
     STRINGARRAYS: ["RecentSelectedVersions"]
   }
 };
@@ -80,13 +80,13 @@ const BGET = {
 const DefaultUserProperties = {
   //Will be handled first thing on TAB 1 of the Settings UI
   ParagraphStyles: {
-    Lineheight:          1.5,                //FLOAT
-    LeftIndent:          0,                  //FLOAT
-    RightIndent:         0,                  //FLOAT
+    LINEHEIGHT:          1.5,                //FLOAT
+    LEFTINDENT:          0,                  //FLOAT
+    RIGHTINDENT:         0,                  //FLOAT
     FONT_FAMILY:         "Times New Roman",  //STRING
-    ParagraphAlign:      BGET.ALIGN.JUSTIFY, //STRING   possible vals 'left','center','right', 'justify' (use ENUM, e.g. BGET.ALIGN.LEFT)
-    NoVersionFormatting: false,               //BOOLEAN
-    InterfaceInCM:       false
+    PARAGRAPHALIGN:      BGET.ALIGN.JUSTIFY, //STRING   possible vals 'left','center','right', 'justify' (use ENUM, e.g. BGET.ALIGN.LEFT)
+    NOVERSIONFORMATTING: false,               //BOOLEAN
+    INTERFACEINCM:       false
   },  
   //Will be handled right under ParagraphStyles on TAB 1 of the Settings UI
   BookChapterStyles: {
@@ -123,17 +123,17 @@ const DefaultUserProperties = {
   },
   //Will be handled right on TAB 2 of the Settings UI
   LayoutPrefs: {
-    ShowBibleVersion:      BGET.VISIBILITY.SHOW, //const will resolve to INT    (use ENUM, e.g. BGET.VISIBILITY.SHOW)
-    BibleVersionAlignment: BGET.ALIGN.LEFT,      //const will resolve to STRING (use ENUM, e.g. BGET.ALIGN.LEFT)
-    BibleVersionPosition:  BGET.POS.TOP,         //const will resolve to INT    (use ENUM, e.g. BGET.POS.TOP. Can only be TOP or BOTTOM)
-    BibleVersionWrap:      BGET.WRAP.NONE,       //const will resolve to INT    (use ENUM, e.g. BGET.WRAP.NONE)
-    BookChapterAlignment:  BGET.ALIGN.LEFT,      //const will resolve to STRING (use ENUM, e.g. BGET.ALIGN.LEFT)
-    BookChapterPosition:   BGET.POS.TOP,         //const will resolve to INT    (use ENUM, e.g. BGET.POS.BOTTOMINLINE. Can be TOP, BOTTOM, or BOTTOMINLINE)
-    BookChapterWrap:       BGET.WRAP.NONE,       //const will resolve to INT    (use ENUM, e.g. BGET.WRAP.NONE)
-    BookChapterFormat:     BGET.FORMAT.BIBLELANG,//const will resolve to INT    (use ENUM, e.g. BGET.FORMAT.BIBLELANG
-    BookChapterFullQuery:  false,                //false: just the name of the book and the chapter will be shown (i.e. 1 John 4)
+    SHOWBIBLEVERSION:      BGET.VISIBILITY.SHOW, //const will resolve to INT    (use ENUM, e.g. BGET.VISIBILITY.SHOW)
+    BIBLEVERSIONALIGNMENT: BGET.ALIGN.LEFT,      //const will resolve to STRING (use ENUM, e.g. BGET.ALIGN.LEFT)
+    BIBLEVERSIONPOSITION:  BGET.POS.TOP,         //const will resolve to INT    (use ENUM, e.g. BGET.POS.TOP. Can only be TOP or BOTTOM)
+    BIBLEVERSIONWRAP:      BGET.WRAP.NONE,       //const will resolve to INT    (use ENUM, e.g. BGET.WRAP.NONE)
+    BOOKCHAPTERALIGNMENT:  BGET.ALIGN.LEFT,      //const will resolve to STRING (use ENUM, e.g. BGET.ALIGN.LEFT)
+    BOOKCHAPTERPOSITION:   BGET.POS.TOP,         //const will resolve to INT    (use ENUM, e.g. BGET.POS.BOTTOMINLINE. Can be TOP, BOTTOM, or BOTTOMINLINE)
+    BOOKCHAPTERWRAP:       BGET.WRAP.NONE,       //const will resolve to INT    (use ENUM, e.g. BGET.WRAP.NONE)
+    BOOKCHAPTERFORMAT:     BGET.FORMAT.BIBLELANG,//const will resolve to INT    (use ENUM, e.g. BGET.FORMAT.BIBLELANG
+    BOOKCHAPTERFULLQUERY:  false,                //false: just the name of the book and the chapter will be shown (i.e. 1 John 4)
                                                  //true: the full reference including the verses will be shown (i.e. 1 John 4:7-8) 
-    ShowVerseNumbers:      BGET.VISIBILITY.SHOW  //const will resolve to INT    (use ENUM, e.g. BGET.VISIBILITY.SHOW)
+    SHOWVERSENUMBERS:      BGET.VISIBILITY.SHOW  //const will resolve to INT    (use ENUM, e.g. BGET.VISIBILITY.SHOW)
   },
   //Will be handled from the Sidebar UI when sending queries
   RecentSelectedVersions:  []                    //Array of STRING values
@@ -337,7 +337,7 @@ function setDefaultUserProperties(){
   if(propsService !== null){
     let usrProperties = propsService.getProperties();
     //Check if there are old properties that we no longer need, if so clean up to avoid trouble
-    if(usrProperties.hasOwnProperty('RientroSinistro') || usrProperties.hasOwnProperty('BookChapterAlignment') || usrProperties.hasOwnProperty('VerseNumberAlignment') || usrProperties.hasOwnProperty('VerseTextAlignment') || usrProperties.hasOwnProperty('Interlinea') ){
+    if(usrProperties.hasOwnProperty('RientroSinistro') || usrProperties.hasOwnProperty('BOOKCHAPTERALIGNMENT') || usrProperties.hasOwnProperty('VerseNumberAlignment') || usrProperties.hasOwnProperty('VerseTextAlignment') || usrProperties.hasOwnProperty('Interlinea') ){
       propsService.deleteAllProperties();
     }
     
@@ -653,11 +653,11 @@ function preparePropertiesForDocInjection(){
   //Let's make sure we have the right typecasting for each value
   for(let [key,value] of Object.entries(userProperties)){
     for(let [key1,value1] of Object.entries(userProperties[key]) ){
-      if(key1 == 'LeftIndent' || key1 == 'RightIndent'){
+      if(key1 == 'LEFTINDENT' || key1 == 'RIGHTINDENT'){
         //setIndentStart and setIndentEnd etc. take values in points
         //while the ruler at the top of the document is in inches
         //so we store our values in inches, then convert to points
-        userProperties[key][key1] = userProperties.ParagraphStyles.InterfaceInCM ? centimetersToPoints(value1) : inchesToPoints(value1);
+        userProperties[key][key1] = userProperties.ParagraphStyles.INTERFACEINCM ? centimetersToPoints(value1) : inchesToPoints(value1);
       }
       else if(key1 == 'VALIGN'){
         switch(value1){
@@ -672,7 +672,7 @@ function preparePropertiesForDocInjection(){
             break;            
         }
       }
-      else if(key1 == 'ParagraphAlign' || key1 =='BibleVersionAlignment' || key1 == 'BookChapterAlignment'){
+      else if(key1 == 'PARAGRAPHALIGN' || key1 =='BIBLEVERSIONALIGNMENT' || key1 == 'BOOKCHAPTERALIGNMENT'){
         switch(value1){
           case BGET.ALIGN.LEFT:
             userProperties[key][key1] = DocumentApp.HorizontalAlignment.LEFT;
@@ -715,7 +715,7 @@ function docInsert(json){
   BibleGetGlobal.firstFmtVerse = false;
   BibleGetGlobal.stack = { bibleversion: [], bookchapter: [] };
   //docLog("got results from server, now preparing to elaborate... BibleGetGlobal object = "+JSON.stringify(BibleGetGlobal));
-  if(BibleGetProperties.LayoutPrefs.BookChapterFormat === BGET.FORMAT.USERLANG || BibleGetProperties.LayoutPrefs.BookChapterFormat === BGET.FORMAT.USERLANGABBREV){
+  if(BibleGetProperties.LayoutPrefs.BOOKCHAPTERFORMAT === BGET.FORMAT.USERLANG || BibleGetProperties.LayoutPrefs.BOOKCHAPTERFORMAT === BGET.FORMAT.USERLANGABBREV){
     let locale = BibleGetGlobal.locale;
     BibleGetGlobal.l10n = getLocalizedBookNames(locale);
     //the preceding statement will return the names and abbreviations of the books of the Bible localized in the specified locale
@@ -737,7 +737,7 @@ function docInsert(json){
     newelement = checkNewElements(verses[i],newelement);
     //docLog("checking new elements... >> "+JSON.stringify(newelement));
     if(newelement.newversion){          
-      switch(BibleGetProperties.LayoutPrefs.BibleVersionWrap){
+      switch(BibleGetProperties.LayoutPrefs.BIBLEVERSIONWRAP){
         case BGET.WRAP.NONE:
           break;
         case BGET.WRAP.PARENTHESES:
@@ -747,16 +747,16 @@ function docInsert(json){
           verses[i].version = "["+verses[i].version+"]";
           break;
       }
-      if(BibleGetProperties.LayoutPrefs.ShowBibleVersion === BGET.VISIBILITY.SHOW){
+      if(BibleGetProperties.LayoutPrefs.SHOWBIBLEVERSION === BGET.VISIBILITY.SHOW){
         if(BibleGetGlobal.stack.bookchapter.length > 0){
-          switch(BibleGetProperties.LayoutPrefs.BookChapterPosition){
+          switch(BibleGetProperties.LayoutPrefs.BOOKCHAPTERPOSITION){
             case BGET.POS.BOTTOM:
             case BGET.POS.TOP:
               if((BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties) ) === false){ 
                 DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
                 return; 
               }
-              BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
+              BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BOOKCHAPTERALIGNMENT);
               bookChapterPargr = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bookchapter.shift());
               break;
             case BGET.POS.BOTTOMINLINE:
@@ -766,7 +766,7 @@ function docInsert(json){
           setTextStyles(bookChapterPargr,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
           BibleGetGlobal.firstFmtVerse = false; //why are we using this again?
         }
-        switch(BibleGetProperties.LayoutPrefs.BibleVersionPosition){
+        switch(BibleGetProperties.LayoutPrefs.BIBLEVERSIONPOSITION){
           case BGET.POS.BOTTOM:
             BibleGetGlobal.stack.bibleversion.push(verses[i].version);
             if(BibleGetGlobal.stack.bibleversion.length > 1){
@@ -777,7 +777,7 @@ function docInsert(json){
                 DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
                 return; 
               }
-              BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BibleVersionAlignment);
+              BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BIBLEVERSIONALIGNMENT);
               versionPar = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bibleversion.shift()); 
               setTextStyles(versionPar,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
               BibleGetGlobal.firstFmtVerse = false;
@@ -788,7 +788,7 @@ function docInsert(json){
               DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
               return; 
             }
-            BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BibleVersionAlignment);
+            BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BIBLEVERSIONALIGNMENT);
           
             versionPar = BibleGetGlobal.currentPar.appendText(verses[i].version); 
             setTextStyles(versionPar,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
@@ -800,7 +800,7 @@ function docInsert(json){
     
     if(newelement.newbook || newelement.newchapter){
       let bkChStr;
-      switch(BibleGetProperties.LayoutPrefs.BookChapterFormat){
+      switch(BibleGetProperties.LayoutPrefs.BOOKCHAPTERFORMAT){
         case BGET.FORMAT.USERLANG:
           bkChStr = BibleGetGlobal.l10n.biblebooks[verses[i].booknum] + " " + verses[i].chapter;
           break;
@@ -815,7 +815,7 @@ function docInsert(json){
           break;
       }
       
-      if(BibleGetProperties.LayoutPrefs.BookChapterFullQuery){
+      if(BibleGetProperties.LayoutPrefs.BOOKCHAPTERFULLQUERY){
         //retrieve the orginal query from originalquery property in the json response received
         let origQuery = verses[i].originalquery; //we need to remove the book name and chapter from this query
         let regexA = hackRegex(/^[1-3]{0,1}((\p{L}\p{M}*)+)[1-9][0-9]{0,2}/); //match book and chapter
@@ -827,7 +827,7 @@ function docInsert(json){
         }
       } 
       
-      switch(BibleGetProperties.LayoutPrefs.BookChapterWrap){
+      switch(BibleGetProperties.LayoutPrefs.BOOKCHAPTERWRAP){
         case BGET.WRAP.NONE:
           break;
         case BGET.WRAP.PARENTHESES:
@@ -838,7 +838,7 @@ function docInsert(json){
           break;
       }
       
-      switch(BibleGetProperties.LayoutPrefs.BookChapterPosition){
+      switch(BibleGetProperties.LayoutPrefs.BOOKCHAPTERPOSITION){
         case BGET.POS.BOTTOM:
           BibleGetGlobal.stack.bookchapter.push(bkChStr);
           if(BibleGetGlobal.stack.bookchapter.length > 1){
@@ -849,7 +849,7 @@ function docInsert(json){
               DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
               return; 
             }
-            BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
+            BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BOOKCHAPTERALIGNMENT);
             bookChapterPar = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bookchapter.shift()); 
             setTextStyles(bookChapterPar,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
             BibleGetGlobal.firstFmtVerse = false;
@@ -860,7 +860,7 @@ function docInsert(json){
             DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
             return; 
           }
-          BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
+          BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BOOKCHAPTERALIGNMENT);
           
           bookChapterPar = BibleGetGlobal.currentPar.appendText(bkChStr); 
           setTextStyles(bookChapterPar,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
@@ -884,9 +884,9 @@ function docInsert(json){
       if(BibleGetGlobal.iterateNewPar || newelement.newchapter){
         BibleGetGlobal.iterateNewPar = false;
         BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
-        BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
+        BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.PARAGRAPHALIGN);
       }
-      if(BibleGetProperties.LayoutPrefs.ShowVerseNumbers === BGET.VISIBILITY.SHOW){
+      if(BibleGetProperties.LayoutPrefs.SHOWVERSENUMBERS === BGET.VISIBILITY.SHOW){
         let versenum = BibleGetGlobal.currentPar.appendText(" " + verses[i].verse + " ");
         setTextStyles(versenum,BibleGetProperties,BGET.PTYPE.VERSENUMBER);
       }
@@ -906,7 +906,7 @@ function docInsert(json){
       verses[i].text = verses[i].text.replace(/  +/g, ' ');
       
       //However we will not deal with it in a special way if the user has chosen to override the special formatting
-      if(BibleGetProperties.ParagraphStyles.NoVersionFormatting){
+      if(BibleGetProperties.ParagraphStyles.NOVERSIONFORMATTING){
         //if user preferences ask to override version formatting, we just need to remove the formatting tags from the text
         //We will first remove line breaks, operating on a multiline level, so that we have a single line of text to work with
         verses[i].text = verses[i].text.replace(/<[\/]{0,1}(?:po|speaker|i|pr)[f|l|s|i]{0,1}[f|l]{0,1}>/g," "); //replace tags (whether opening or closing tags) with a blank space
@@ -916,18 +916,18 @@ function docInsert(json){
         //Now we're ready to append the text to the paragraph
         let versetext = BibleGetGlobal.currentPar.appendText(verses[i].text);
         setTextStyles(versetext,BibleGetProperties,BGET.PTYPE.VERSETEXT);
-        //consoleLog("NoVersionFormatting=true, simply removing the tags. Verse text is now : <"+verses[i].text+">");  
+        //consoleLog("NOVERSIONFORMATTING=true, simply removing the tags. Verse text is now : <"+verses[i].text+">");  
       }else{
         BibleGetGlobal = formatSections(verses[i].text,BibleGetProperties,newelement,BibleGetGlobal);
       }
       
     }
     //If we don't have special tags, we still want to check for newline characters however
-    //and deal with them according to the NoVersionFormatting user option
+    //and deal with them according to the NOVERSIONFORMATTING user option
     else{
       //We will still replace newline and carriage return characters even if we don't have special tags
-      //as long as the NoVersionFormatting override is active
-      if(BibleGetProperties.ParagraphStyles.NoVersionFormatting){
+      //as long as the NOVERSIONFORMATTING override is active
+      if(BibleGetProperties.ParagraphStyles.NOVERSIONFORMATTING){
         verses[i].text = verses[i].text.replace(/(\r\n|\n|\r)/gm," "); //We replace newline or carriage return characters with a blank space in any case
         verses[i].text = verses[i].text.replace(/  +/g, ' ');
       }
@@ -940,7 +940,7 @@ function docInsert(json){
   
   //Now that we're out of our loop, check if we still have things piled up on our stacks
   //If so we need to print them out, starting from BookChapter and then going to BibleVersion
-  switch(BibleGetProperties.LayoutPrefs.BookChapterPosition){
+  switch(BibleGetProperties.LayoutPrefs.BOOKCHAPTERPOSITION){
     case BGET.POS.TOP:
       break;
     case BGET.POS.BOTTOM:
@@ -950,7 +950,7 @@ function docInsert(json){
           DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
           return; 
         }
-        BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BookChapterAlignment);
+        BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BOOKCHAPTERALIGNMENT);
         bookChapterPar = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bookchapter.shift()); 
         setTextStyles(bookChapterPar,BibleGetProperties,BGET.PTYPE.BOOKCHAPTER);
         BibleGetGlobal.firstFmtVerse = false;
@@ -966,14 +966,14 @@ function docInsert(json){
   }
   
   
-  if(BibleGetProperties.LayoutPrefs.BibleVersionPosition === BGET.POS.BOTTOM && BibleGetProperties.LayoutPrefs.ShowBibleVersion === BGET.VISIBILITY.SHOW){
+  if(BibleGetProperties.LayoutPrefs.BIBLEVERSIONPOSITION === BGET.POS.BOTTOM && BibleGetProperties.LayoutPrefs.SHOWBIBLEVERSION === BGET.VISIBILITY.SHOW){
     //we should still have one element on the stack, if so print it to the document
     if(BibleGetGlobal.stack.bibleversion.length > 0){
       if((BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties) ) === false){ 
         DocumentApp.getUi().alert(__('Cannot insert text at this document location.',BibleGetGlobal.locale));
         return; 
       }
-      BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BibleVersionAlignment);
+      BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.LayoutPrefs.BIBLEVERSIONALIGNMENT);
       versionPar = BibleGetGlobal.currentPar.appendText(BibleGetGlobal.stack.bibleversion.shift()); 
       setTextStyles(versionPar,BibleGetProperties,BGET.PTYPE.BIBLEVERSION);
       BibleGetGlobal.firstFmtVerse = false; //not necessary at this point?
@@ -1064,11 +1064,11 @@ function checkNewElements(verses,newelement){
 function createNewPar(BibleGetGlb,BibleGetProps){ 
   var newPar;
   if(newPar = BibleGetGlb.body.insertParagraph(BibleGetGlb.idx,"")){
-    newPar.setLineSpacing(BibleGetProps.ParagraphStyles.Lineheight);
-    //DocumentApp.getUi().alert("Left Indent = "+LeftIndent+" >> "+leftindent+"pt");
-    newPar.setIndentFirstLine(BibleGetProps.ParagraphStyles.LeftIndent);
-    newPar.setIndentStart(BibleGetProps.ParagraphStyles.LeftIndent);
-    newPar.setIndentEnd(BibleGetProps.ParagraphStyles.RightIndent);
+    newPar.setLineSpacing(BibleGetProps.ParagraphStyles.LINEHEIGHT);
+    //DocumentApp.getUi().alert("Left Indent = "+LEFTINDENT+" >> "+LEFTINDENT+"pt");
+    newPar.setIndentFirstLine(BibleGetProps.ParagraphStyles.LEFTINDENT);
+    newPar.setIndentStart(BibleGetProps.ParagraphStyles.LEFTINDENT);
+    newPar.setIndentEnd(BibleGetProps.ParagraphStyles.RIGHTINDENT);
     let ffStyle = {};
     ffStyle[DocumentApp.Attribute.FONT_FAMILY] = BibleGetProps.ParagraphStyles.FONT_FAMILY;
     newPar.setAttributes(ffStyle);
@@ -1172,7 +1172,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
       remainingText = thistext,
       NABREpar;
   
-  //consoleLog("noVersionFormatting=false, now extracting regex groups...");
+  //consoleLog("NOVERSIONFORMATTING=false, now extracting regex groups...");
   //consoleLog(NABREfmtMatch);
   //NABREfmtMatch = NABREfmt.exec(remainingText);
   //docLog("we are now in the formatSections function...");
@@ -1195,7 +1195,7 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
       //NABREfmtMatch[2] matches the opening tag; we will create a new paragraph if it's any tag besided "sm" or "i" (what about speaker tags?)
       if(NABREfmtMatch[2] !== "sm" && NABREfmtMatch[2] !== "i" && NABREfmtMatch[2] !== "pr"){
         BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
-        BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
+        BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.PARAGRAPHALIGN);
       }
     }
     //NABREfmtMatch[4] matches the contents between the opening and closing tag
@@ -1224,14 +1224,14 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
             if(!newelement.newverse){consoleLog("case pof|pos|po|pol and not the start of a new verse... creating paragraph... <"+formattingTagContents+">");}
             else{consoleLog("case pof|pos|po|pol and is start of a new verse but is also the first verse with special formatting... creating paragraph... <"+formattingTagContents+">");}
             BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
-            BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
+            BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.PARAGRAPHALIGN);
             
             if(BibleGetGlobal.firstFmtVerse){ BibleGetGlobal.firstFmtVerse = false; }
             newelement.newverse = false;
           }
           // because if it is the start of a new verse, we probably already have a new paragraph
           else{
-            BibleGetGlobal.currentPar.setIndentStart(BibleGetProperties.ParagraphStyles.LeftIndent+(7.2*2));
+            BibleGetGlobal.currentPar.setIndentStart(BibleGetProperties.ParagraphStyles.LEFTINDENT+(7.2*2));
             BibleGetGlobal.currentPar.appendText("\t");
             newelement.newverse = false;
           }
@@ -1253,11 +1253,11 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
           if(!newelement.newverse){
             //consoleLog("not the start of a new verse, so creating a new paragraph... <"+formattingTagContents+">");
             BibleGetGlobal = createNewPar(BibleGetGlobal,BibleGetProperties);
-            BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.ParagraphAlign);
+            BibleGetGlobal.currentPar.setAlignment(BibleGetProperties.ParagraphStyles.PARAGRAPHALIGN);
           }
           // because if it is the start of a new verse we probably already have a new paragraph
           else{
-            BibleGetGlobal.currentPar.setIndentStart(BibleGetProperties.ParagraphStyles.LeftIndent+(7.2*3));
+            BibleGetGlobal.currentPar.setIndentStart(BibleGetProperties.ParagraphStyles.LEFTINDENT+(7.2*3));
             BibleGetGlobal.currentPar.appendText("\t");
             newelement.newverse = false;
           }                      
@@ -1313,8 +1313,8 @@ function formatSections(thistext,BibleGetProperties,newelement,BibleGetGlobal){
   newPar = body.insertParagraph(++idx, "");
   newPar.setAlignment(DocumentApp.HorizontalAlignment.JUSTIFY);
   newPar.setLineSpacing(linespacing);
-  newPar.setIndentFirstLine(leftindent);
-  newPar.setIndentStart(leftindent);
+  newPar.setIndentFirstLine(LEFTINDENT);
+  newPar.setIndentStart(LEFTINDENT);
   currentPar = newPar;
   }
   */
