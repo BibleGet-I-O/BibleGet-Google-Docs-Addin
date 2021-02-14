@@ -179,10 +179,10 @@
                 let counter = 0;
                 if ($searchresults.hasOwnProperty("results") && typeof $searchresults.results === 'object') {
                     if ($searchresults.results.length === 1) {
-                        numResultsStr = '<?!=__('There is { n } result for the keyword { k } in the version { v }.',locale)?>';
+                        numResultsStr = '<?!=__('There is {n} result for the keyword {k} in the version {v}.',locale)?>';
                     }
                     else {
-                        numResultsStr = '<?!=__('There are { n } results for the keyword { k } in the version { v }.',locale)?>';
+                        numResultsStr = '<?!=__('There are {n} results for the keyword {k} in the version {v}.',locale)?>';
                     }
                     jQuery('#searchResultsInfo').html(numResultsStr.formatUnicorn({ n: '<b>' + $searchresults.results.length + '</b>', k: '<b>' + $searchresults.info.keyword + '</b>', v: '<b>' + $searchresults.info.version + '</b>' }));
                     for (let $result of $searchresults.results) {
