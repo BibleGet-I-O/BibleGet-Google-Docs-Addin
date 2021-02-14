@@ -126,19 +126,14 @@
         <!-- this is our flex container -->
         <div id="searchResultsControlPanel" class="searchResultsFlexChild">
             <div class="controlComponent">
-                <label>
-                    <?!=__('Filter by keyword',locale)?><input type="text" id="keywordFilter" />
-                </label>
+                <label><?!=__('Filter by keyword',locale)?><input type="text" id="keywordFilter" /></label>
                 <button class="action gapp-addon" id="APPLY_FILTER"><i class="material-icons md-18">filter_alt</i><span
-                        class="label">
-                        <?=__('Apply filter',locale)?>
-                    </span></button>
+                        class="label"><?=__('Apply filter',locale)?></span></button>
             </div>
             <div class="controlComponent">
                 <button class="action gapp-addon" id="ORDER_RESULTS_BY" title="reference = Genesis to Apocalypse"><i
-                        class="material-icons md-18">sort_by_alpha</i><span class="label">
-                        <?=__('Order by reference',locale)?>
-                    </span></button>
+                        class="material-icons md-18">sort_by_alpha</i><span
+                        class="label"><?=__('Order by reference',locale)?></span></button>
             </div>
         </div>
         <div id="searchResultsContents" class="searchResultsFlexChild">
@@ -307,10 +302,10 @@
                     case 'searchResultsControlPanel':
                         $orderbyLabel = $('#ORDER_RESULTS_BY').find('span.label');
                         if ($orderbyLabel.text().trim() == '<?=__('Order by reference',locale)?>' ){
-                            $ORDER_BY = 'relevance';
+                            $ORDER_BY = 'reference';
                         }
                         else if ($orderbyLabel.text().trim() == '<?=__('Order by relevance',locale)?>' ){
-                            $ORDER_BY = 'reference';
+                            $ORDER_BY = 'relevance';
                         }
 
                         $filterLabel = $('#APPLY_FILTER').find('span.label');
@@ -319,7 +314,7 @@
                         switch ($(this).attr('id')) {
                             case 'ORDER_RESULTS_BY':
                                 REFRESH = true;
-                                if ($orderbyLabel.text() == '<?=__('Order by reference',locale)?>' ) {
+                                if ($orderbyLabel.text().trim() == '<?=__('Order by reference',locale)?>' ) {
                                     $ORDER_BY = 'reference';
                                     $orderbyLabel.text('<?=__('Order by relevance',locale)?>');
                                     $orderbyLabel.closest('button').attr('title','relevance = exact matches first');
