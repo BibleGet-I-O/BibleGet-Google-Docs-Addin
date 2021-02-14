@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-const VERSION = 46; 
+const VERSION = 47; 
 const ADDONSTATE = {
   PRODUCTION: "production",
   DEVELOPMENT: "development"
@@ -227,6 +227,7 @@ function openSettings(){
       .setWidth(SETTINGSWINDOW.WIDTH)
       .setHeight(SETTINGSWINDOW.HEIGHT)
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+  //MailApp.sendEmail("priest@johnromanodorazio.com", "Apps Script Debug", evaluated.getContent());
   DocumentApp.getUi().showModalDialog(evaluated, __('Settings',locale));
   
 }
@@ -342,7 +343,28 @@ function setDefaultUserProperties(){
   if(propsService !== null){
     let usrProperties = propsService.getProperties();
     //Check if there are old properties that we no longer need, if so clean up to avoid trouble
-    if(usrProperties.hasOwnProperty('RientroSinistro') || usrProperties.hasOwnProperty('BookChapterAlignment') || usrProperties.hasOwnProperty('VerseNumberAlignment') || usrProperties.hasOwnProperty('VerseTextAlignment') || usrProperties.hasOwnProperty('Interlinea') ){
+    if(usrProperties.hasOwnProperty('RientroSinistro') 
+      || usrProperties.hasOwnProperty('BookChapterAlignment')
+      || usrProperties.hasOwnProperty('VerseNumberAlignment')
+      || usrProperties.hasOwnProperty('VerseTextAlignment')
+      || usrProperties.hasOwnProperty('Interlinea')
+      || usrProperties.hasOwnProperty('ShowVerseNumbers')
+      || usrProperties.hasOwnProperty('NoVersionFormatting')
+      || usrProperties.hasOwnProperty('Lineheight')
+      || usrProperties.hasOwnProperty('LeftIndent')
+      || usrProperties.hasOwnProperty('RightIndent')
+      || usrProperties.hasOwnProperty('ShowBibleVersion')
+      || usrProperties.hasOwnProperty('BibleVersionPosition')
+      || usrProperties.hasOwnProperty('BibleVersionWrap')
+      || usrProperties.hasOwnProperty('BookChapterPosition')
+      || usrProperties.hasOwnProperty('BookChapterWrap')
+      || usrProperties.hasOwnProperty('BookChapterFormat')
+      || usrProperties.hasOwnProperty('ParagraphAlign')
+      || usrProperties.hasOwnProperty('BibleVersionAlignment')
+      || usrProperties.hasOwnProperty('BookChapterAlignment')
+      || usrProperties.hasOwnProperty('InterfaceInCM')
+      || usrProperties.hasOwnProperty('BookChapterFullQuery')
+      ){
       propsService.deleteAllProperties();
     }
     
