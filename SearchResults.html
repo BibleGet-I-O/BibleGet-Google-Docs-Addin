@@ -104,6 +104,11 @@
 
         mark {
             font-weight: bold;
+            padding: 2px 0;
+        }
+
+        a.submark {
+            background-color: lightyellow; padding: 2px 0;
         }
     </style>
 </head>
@@ -172,7 +177,7 @@
                 if (typeof keyword === 'string') {
                     keyword = [keyword];
                 }
-                return text.replace(new RegExp("(" + keyword.join('|') + ")", "gi"), '<mark>$1</mark>');
+                return text.replace(new RegExp("(\\w*)(" + keyword.join('|') + ")(\\w*)", "giu"), '<a class="submark">$1</a><mark>$2</mark><a class="submark">$3</a>');
             },
             populateTable = function (bibleBooksL10n) {
                 $bibleBooksL10n = bibleBooksL10n;
