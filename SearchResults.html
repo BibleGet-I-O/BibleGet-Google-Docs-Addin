@@ -226,10 +226,10 @@
                 }
                 if (options.FILTER_BY == '') {
                     if ($searchresults.results.length === 1) {
-                        numResultsStr = '<?!=__('There is { n } result for the keyword { k } in the version { v }.',locale)?>';
+                        numResultsStr = '<?!=__('There is {n} result for the keyword {k} in the version {v}.',locale)?>';
                     }
                     else {
-                        numResultsStr = '<?!=__('There are { n } results for the keyword { k } in the version { v }.',locale)?>';
+                        numResultsStr = '<?!=__('There are {n} results for the keyword {k} in the version {v}.',locale)?>';
                     }
                     jQuery('#searchResultsInfo').html(numResultsStr.formatUnicorn({
                       n: '<b>' + $searchresults.results.length + '</b>',
@@ -239,10 +239,10 @@
                 }
                 else {
                     if (counter == 1) {
-                        numResultsStr = '<?!=__('There is { n } result for the keyword { k } filtered by { f } in the version { v }.',locale)?>';
+                        numResultsStr = '<?!=__('There is {n} result for the keyword {k} filtered by {f} in the version {v}.',locale)?>';
                     }
                     else if (counter > 1) {
-                        numResultsStr = '<?!=__('There are { n } results for the keyword { k } filtered by { f } in the version { v }.',locale)?>';
+                        numResultsStr = '<?!=__('There are {n} results for the keyword {k} filtered by {f} in the version {v}.',locale)?>';
                     }
                     jQuery('#searchResultsInfo').html(numResultsStr.formatUnicorn({
                       n: '<b>' + counter + '</b>',
