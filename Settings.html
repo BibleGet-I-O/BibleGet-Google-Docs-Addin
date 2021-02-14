@@ -530,19 +530,19 @@ successAcctTest = function(rtrn) {
           </span>
         </div>
         <div class="flexitem">
-          <span id="PARAGRAPHALIGN" class="buttonset">
-            <input type="radio" id="PARAGRAPHALIGN-left" value="<?!=BGET.ALIGN.LEFT?>" name="PARAGRAPHALIGN" <? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.LEFT) { ?>CHECKED<? } ?>><label for="PARAGRAPHALIGN-left" title="<?!=__('ALIGN LEFT',locale)?>"><i class="material-icons md-18">format_align_left</i></label>
-            <input type="radio" id="PARAGRAPHALIGN-center" value="<?!=BGET.ALIGN.CENTER?>" name="PARAGRAPHALIGN"<? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.CENTER) { ?>CHECKED<? } ?>><label for="PARAGRAPHALIGN-center" title="<?!=__('ALIGN CENTER',locale)?>"><i class="material-icons md-18">format_align_center</i></label>
-            <input type="radio" id="PARAGRAPHALIGN-right" value="<?!=BGET.ALIGN.RIGHT?>" name="PARAGRAPHALIGN"<? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.RIGHT) { ?>CHECKED<? } ?>><label for="PARAGRAPHALIGN-right" title="<?!=__('ALIGN RIGHT',locale)?>"><i class="material-icons md-18">format_align_right</i></label>
-            <input type="radio" id="PARAGRAPHALIGN-justify" value="<?!=BGET.ALIGN.JUSTIFY?>" name="PARAGRAPHALIGN"<? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.JUSTIFY) { ?>CHECKED<? } ?>><label for="PARAGRAPHALIGN-justify" title="<?!=__('Justify',locale).toUpperCase()?>"><i class="material-icons md-18">format_align_justify</i></label>
+          <span id="paragraphalign" class="buttonset">
+            <input type="radio" id="paragraphalign-left" value="<?!=BGET.ALIGN.LEFT?>" name="paragraphalign" <? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.LEFT) { ?>CHECKED<? } ?>><label for="paragraphalign-left" title="<?!=__('ALIGN LEFT',locale)?>"><i class="material-icons md-18">format_align_left</i></label>
+            <input type="radio" id="paragraphalign-center" value="<?!=BGET.ALIGN.CENTER?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.CENTER) { ?>CHECKED<? } ?>><label for="paragraphalign-center" title="<?!=__('ALIGN CENTER',locale)?>"><i class="material-icons md-18">format_align_center</i></label>
+            <input type="radio" id="paragraphalign-right" value="<?!=BGET.ALIGN.RIGHT?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.RIGHT) { ?>CHECKED<? } ?>><label for="paragraphalign-right" title="<?!=__('ALIGN RIGHT',locale)?>"><i class="material-icons md-18">format_align_right</i></label>
+            <input type="radio" id="paragraphalign-justify" value="<?!=BGET.ALIGN.JUSTIFY?>" name="paragraphalign"<? if (userProperties.ParagraphStyles.PARAGRAPHALIGN==BGET.ALIGN.JUSTIFY) { ?>CHECKED<? } ?>><label for="paragraphalign-justify" title="<?!=__('Justify',locale).toUpperCase()?>"><i class="material-icons md-18">format_align_justify</i></label>
           </span>          
         </div>
         <div class="flexitem bibleget-font-family">
           <select id="bibleget-font-family" class="bget-fontfamily-combobox" title="<?!=__('FONT',locale)?>"></select>
         </div>
         <div class="flexitem">
-          <span id="LINEHEIGHTBtn" class="ui-button" title="<?!=__('LINEHEIGHT',locale).toUpperCase()?>"><i class="material-icons md-18">format_line_spacing</i></span>
-          <select id="LINEHEIGHT-quote" class="selectmenu">
+          <span id="lineheightBtn" class="ui-button" title="<?!=__('Lineheight',locale).toUpperCase()?>"><i class="material-icons md-18">format_line_spacing</i></span>
+          <select id="lineheight-quote" class="selectmenu">
             <option value="1.0"<? if(userProperties.ParagraphStyles.LINEHEIGHT=="1.0"){ ?> SELECTED<? } ?>><?!=__('Single',locale)?> 1.0</option>
             <option value="1.15"<? if(userProperties.ParagraphStyles.LINEHEIGHT=="1.15"){ ?> SELECTED<? } ?>>1.15</option>
             <option value="1.5"<? if(userProperties.ParagraphStyles.LINEHEIGHT=="1.5"){ ?> SELECTED<? } ?>>1&#189;</option>
@@ -566,10 +566,10 @@ successAcctTest = function(rtrn) {
             <input type="checkbox" id="BookChapterStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" value="<?!=BGET.TEXTSTYLE.UNDERLINE?>" name="BookChapterStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" <? if (userProperties.BookChapterStyles.UNDERLINE) { ?>CHECKED<? } ?>><label for="BookChapterStyles-<?!=BGET.TEXTSTYLE.UNDERLINE?>" title="<?!=__("UNDERLINE",locale)?>"><b><u><span><?!=__("U",locale)?></span></u></b></label>
             <input type="checkbox" id="BookChapterStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" value="<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" name="BookChapterStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" <? if (userProperties.BookChapterStyles.STRIKETHROUGH) { ?>CHECKED<? } ?>><label for="BookChapterStyles-<?!=BGET.TEXTSTYLE.STRIKETHROUGH?>" title="<?!=__("STRIKETHROUGH",locale)?>"><b><del><span><?!=__("S",locale)?></span></del></b></label>
           </span>      
-          <span id="BOOKCHAPTERALIGNMENT" class="buttonset">
-            <input type="radio" id="bookchapter-normal" value="<?!=BGET.VALIGN.NORMAL?>" name="BOOKCHAPTERALIGNMENT" <? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.NORMAL) { ?>CHECKED<? } ?>><label for="bookchapter-normal" title="<?!=__("NORMAL",locale)?>"><span><b>X</b></span></label>
-            <input type="radio" id="bookchapter-superscript" value="<?!=BGET.VALIGN.SUPERSCRIPT?>" name="BOOKCHAPTERALIGNMENT"<? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.SUPERSCRIPT) { ?>CHECKED<? } ?>><label for="bookchapter-superscript" title="<?!=__("SUPERSCRIPT",locale)?>"><span><b>X</b><b style="position: relative; top: -0.8em; font-size: 50%;">2</b></span></label>
-            <input type="radio" id="bookchapter-subscript" value="<?!=BGET.VALIGN.SUBSCRIPT?>" name="BOOKCHAPTERALIGNMENT"<? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.SUBSCRIPT) { ?>CHECKED<? } ?>><label for="bookchapter-subscript" title="<?!=__("SUBSCRIPT",locale)?>"><span><b>X</b><b style="position: relative; top: 0.2em; font-size: 50%;">2</b></span></label>
+          <span id="bookchapteralignment" class="buttonset">
+            <input type="radio" id="bookchapter-normal" value="<?!=BGET.VALIGN.NORMAL?>" name="bookchapteralignment" <? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.NORMAL) { ?>CHECKED<? } ?>><label for="bookchapter-normal" title="<?!=__("NORMAL",locale)?>"><span><b>X</b></span></label>
+            <input type="radio" id="bookchapter-superscript" value="<?!=BGET.VALIGN.SUPERSCRIPT?>" name="bookchapteralignment"<? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.SUPERSCRIPT) { ?>CHECKED<? } ?>><label for="bookchapter-superscript" title="<?!=__("SUPERSCRIPT",locale)?>"><span><b>X</b><b style="position: relative; top: -0.8em; font-size: 50%;">2</b></span></label>
+            <input type="radio" id="bookchapter-subscript" value="<?!=BGET.VALIGN.SUBSCRIPT?>" name="bookchapteralignment"<? if (userProperties.BookChapterStyles.VALIGN==BGET.VALIGN.SUBSCRIPT) { ?>CHECKED<? } ?>><label for="bookchapter-subscript" title="<?!=__("SUBSCRIPT",locale)?>"><span><b>X</b><b style="position: relative; top: 0.2em; font-size: 50%;">2</b></span></label>
           </span>
           <select id="bookchapter-fontsize" name="bookchapter-fontsize" class="fontsizes gapp-addon" title="<?!=__("FONT SIZE",locale)?>">
           <? var ops=[8,9,10,11,12,14,18,24,30,36,48,60,72,96]; 
@@ -635,10 +635,10 @@ successAcctTest = function(rtrn) {
     <?!= PreviewBox ?>
     <div class="flexcontainer" id="otherSettingsTab1">
       <div class="flexitem">
-        <label title="<?!=__("p9",locale)?>"><input type="checkbox" id="NOVERSIONFORMATTING" name="NOVERSIONFORMATTING" <? if(userProperties.ParagraphStyles.NOVERSIONFORMATTING){ ?>CHECKED<? } ?>><?!=__("lbl1",locale)?></label>
+        <label title="<?!=__("p9",locale)?>"><input type="checkbox" id="NoVersionFormatting" name="NoVersionFormatting" <? if(userProperties.ParagraphStyles.NOVERSIONFORMATTING){ ?>CHECKED<? } ?>><?!=__("lbl1",locale)?></label>
       </div>
       <div class="flexitem">
-        <label><input type="checkbox" id="INTERFACEINCM" name="INTERFACEINCM" <? if(userProperties.ParagraphStyles.INTERFACEINCM){ ?>CHECKED<? } ?>><?!=__("DocInterfaceInCM",locale)?></label>
+        <label><input type="checkbox" id="InterfaceInCM" name="InterfaceInCM" <? if(userProperties.ParagraphStyles.INTERFACEINCM){ ?>CHECKED<? } ?>><?!=__("DocInterfaceInCM",locale)?></label>
       </div>
     </div>
   </div>  
@@ -663,35 +663,35 @@ successAcctTest = function(rtrn) {
     
         <div class="flexitemB">
           <span class="ctrlGrpLbl"><?!=__('Visibility',locale)?></span><br />
-          <span id="SHOWBIBLEVERSION" class="buttonset">
-            <label><input type="radio" name="SHOWBIBLEVERSION" value="<?!=BGET.VISIBILITY.SHOW?>" <? if(userProperties.LayoutPrefs.SHOWBIBLEVERSION == BGET.VISIBILITY.SHOW){ ?>CHECKED<? } ?> /><?!=__('Show',locale)?></label>
-            <label><input type="radio" name="SHOWBIBLEVERSION" value="<?!=BGET.VISIBILITY.HIDE?>" <? if(userProperties.LayoutPrefs.SHOWBIBLEVERSION == BGET.VISIBILITY.HIDE){ ?>CHECKED<? } ?> /><?!=__('Hide',locale)?></label>
+          <span id="ShowBibleVersion" class="buttonset">
+            <label><input type="radio" name="ShowBibleVersion" value="<?!=BGET.VISIBILITY.SHOW?>" <? if(userProperties.LayoutPrefs.SHOWBIBLEVERSION == BGET.VISIBILITY.SHOW){ ?>CHECKED<? } ?> /><?!=__('Show',locale)?></label>
+            <label><input type="radio" name="ShowBibleVersion" value="<?!=BGET.VISIBILITY.HIDE?>" <? if(userProperties.LayoutPrefs.SHOWBIBLEVERSION == BGET.VISIBILITY.HIDE){ ?>CHECKED<? } ?> /><?!=__('Hide',locale)?></label>
           </span>
         </div>
     
         <div class="flexitemB">
           <span class="ctrlGrpLbl"><?!=__('Wrap',locale)?></span><br />
-          <span id="BIBLEVERSIONWRAP" class="buttonset">
-            <label><input type="radio" name="BIBLEVERSIONWRAP" value="<?!=BGET.WRAP.NONE?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONWRAP == BGET.WRAP.NONE){ ?>CHECKED<? } ?> /><?!=__('None',locale)?></label>
-            <label><input type="radio" name="BIBLEVERSIONWRAP" value="<?!=BGET.WRAP.PARENTHESES?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONWRAP == BGET.WRAP.PARENTHESES){ ?>CHECKED<? } ?> /><?!=__('Parentheses',locale)?></label>
-            <label><input type="radio" name="BIBLEVERSIONWRAP" value="<?!=BGET.WRAP.BRACKETS?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONWRAP == BGET.WRAP.BRACKETS){ ?>CHECKED<? } ?> /><?!=__('Brackets',locale)?></label>
+          <span id="BibleVersionWrap" class="buttonset">
+            <label><input type="radio" name="BibleVersionWrap" value="<?!=BGET.WRAP.NONE?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONWRAP == BGET.WRAP.NONE){ ?>CHECKED<? } ?> /><?!=__('None',locale)?></label>
+            <label><input type="radio" name="BibleVersionWrap" value="<?!=BGET.WRAP.PARENTHESES?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONWRAP == BGET.WRAP.PARENTHESES){ ?>CHECKED<? } ?> /><?!=__('Parentheses',locale)?></label>
+            <label><input type="radio" name="BibleVersionWrap" value="<?!=BGET.WRAP.BRACKETS?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONWRAP == BGET.WRAP.BRACKETS){ ?>CHECKED<? } ?> /><?!=__('Brackets',locale)?></label>
           </span>
         </div>
     
         <div class="flexitemB">
           <span class="ctrlGrpLbl"><?!=__('Alignment',locale)?></span><br />
-          <span id="BIBLEVERSIONALIGNMENT" class="buttonset">
-            <label><input type="radio" name="BIBLEVERSIONALIGNMENT" value="<?!=BGET.ALIGN.LEFT?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONALIGNMENT == BGET.ALIGN.LEFT){ ?>CHECKED<? } ?> /><?!=__('Left',locale)?></label>
-            <label><input type="radio" name="BIBLEVERSIONALIGNMENT" value="<?!=BGET.ALIGN.CENTER?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONALIGNMENT == BGET.ALIGN.CENTER){ ?>CHECKED<? } ?> /><?!=__('Center',locale)?></label>
-            <label><input type="radio" name="BIBLEVERSIONALIGNMENT" value="<?!=BGET.ALIGN.RIGHT?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONALIGNMENT == BGET.ALIGN.RIGHT){ ?>CHECKED<? } ?> /><?!=__('Right',locale)?></label>
+          <span id="BibleVersionAlignment" class="buttonset">
+            <label><input type="radio" name="BibleVersionAlignment" value="<?!=BGET.ALIGN.LEFT?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONALIGNMENT == BGET.ALIGN.LEFT){ ?>CHECKED<? } ?> /><?!=__('Left',locale)?></label>
+            <label><input type="radio" name="BibleVersionAlignment" value="<?!=BGET.ALIGN.CENTER?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONALIGNMENT == BGET.ALIGN.CENTER){ ?>CHECKED<? } ?> /><?!=__('Center',locale)?></label>
+            <label><input type="radio" name="BibleVersionAlignment" value="<?!=BGET.ALIGN.RIGHT?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONALIGNMENT == BGET.ALIGN.RIGHT){ ?>CHECKED<? } ?> /><?!=__('Right',locale)?></label>
           </span>
         </div>
 
         <div class="flexitemB">
           <span class="ctrlGrpLbl"><?!=__('Positioning',locale)?></span><br />
-          <span id="BIBLEVERSIONPOSITION" class="buttonset">
-            <label><input type="radio" name="BIBLEVERSIONPOSITION" value="<?!=BGET.POS.TOP?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONPOSITION == BGET.POS.TOP){ ?>CHECKED<? } ?> /><?!=__('Top',locale)?></label>
-            <label><input type="radio" name="BIBLEVERSIONPOSITION" value="<?!=BGET.POS.BOTTOM?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONPOSITION == BGET.POS.BOTTOM){ ?>CHECKED<? } ?> /><?!=__('Bottom',locale)?></label>
+          <span id="BibleVersionPosition" class="buttonset">
+            <label><input type="radio" name="BibleVersionPosition" value="<?!=BGET.POS.TOP?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONPOSITION == BGET.POS.TOP){ ?>CHECKED<? } ?> /><?!=__('Top',locale)?></label>
+            <label><input type="radio" name="BibleVersionPosition" value="<?!=BGET.POS.BOTTOM?>" <? if(userProperties.LayoutPrefs.BIBLEVERSIONPOSITION == BGET.POS.BOTTOM){ ?>CHECKED<? } ?> /><?!=__('Bottom',locale)?></label>
           </span>
         </div>
     
@@ -705,39 +705,39 @@ successAcctTest = function(rtrn) {
     
         <div class="flexitemB">
           <span class="ctrlGrpLbl"><?!=__('Format',locale)?></span><br />
-          <span id="BOOKCHAPTERFORMAT" class="buttonset">
-            <label><input type="radio" name="BOOKCHAPTERFORMAT" value="<?!=BGET.FORMAT.BIBLELANG?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERFORMAT == BGET.FORMAT.BIBLELANG){ ?>CHECKED<? } ?> /><?!=__('BIBLELANG',locale)?></label>
-            <label><input type="radio" name="BOOKCHAPTERFORMAT" value="<?!=BGET.FORMAT.BIBLELANGABBREV?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERFORMAT == BGET.FORMAT.BIBLELANGABBREV){ ?>CHECKED<? } ?> /><?!=__('BIBLELANGABBREV',locale)?></label>
-            <label><input type="radio" name="BOOKCHAPTERFORMAT" value="<?!=BGET.FORMAT.USERLANG?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERFORMAT == BGET.FORMAT.USERLANG){ ?>CHECKED<? } ?> /><?!=__('USERLANG',locale)?></label>
-            <label><input type="radio" name="BOOKCHAPTERFORMAT" value="<?!=BGET.FORMAT.USERLANGABBREV?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERFORMAT == BGET.FORMAT.USERLANGABBREV){ ?>CHECKED<? } ?> /><?!=__('USERLANGABBREV',locale)?></label>
+          <span id="BookChapterFormat" class="buttonset">
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.BIBLELANG?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERFORMAT == BGET.FORMAT.BIBLELANG){ ?>CHECKED<? } ?> /><?!=__('BIBLELANG',locale)?></label>
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.BIBLELANGABBREV?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERFORMAT == BGET.FORMAT.BIBLELANGABBREV){ ?>CHECKED<? } ?> /><?!=__('BIBLELANGABBREV',locale)?></label>
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.USERLANG?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERFORMAT == BGET.FORMAT.USERLANG){ ?>CHECKED<? } ?> /><?!=__('USERLANG',locale)?></label>
+            <label><input type="radio" name="BookChapterFormat" value="<?!=BGET.FORMAT.USERLANGABBREV?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERFORMAT == BGET.FORMAT.USERLANGABBREV){ ?>CHECKED<? } ?> /><?!=__('USERLANGABBREV',locale)?></label>
           </span>
-          <label><input type="checkbox" id="BOOKCHAPTERFULLQUERY" name="BOOKCHAPTERFULLQUERY" <? if(userProperties.LayoutPrefs.BOOKCHAPTERFULLQUERY){ ?>CHECKED<? } ?> /><?!=__('Show full reference',locale)?></label>
+          <label><input type="checkbox" id="BookChapterFullQuery" name="BookChapterFullQuery" <? if(userProperties.LayoutPrefs.BOOKCHAPTERFULLQUERY){ ?>CHECKED<? } ?> /><?!=__('Show full reference',locale)?></label>
         </div>    
     
         <div class="flexitemB">
           <span class="ctrlGrpLbl"><?!=__('Wrap',locale)?></span><br />
-          <span id="BOOKCHAPTERWRAP" class="buttonset">
-            <label><input type="radio" name="BOOKCHAPTERWRAP" value="<?!=BGET.WRAP.NONE?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERWRAP == BGET.WRAP.NONE){ ?>CHECKED<? } ?> /><?!=__('None',locale)?></label>
-            <label><input type="radio" name="BOOKCHAPTERWRAP" value="<?!=BGET.WRAP.PARENTHESES?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERWRAP == BGET.WRAP.PARENTHESES){ ?>CHECKED<? } ?> /><?!=__('Parentheses',locale)?></label>
-            <label><input type="radio" name="BOOKCHAPTERWRAP" value="<?!=BGET.WRAP.BRACKETS?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERWRAP == BGET.WRAP.BRACKETS){ ?>CHECKED<? } ?> /><?!=__('Brackets',locale)?></label>
+          <span id="BookChapterWrap" class="buttonset">
+            <label><input type="radio" name="BookChapterWrap" value="<?!=BGET.WRAP.NONE?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERWRAP == BGET.WRAP.NONE){ ?>CHECKED<? } ?> /><?!=__('None',locale)?></label>
+            <label><input type="radio" name="BookChapterWrap" value="<?!=BGET.WRAP.PARENTHESES?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERWRAP == BGET.WRAP.PARENTHESES){ ?>CHECKED<? } ?> /><?!=__('Parentheses',locale)?></label>
+            <label><input type="radio" name="BookChapterWrap" value="<?!=BGET.WRAP.BRACKETS?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERWRAP == BGET.WRAP.BRACKETS){ ?>CHECKED<? } ?> /><?!=__('Brackets',locale)?></label>
           </span>
         </div>
     
         <div class="flexitemB">
           <span class="ctrlGrpLbl"><?!=__('Alignment',locale)?></span><br />
-          <span id="BOOKCHAPTERALIGNMENT" class="buttonset">
-            <label><input type="radio" name="BOOKCHAPTERALIGNMENT" value="<?!=BGET.ALIGN.LEFT?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERALIGNMENT == BGET.ALIGN.LEFT){ ?>CHECKED<? } ?> /><?!=__('Left',locale)?></label>
-            <label><input type="radio" name="BOOKCHAPTERALIGNMENT" value="<?!=BGET.ALIGN.CENTER?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERALIGNMENT == BGET.ALIGN.CENTER){ ?>CHECKED<? } ?> /><?!=__('Center',locale)?></label>
-            <label><input type="radio" name="BOOKCHAPTERALIGNMENT" value="<?!=BGET.ALIGN.RIGHT?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERALIGNMENT == BGET.ALIGN.RIGHT){ ?>CHECKED<? } ?> /><?!=__('Right',locale)?></label>
+          <span id="BookChapterAlignment" class="buttonset">
+            <label><input type="radio" name="BookChapterAlignment" value="<?!=BGET.ALIGN.LEFT?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERALIGNMENT == BGET.ALIGN.LEFT){ ?>CHECKED<? } ?> /><?!=__('Left',locale)?></label>
+            <label><input type="radio" name="BookChapterAlignment" value="<?!=BGET.ALIGN.CENTER?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERALIGNMENT == BGET.ALIGN.CENTER){ ?>CHECKED<? } ?> /><?!=__('Center',locale)?></label>
+            <label><input type="radio" name="BookChapterAlignment" value="<?!=BGET.ALIGN.RIGHT?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERALIGNMENT == BGET.ALIGN.RIGHT){ ?>CHECKED<? } ?> /><?!=__('Right',locale)?></label>
           </span>
         </div>
       
         <div class="flexitemB">
           <span class="ctrlGrpLbl"><?!=__('Positioning',locale)?></span><br />
-          <span id="BOOKCHAPTERPOSITION" class="buttonset">
-            <label><input type="radio" name="BOOKCHAPTERPOSITION" value="<?!=BGET.POS.TOP?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERPOSITION == BGET.POS.TOP){ ?>CHECKED<? } ?> /><?!=__('Top',locale)?></label>
-            <label><input type="radio" name="BOOKCHAPTERPOSITION" value="<?!=BGET.POS.BOTTOM?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERPOSITION == BGET.POS.BOTTOM){ ?>CHECKED<? } ?> /><?!=__('Bottom',locale)?></label>
-            <label><input type="radio" name="BOOKCHAPTERPOSITION" value="<?!=BGET.POS.BOTTOMINLINE?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERPOSITION == BGET.POS.BOTTOMINLINE){ ?>CHECKED<? } ?> /><?!=__('Bottom Inline',locale)?></label>
+          <span id="BookChapterPosition" class="buttonset">
+            <label><input type="radio" name="BookChapterPosition" value="<?!=BGET.POS.TOP?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERPOSITION == BGET.POS.TOP){ ?>CHECKED<? } ?> /><?!=__('Top',locale)?></label>
+            <label><input type="radio" name="BookChapterPosition" value="<?!=BGET.POS.BOTTOM?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERPOSITION == BGET.POS.BOTTOM){ ?>CHECKED<? } ?> /><?!=__('Bottom',locale)?></label>
+            <label><input type="radio" name="BookChapterPosition" value="<?!=BGET.POS.BOTTOMINLINE?>" <? if(userProperties.LayoutPrefs.BOOKCHAPTERPOSITION == BGET.POS.BOTTOMINLINE){ ?>CHECKED<? } ?> /><?!=__('Bottom Inline',locale)?></label>
           </span>
         </div>
     
@@ -750,9 +750,9 @@ successAcctTest = function(rtrn) {
     
         <div class="flexitemB">
           <span class="ctrlGrpLbl"><?!=__('Visibility',locale)?></span><br />
-          <span id="SHOWVERSENUMBERS" class="buttonset">
-            <label><input type="radio" name="SHOWVERSENUMBERS" value="<?!=BGET.VISIBILITY.SHOW?>" <? if(userProperties.LayoutPrefs.SHOWVERSENUMBERS == BGET.VISIBILITY.SHOW){ ?>CHECKED<? } ?> /><?!=__('Show',locale)?></label>
-            <label><input type="radio" name="SHOWVERSENUMBERS" value="<?!=BGET.VISIBILITY.HIDE?>" <? if(userProperties.LayoutPrefs.SHOWVERSENUMBERS == BGET.VISIBILITY.HIDE){ ?>CHECKED<? } ?> /><?!=__('Hide',locale)?></label>
+          <span id="ShowVerseNumbers" class="buttonset">
+            <label><input type="radio" name="ShowVerseNumbers" value="<?!=BGET.VISIBILITY.SHOW?>" <? if(userProperties.LayoutPrefs.SHOWVERSENUMBERS == BGET.VISIBILITY.SHOW){ ?>CHECKED<? } ?> /><?!=__('Show',locale)?></label>
+            <label><input type="radio" name="ShowVerseNumbers" value="<?!=BGET.VISIBILITY.HIDE?>" <? if(userProperties.LayoutPrefs.SHOWVERSENUMBERS == BGET.VISIBILITY.HIDE){ ?>CHECKED<? } ?> /><?!=__('Hide',locale)?></label>
           </span>
         </div>
     
@@ -1125,7 +1125,7 @@ jQuery(document).ready(function(){
       saveUserProps(userProps);
     });
     
-    $('#PARAGRAPHALIGN input[type=radio]').on('change',function(){
+    $('#paragraphalign  input[type=radio]').on('change',function(){
       if(this.checked){
         $('.liveview-quote').css({"text-align":this.value});
         userProps.ParagraphStyles.PARAGRAPHALIGN = this.value;
@@ -1156,17 +1156,17 @@ jQuery(document).ready(function(){
       }
     }
     
-    let $pos = $('#LINEHEIGHTBtn').offset();
-    let $hgt = $('#LINEHEIGHTBtn').height();      
-    $('#LINEHEIGHT-quote').selectmenu({width:'auto',change:function(event,ui){
+    let $pos = $('#lineheightBtn').offset();
+    let $hgt = $('#lineheightBtn').height();      
+    $('#Lineheight-quote').selectmenu({width:'auto',change:function(event,ui){
       $('.liveview-quote').css({"line-height":this.value+"em"});
       userProps.ParagraphStyles.LINEHEIGHT = this.value;
       saveUserProps(userProps);
       } }).selectmenu("widget").css({"display": "none"});
-    $('#LINEHEIGHTBtn').on('click',function(){
-      let $pos = $('#LINEHEIGHTBtn').offset();
-      let $hgt = $('#LINEHEIGHTBtn').outerHeight();      
-      $('#LINEHEIGHT-quote').selectmenu('open').selectmenu('menuWidget').offset({top:($pos.top+$hgt),left:$pos.left});
+    $('#lineheightBtn').on('click',function(){
+      let $pos = $('#lineheightBtn').offset();
+      let $hgt = $('#lineheightBtn').outerHeight();      
+      $('#Lineheight-quote').selectmenu('open').selectmenu('menuWidget').offset({top:($pos.top+$hgt),left:$pos.left});
     });
     
     
@@ -1257,7 +1257,7 @@ jQuery(document).ready(function(){
       saveUserProps(userProps);
     });
     
-    $('span#BOOKCHAPTERALIGNMENT input').change(function(){
+    $('span#bookchapteralignment input').change(function(){
       if(this.checked){
         switch(this.value){
           case '<?!=BGET.VALIGN.NORMAL?>': 
@@ -1357,12 +1357,12 @@ jQuery(document).ready(function(){
     
     $('#otherSettingsTab1 input').button();    
     
-    $('#NOVERSIONFORMATTING').change(function(){
+    $('#NoVersionFormatting').change(function(){
       userProps.ParagraphStyles.NOVERSIONFORMATTING = this.checked;//$(this).prop("checked");
       saveUserProps(userProps);
     });
     
-    $('#INTERFACEINCM').change(function(){
+    $('#InterfaceInCM').change(function(){
       //When in inches mode (default), increments will be by 0.25. When in centimeters mode, increments will be by 0.5
       //so let's convert between these two, doubling when going from inches to CM and halving the other way around
       userProps.ParagraphStyles.INTERFACEINCM = this.checked;
@@ -1542,7 +1542,7 @@ jQuery(document).ready(function(){
       }
     });
 
-    $('#BOOKCHAPTERFULLQUERY').button().on('change',function(){
+    $('#BookChapterFullQuery').button().on('change',function(){
       userProps.LayoutPrefs.BOOKCHAPTERFULLQUERY = this.checked;
       if(this.checked){
             $('.bcText1Sam').text(bkChptr1Sam213 + ('<?!=locale?>'=='en' ? ':' : ',')+'1-3');
