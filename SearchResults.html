@@ -130,9 +130,9 @@
                     </span></button>
             </div>
             <div class="controlComponent">
-                <button class="action gapp-addon" id="ORDER_RESULTS_BY"><i
+                <button class="action gapp-addon" id="ORDER_RESULTS_BY" title="reference = Genesis to Apocalypse"><i
                         class="material-icons md-18">sort_by_alpha</i><span class="label">
-                        <?=__('Order results by reference',locale)?>
+                        <?=__('Order by reference',locale)?>
                     </span></button>
             </div>
         </div>
@@ -182,7 +182,7 @@
                         numResultsStr = '<?!=__('There is {n} result for the keyword {k} in the version {v}.',locale)?>';
                     }
                     else {
-                        numResultsStr = '<?!=__('There are {n} results for the keyword {k} in the version {v}.',locale)?>';
+                        numResultsStr = '<?!=__('There are {n} results for the keyword {k} in the version {v}, ordered by relevance (exact matches first).',locale)?>';
                     }
                     jQuery('#searchResultsInfo').html(numResultsStr.formatUnicorn({ n: '<b>' + $searchresults.results.length + '</b>', k: '<b>' + $searchresults.info.keyword + '</b>', v: '<b>' + $searchresults.info.version + '</b>' }));
                     for (let $result of $searchresults.results) {
@@ -195,7 +195,7 @@
                 let counter = 0;
                 jQuery("#SearchResultsTable tbody").empty();
                 switch (options.ORDER_BY) {
-                    case 'importance':
+                    case 'relevance':
                         for (let $result of $searchresults.results) {
                             if (options.FILTER_BY == '') {
                                 jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="' + encodeURIComponent(JSON.stringify($result)) + '" /></td><td>' + bibleBooksL10n.biblebooks[parseInt($result.univbooknum) - 1].split('|')[0] + ' ' + $result.chapter + ':' + $result.verse + '</td><td>' + addMark($result.text, $searchresults.info.keyword) + '</td></tr>');
@@ -226,29 +226,31 @@
                 }
                 if (options.FILTER_BY == '') {
                     if ($searchresults.results.length === 1) {
-                        numResultsStr = '<?!=__('There is {n} result for the keyword {k} in the version {v}.',locale)?>';
+                        numResultsStr = '<?!=__("There is {n} result for the keyword {k} in the version {v}.",locale)?>';
                     }
                     else {
-                        numResultsStr = '<?!=__('There are {n} results for the keyword {k} in the version {v}.',locale)?>';
+                        numResultsStr = '<?!=__("There are {n} results for the keyword {k} in the version {v}, ordered by {r}.",locale)?>';
                     }
                     jQuery('#searchResultsInfo').html(numResultsStr.formatUnicorn({
                       n: '<b>' + $searchresults.results.length + '</b>',
                       k: '<b>' + $searchresults.info.keyword + '</b>',
-                      v: '<b>' + $searchresults.info.version + '</b>'
+                      v: '<b>' + $searchresults.info.version + '</b>',
+                      r: options.ORDER_BY == 'relevance' ? '<?!=__("relevance (exact matches first)",locale)?>' : '<?!=__("reference (Genesis to Apocalypse)",locale)?>'
                     }));
                 }
                 else {
                     if (counter == 1) {
-                        numResultsStr = '<?!=__('There is {n} result for the keyword {k} filtered by {f} in the version {v}.',locale)?>';
+                        numResultsStr = '<?!=__("There is {n} result for the keyword {k} filtered by {f} in the version {v}.",locale)?>';
                     }
                     else if (counter > 1) {
-                        numResultsStr = '<?!=__('There are {n} results for the keyword {k} filtered by {f} in the version {v}.',locale)?>';
+                        numResultsStr = '<?!=__("There are {n} results for the keyword {k} filtered by {f} in the version {v}, ordered by {r}.",locale)?>';
                     }
                     jQuery('#searchResultsInfo').html(numResultsStr.formatUnicorn({
                       n: '<b>' + counter + '</b>',
                       k: '<b>' + $searchresults.info.keyword + '</b>',
                       f: '<b>' + options.FILTER_BY + '</b>',
-                      v: '<b>' + $searchresults.info.version + '</b>'
+                      v: '<b>' + $searchresults.info.version + '</b>',
+                      r: options.ORDER_BY == 'relevance' ? '<?!=__("relevance (exact matches first)",locale)?>' : '<?!=__("reference (Genesis to Apocalypse)",locale)?>'
                     }));
                 }
             },
@@ -296,10 +298,10 @@
                 switch ($(this).parents('.searchResultsFlexChild').attr('id')) {
                     case 'searchResultsControlPanel':
                         $orderbyLabel = $('#ORDER_RESULTS_BY').find('span.label');
-                        if ($orderbyLabel.text() == '<?=__('Order results by reference',locale)?>' ){
-                            $ORDER_BY = 'importance';
+                        if ($orderbyLabel.text() == '<?=__('Order by reference',locale)?>' ){
+                            $ORDER_BY = 'relevance';
                         }
-                        else if ($orderbyLabel.text() == '<?=__('Order results by importance',locale)?>' ){
+                        else if ($orderbyLabel.text() == '<?=__('Order by relevance',locale)?>' ){
                             $ORDER_BY = 'reference';
                         }
 
@@ -309,13 +311,15 @@
                         switch ($(this).attr('id')) {
                             case 'ORDER_RESULTS_BY':
                                 REFRESH = true;
-                                if ($orderbyLabel.text() == '<?=__('Order results by reference',locale)?>' ) {
+                                if ($orderbyLabel.text() == '<?=__('Order by reference',locale)?>' ) {
                                     $ORDER_BY = 'reference';
-                                    $orderbyLabel.text('<?=__('Order results by importance',locale)?>');
+                                    $orderbyLabel.text('<?=__('Order by relevance',locale)?>');
+                                    $orderbyLabel.closest('button').attr('title','relevance = exact matches first');
                                 }
                                 else {
-                                    $ORDER_BY = 'importance';
-                                    $orderbyLabel.text('<?=__('Order results by reference',locale)?>');
+                                    $ORDER_BY = 'relevance';
+                                    $orderbyLabel.text('<?=__('Order by reference',locale)?>');
+                                    $orderbyLabel.closest('button').attr('title','reference = Genesis to Apocalypse');
                                 }
                             break;
                             case 'APPLY_FILTER':
