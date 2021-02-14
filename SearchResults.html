@@ -191,7 +191,7 @@
                     }
                     jQuery('#searchResultsInfo').html(numResultsStr.formatUnicorn({ n: '<b>' + $searchresults.results.length + '</b>', k: '<b>' + $searchresults.info.keyword + '</b>', v: '<b>' + $searchresults.info.version + '</b>' }));
                     for (let $result of $searchresults.results) {
-                        jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="' + encodeURIComponent(JSON.stringify($result)) + '" /></td><td>' + bibleBooksL10n.biblebooks[parseInt($result.univbooknum) - 1].split('|')[0] + ' ' + $result.chapter + ':' + $result.verse + '</td><td>' + addMark($result.text, $searchresults.info.keyword) + '</td></tr>');
+                        jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="' + encodeURIComponent(JSON.stringify($result)) + '" /></td><td>' + bibleBooksL10n.biblebooks[parseInt($result.univbooknum) - 1].split('|')[0] + ' ' + $result.chapter + ':' + $result.verse + '</td><td>' + addMark($result.text, [$searchresults.info.keyword, stripDiacritics($searchresults.info.keyword)]) + '</td></tr>');
                         if (++counter == $searchresults.results.length) { hideSpinner(); }
                     }
                 }
@@ -203,12 +203,12 @@
                     case 'relevance':
                         for (let $result of $searchresults.results) {
                             if (options.FILTER_BY == '') {
-                                jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="' + encodeURIComponent(JSON.stringify($result)) + '" /></td><td>' + bibleBooksL10n.biblebooks[parseInt($result.univbooknum) - 1].split('|')[0] + ' ' + $result.chapter + ':' + $result.verse + '</td><td>' + addMark($result.text, $searchresults.info.keyword) + '</td></tr>');
+                                jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="' + encodeURIComponent(JSON.stringify($result)) + '" /></td><td>' + bibleBooksL10n.biblebooks[parseInt($result.univbooknum) - 1].split('|')[0] + ' ' + $result.chapter + ':' + $result.verse + '</td><td>' + addMark($result.text, [$searchresults.info.keyword, stripDiacritics($searchresults.info.keyword)]) + '</td></tr>');
                             }
                             else {
                                 let $filter = new RegExp(options.FILTER_BY, "i");
                                 if ($filter.test($result.text)) {
-                                    jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="' + encodeURIComponent(JSON.stringify($result)) + '" /></td><td>' + bibleBooksL10n.biblebooks[parseInt($result.univbooknum) - 1].split('|')[0] + ' ' + $result.chapter + ':' + $result.verse + '</td><td>' + addMark($result.text, [$searchresults.info.keyword, options.FILTER_BY]) + '</td></tr>');
+                                    jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="' + encodeURIComponent(JSON.stringify($result)) + '" /></td><td>' + bibleBooksL10n.biblebooks[parseInt($result.univbooknum) - 1].split('|')[0] + ' ' + $result.chapter + ':' + $result.verse + '</td><td>' + addMark($result.text, [$searchresults.info.keyword, stripDiacritics($searchresults.info.keyword), options.FILTER_BY]) + '</td></tr>');
                                     ++counter;
                                 }
                             }
@@ -217,12 +217,12 @@
                     case 'reference':
                         for (let $result of $searchresultsOrderedByReference.results) {
                             if (options.FILTER_BY == '') {
-                                jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="' + encodeURIComponent(JSON.stringify($result)) + '" /></td><td>' + bibleBooksL10n.biblebooks[parseInt($result.univbooknum) - 1].split('|')[0] + ' ' + $result.chapter + ':' + $result.verse + '</td><td>' + addMark($result.text, $searchresults.info.keyword) + '</td></tr>');
+                                jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="' + encodeURIComponent(JSON.stringify($result)) + '" /></td><td>' + bibleBooksL10n.biblebooks[parseInt($result.univbooknum) - 1].split('|')[0] + ' ' + $result.chapter + ':' + $result.verse + '</td><td>' + addMark($result.text, [$searchresults.info.keyword, stripDiacritics($searchresults.info.keyword)]) + '</td></tr>');
                             }
                             else {
                                 let $filter = new RegExp(options.FILTER_BY, "i");
                                 if ($filter.test($result.text)) {
-                                    jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="' + encodeURIComponent(JSON.stringify($result)) + '" /></td><td>' + bibleBooksL10n.biblebooks[parseInt($result.univbooknum) - 1].split('|')[0] + ' ' + $result.chapter + ':' + $result.verse + '</td><td>' + addMark($result.text, [$searchresults.info.keyword, options.FILTER_BY]) + '</td></tr>');
+                                    jQuery("#SearchResultsTable tbody").append('<tr><td><button class="action gapp-addon"><i class="material-icons md-18">save_alt</i><?!=__('Insert',locale)?></button><input type="hidden" class="searchResultJSON" value="' + encodeURIComponent(JSON.stringify($result)) + '" /></td><td>' + bibleBooksL10n.biblebooks[parseInt($result.univbooknum) - 1].split('|')[0] + ' ' + $result.chapter + ':' + $result.verse + '</td><td>' + addMark($result.text, [$searchresults.info.keyword, stripDiacritics($searchresults.info.keyword), options.FILTER_BY]) + '</td></tr>');
                                     ++counter;
                                 }
                             }
@@ -264,6 +264,9 @@
             },
             showSpinner = function () {
                 $('.spinner').show();
+            },
+            stripDiacritics = function (term) {
+                return term.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             };
         String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
             function () {
