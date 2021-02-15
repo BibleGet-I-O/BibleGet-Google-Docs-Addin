@@ -227,7 +227,6 @@ function openSettings(){
       .setWidth(SETTINGSWINDOW.WIDTH)
       .setHeight(SETTINGSWINDOW.HEIGHT)
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
-  //MailApp.sendEmail("priest@johnromanodorazio.com", "Apps Script Debug", evaluated.getContent());
   DocumentApp.getUi().showModalDialog(evaluated, __('Settings',locale));
   
 }
@@ -610,7 +609,6 @@ function fetchSearchResults(request){
   let {query,version,keyword,exactmatch} = request;
   let {rettype,appid} = REQUESTPARAMS;
   let payload = {'query':query,'version':version,'exactmatch':exactmatch,'return':rettype,'appid':appid,'pluginversion':VERSION,'keyword':keyword};
-  MailApp.sendEmail("priest@johnromanodorazio.com","search payload debug",JSON.stringify(payload));
   let locale = "en";
   try{ locale = getUserLocale(); }
   catch(e){ alertMe("Error: " + e.message + "\r\nFile: " + e.fileName + "\r\nLine: " + e.lineNumber); }
