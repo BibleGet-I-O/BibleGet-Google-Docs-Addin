@@ -68,8 +68,8 @@ const BGET = {
     VERSETEXT:       4
   },
   PREFERORIGIN: {        //PREFER ORIGIN : most catholic editions of the Bible have texts based both on the Greek and on the Hebrew versions of the Bible
-    GREEK:           1,  //  resulting in duplicate verses, which can be both be quoted with the same reference (e.g. Esther 1,1-10)
-    HEBREW:          2   //  Even though some Catholic editions place the Greek version in separate "books", for simplicity the BibleGet project places them as quotable verses following the CEI2008 layout. This preference allows the user to define which origin to prefer (if available) when making the quote
+    HEBREW:          1,  //  resulting in duplicate verses, which can be both be quoted with the same reference (e.g. Esther 1,1-10)
+    GREEK:           2   //  Even though some Catholic editions place the Greek version in separate "books", for simplicity the BibleGet project places them as quotable verses following the CEI2008 layout. This preference allows the user to define which origin to prefer (if available) when making the quote
   },
   TYPECASTING: {        //just for quality assurance and good measure, let's explicitly define typecasting of our UserProperties, don't just rely on JSON.parse
                         //this way we know that floats will be floats and ints will be ints and we don't have to worry about it every time in our code when we use the values
@@ -583,9 +583,9 @@ function sendMail(txt) {
 
 //Function fetchData @ used in SidebarJS and in other scripts here in Code.gs (which are called from SidebarJS), to communicate with the BibleGet endpoints
 function fetchData(request){
-  let {query,version} = request;
+  let {query,version,preferorigin} = request;
   let {rettype,appid} = REQUESTPARAMS;
-  let payload = {'query':query,'version':version,'return':rettype,'appid':appid,'pluginversion':VERSION};
+  let payload = {'query':query,'version':version,'return':rettype,'appid':appid,'pluginversion':VERSION,'preferorigin':preferorigin};
   try{
     var response = UrlFetchApp.fetch(ENDPOINTURL,{'method':'post','payload':payload});
     var responsecode = response.getResponseCode();

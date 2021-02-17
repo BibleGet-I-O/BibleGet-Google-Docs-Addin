@@ -1,6 +1,8 @@
 <? 
   var propsService = PropertiesService.getUserProperties();
   var recentSelectedVersionsProp = propsService.getProperty("RecentSelectedVersions");
+  let LayoutPrefs = propsService.getProperty("LayoutPrefs");
+  let PREFERORIGIN = JSON.parse(LayoutPrefs).PREFERORIGIN;
   if(recentSelectedVersionsProp===null){
     recentSelectedVersions = [];
   }
@@ -150,7 +152,7 @@
 		}
 
     .lbl-inline {
-      max-width: 25%;
+      max-width: 15%;
     }
 
     .flex-center-even {
@@ -165,7 +167,8 @@
 	<div id="messageToUser"></div>
 	<input id="idAccountOfEffectiveUsr" type="hidden" style="display:none" value="<?!= Session.getEffectiveUser().getEmail(); ?>"/>
 	<script>
-		let failedAcctTest = function(rtrn) {
+let LayoutPrefs = JSON.parse('<?!=LayoutPrefs?>');
+let failedAcctTest = function(rtrn) {
   $('.spinner').hide();
   let usrWhoLoaded = document.getElementById('idAccountOfEffectiveUsr').textContent;
 
@@ -217,7 +220,7 @@ successAcctTest = function(rtrn) {
 				title="<?=__('Some books of the Bible, in Catholic versions, have two different versions of some chapters, one based on the Tanakh (Hebrew) and one based on the Septuagint (Greek). This switch will allow to choose between the two possible texts.',locale)?>">
 				<label class="gapp-addon lbl-inline"><?=__('Prefer Hebrew origin',locale)?></label>
         <label class="switch">
-				  <input class="gapp-addon" id="bibleget-preferorigin" type="checkbox"  />
+				  <input class="gapp-addon" id="bibleget-preferorigin" type="checkbox" <?if(PREFERORIGIN == BGET.PREFERORIGIN.GREEK){?>checked<?}?> />
 				  <span class="slider round"></span>
         </label>
 				<label class="gapp-addon lbl-inline"><?=__('Prefer Greek origin',locale)?></label>
@@ -257,20 +260,21 @@ successAcctTest = function(rtrn) {
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
 
 	<script>
-		var queryServer = function(goodqueries){
+var queryServer = function(goodqueries){
   goodqueries = goodqueries || [];
   if(goodqueries.length===0){
     $('.spinner').hide();
     return false;
   }else{
     let finalquery = goodqueries.join(';');
+    let preferorigin = $('#bibleget-preferorigin').prop('checked') ? 'GREEK' : 'HEBREW';
     if(finalquery != ''){
       let versions = $("select#text-version :selected").map(function(){ return this.value; }).get().join(',');
       if(versions.length<1){
         alertMe('<?!=__("Please select a version.",locale)?>');
         return false;
       }else{
-        let payload = {'query':finalquery,'version':versions};
+        let payload = {'query':finalquery,'version':versions,'preferorigin':preferorigin};
         google.script.run.withSuccessHandler(parseResponse).fetchData(payload);
       }
     }
@@ -379,7 +383,7 @@ $(document).ready(function(){
         return false;
       }
       let query = $('#bibleget-search').val();
-      let queries = queryClean(query);      
+      let queries = queryClean(query);   
       google.script.run.withSuccessHandler(queryServer).processQueries(queries,versions);
     });
     
@@ -402,6 +406,11 @@ $(document).ready(function(){
           runKeywordSearch($keyword);
         }
       }
+    });
+
+    $('#bibleget-preferorigin').on('click',function(){
+      LayoutPrefs.PREFERORIGIN = (this.checked ? <?!=BGET.PREFERORIGIN.GREEK?> : <?!=BGET.PREFERORIGIN.HEBREW?>);
+      google.script.run.setUserProperty("LayoutPrefs",JSON.stringify(LayoutPrefs));
     });
     
     $('#RESET_DEFAULT_USERPROPS').on('click',function(){
