@@ -860,8 +860,8 @@ Number.prototype.map = function (in_min, in_max, out_min, out_max) {
 //We can't save the userProps obj unless we have all the user Properties in this object, this is why we need the object,
 //and need it fully populated, not only available to populate one at a time
 var passUserPropertiesServer2Client = function(propsobj){ 
-    userProps.populated = true;
     userProps = propsobj;
+    userProps.populated = true;
     <? if(CURRENTSTATE==ADDONSTATE.DEVELOPMENT){ ?>
     for (let [key, value] of Object.entries(propsobj).sort() ) {
       if(typeof value === 'object'){

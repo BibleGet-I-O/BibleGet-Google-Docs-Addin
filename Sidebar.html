@@ -1,6 +1,8 @@
 <? 
   var propsService = PropertiesService.getUserProperties();
   var recentSelectedVersionsProp = propsService.getProperty("RecentSelectedVersions");
+  let LayoutPrefs = propsService.getProperty("LayoutPrefs");
+  let PREFERORIGIN = JSON.parse(LayoutPrefs).PREFERORIGIN;
   if(recentSelectedVersionsProp===null){
     recentSelectedVersions = [];
   }
@@ -49,44 +51,123 @@
   });
 ?>
 <!DOCTYPE html>
+
 <head>
-  <base target="_blank">
-  <meta charset="UTF-8">
-  <?!= include("Stylesheet"); ?>
-  <style>
-  .downLdIco {
-    background-image: url(<?!= include('DownloadIcon'); ?>);
-    background-size: cover;
-    width: 20px;
-    height: 20px;
-    position: relative;
-    top: 4px;
-    right: 3px;
-    display: inline-block;
-  }
-  .searchIco {
-    background-image: url(<?!= include('SearchIcon'); ?>);
-    background-size: cover;
-    width: 20px;
-    height: 20px;
-    position: relative;
-    top: 4px;
-    right: 3px;
-    display: inline-block;
-  }
-  
-  #messageToUser {
-    border: 1px solid Gray;
-    background-color: pink;
-    color: Gray;
-    padding: 12px;
-  }
-  </style>
+	<base target="_blank">
+	<meta charset="UTF-8">
+	<?!= include("Stylesheet"); ?>
+	<style>
+		.downLdIco {
+			background-image: url(<?!= include('DownloadIcon');
+			?>);
+			background-size: cover;
+			width: 20px;
+			height: 20px;
+			position: relative;
+			top: 4px;
+			right: 3px;
+			display: inline-block;
+		}
+
+		.searchIco {
+			background-image: url(<?!= include('SearchIcon');
+			?>);
+			background-size: cover;
+			width: 20px;
+			height: 20px;
+			position: relative;
+			top: 4px;
+			right: 3px;
+			display: inline-block;
+		}
+
+		#messageToUser {
+			border: 1px solid Gray;
+			background-color: pink;
+			color: Gray;
+			padding: 12px;
+		}
+
+		/* The switch - the box around the slider */
+		.switch {
+			position: relative;
+			display: inline-block;
+			width: 60px;
+			height: 34px;
+		}
+
+		/* Hide default HTML checkbox */
+		.switch input {
+			opacity: 0;
+			width: 0;
+			height: 0;
+		}
+
+		/* The slider */
+		.slider {
+			position: absolute;
+			cursor: pointer;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: #2196F3;
+			-webkit-transition: .4s;
+			transition: .4s;
+		}
+
+		.slider:before {
+			position: absolute;
+			content: "";
+			height: 26px;
+			width: 26px;
+			left: 4px;
+			bottom: 4px;
+			background-color: white;
+			-webkit-transition: .4s;
+			transition: .4s;
+		}
+
+		input:checked+.slider {
+			background-color: #2196F3;
+		}
+
+		input:focus+.slider {
+			box-shadow: 0 0 1px #2196F3;
+		}
+
+		input:checked+.slider:before {
+			-webkit-transform: translateX(26px);
+			-ms-transform: translateX(26px);
+			transform: translateX(26px);
+		}
+
+		/* Rounded sliders */
+		.slider.round {
+			border-radius: 34px;
+		}
+
+		.slider.round:before {
+			border-radius: 50%;
+		}
+
+    .lbl-inline {
+      max-width: 15%;
+    }
+
+    .flex-center-even {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+    }
+	</style>
 </head>
+
 <body>
-<div id="messageToUser"></div>
-<input id="idAccountOfEffectiveUsr" type="hidden" style="display:none" value="<?!= Session.getEffectiveUser().getEmail(); ?>"/>
-<script>
+	<div id="messageToUser"></div>
+	<input id="idAccountOfEffectiveUsr" type="hidden" style="display:none" value="<?!= Session.getEffectiveUser().getEmail(); ?>"/>
+	<script>
+let LayoutPrefs = JSON.parse('<?!=LayoutPrefs?>');
 let failedAcctTest = function(rtrn) {
   $('.spinner').hide();
   let usrWhoLoaded = document.getElementById('idAccountOfEffectiveUsr').textContent;
@@ -102,14 +183,19 @@ let failedAcctTest = function(rtrn) {
 successAcctTest = function(rtrn) {
   $('#messageToUser').hide();
 };
-</script>
-<div class="spinner lds-ring" id="spinner-gif"><div></div><div></div><div></div><div></div></div>
-<div class="spinner" id="spinner-bg"></div>
-<div class="sidebar branding-below">
-    <h3><?=__("Get bible quotes",locale)?></h3>
-    <div class="block form-group">
-      <label class="gapp-addon" for="text-version"><b><?=__("Versions available:",locale)?></b></label>
-      <select class="gapp-addon" id="text-version" multiple>
+	</script>
+	<div class="spinner lds-ring" id="spinner-gif">
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+	</div>
+	<div class="spinner" id="spinner-bg"></div>
+	<div class="sidebar branding-below">
+		<h3><?=__("Get bible quotes",locale)?></h3>
+		<div class="block form-group">
+			<label class="gapp-addon" for="text-version"><b><?=__("Versions available:",locale)?></b></label>
+			<select class="gapp-addon" id="text-version" multiple>
         <? for(var q in langs){ ?>
         <optgroup label="-<?=langs[q]?>-">
           <?for(var s in versionsbylang[langs[q]]){?>
@@ -118,42 +204,62 @@ successAcctTest = function(rtrn) {
         </optgroup>
         <?}?>
       </select>
-      <div><?=__("Versions selected:",locale)?> <span id="selectedversions" <?if(recentSelectedVersions.length<1){?>class="empty">none<?}else{?>><?=recentSelectedVersions.join(',')?><?}?></span></div>
-    </div>    
-    <div class="block form-group" style="margin-top:20px;">
-      <label class="gapp-addon"><b><?=__('Insert citation',locale)?></b></label>
-      <div class="inline form-group">
-        <input class="gapp-addon" id="bibleget-search" type="search" placeholder="<?=__("e.g. Matthew 1:1-10,13-15",locale)?>" />
-        <button id="btn-get-bible-quote" class="action gapp-addon"><span class="downLdIco">&nbsp;</span><?=__("Get verses",locale)?></button>
-      </div>
-    </div>
-    <div class="block form-group" style="margin-top:10px;">
-      <label class="gapp-addon"><b><?=__('Find verses by keyword',locale)?></b></label>
-      <div class="inline form-group">
-        <input class="gapp-addon" id="bibleget-fulltextsearch" type="search" placeholder="<?=__("e.g. Creation",locale)?>" />
-        <button id="btn-bible-search" class="action gapp-addon"><span class="searchIco">&nbsp;</span><?=__("Search",locale)?></button>
-      </div>
-    </div>
-    <div class="block form-group" style="margin-top:10px;">
-      <div class="inline form-group" title="<?=__('By default, search will include partial matches of 3 letters or more. If you prefer to include only exact matches of 2 letters or more, select this option.',locale)?>">
-        <input class="gapp-addon" id="bibleget-exactmatch" type="checkbox" />
-        <label class="gapp-addon"><?=__('Exact matches only',locale)?></label>
-      </div>
-    </div>
-</div>
+			<div><?=__("Versions selected:",locale)?>
+				<span id="selectedversions" <?if(recentSelectedVersions.length<1){?>class="empty">none<?}else{?>><?=recentSelectedVersions.join(',')?><?}?></span>
+			</div>
+		</div>
+		<div class="block form-group" style="margin-top:20px;">
+			<label class="gapp-addon"><b><?=__('Insert citation',locale)?></b></label>
+			<div class="inline form-group">
+				<input class="gapp-addon" id="bibleget-search" type="search" placeholder="<?=__("e.g. Matthew 1:1-10,13-15",locale)?>" />
+				<button id="btn-get-bible-quote" class="action gapp-addon"><span class="downLdIco">&nbsp;</span><?=__("Get verses",locale)?></button>
+			</div>
+		</div>
+		<div class="block form-group" style="margin-top:10px;">
+			<div class="flex-center-even form-group"
+				title="<?=__('Some books of the Bible, in Catholic versions, have two different versions of some chapters, one based on the Tanakh (Hebrew) and one based on the Septuagint (Greek). This switch will allow to choose between the two possible texts.',locale)?>">
+				<label class="gapp-addon lbl-inline"><?=__('Prefer Hebrew origin',locale)?></label>
+        <label class="switch">
+				  <input class="gapp-addon" id="bibleget-preferorigin" type="checkbox" <?if(PREFERORIGIN == BGET.PREFERORIGIN.GREEK){?>checked<?}?> />
+				  <span class="slider round"></span>
+        </label>
+				<label class="gapp-addon lbl-inline"><?=__('Prefer Greek origin',locale)?></label>
+			</div>
+		</div>
+		<div class="block form-group" style="margin-top:10px;">
+			<label class="gapp-addon"><b><?=__('Find verses by keyword',locale)?></b></label>
+			<div class="inline form-group">
+				<input class="gapp-addon" id="bibleget-fulltextsearch" type="search" placeholder="<?=__("e.g. Creation",locale)?>" />
+				<button id="btn-bible-search" class="action gapp-addon"><span class="searchIco">&nbsp;</span><?=__("Search",locale)?></button>
+			</div>
+		</div>
+		<div class="block form-group" style="margin-top:10px;">
+			<div class="inline form-group"
+				title="<?=__('By default, search will include partial matches of 3 letters or more. If you prefer to include only exact matches of 2 letters or more, select this option.',locale)?>">
+				<input class="gapp-addon" id="bibleget-exactmatch" type="checkbox" />
+				<label class="gapp-addon"><?=__('Exact matches only',locale)?></label>
+			</div>
+		</div>
+	</div>
 
-<div class="sidebar bottom">
-  <? let usrProperties = propsService.getProperties();
+	<div class="sidebar bottom">
+		<? let usrProperties = propsService.getProperties();
      if(usrProperties.hasOwnProperty('RientroSinistro') || usrProperties.hasOwnProperty('BookChapterAlignment') || usrProperties.hasOwnProperty('VerseNumberAlignment') || usrProperties.hasOwnProperty('VerseTextAlignment') || usrProperties.hasOwnProperty('Interlinea') ){ ?>
-  <div style="text-align:center;margin-top:16px;"><button title="This will remove all of your current user preferences and reset them to default. Resort to this if you cannot open the settings / preferences window." class="button" id="RESET_DEFAULT_USERPROPS"><?=__('RESET PREFERENCES TO DEFAULT OPTIONS',locale)?></button></div>
-  <?  } ?>
-  <div style="background:linear-gradient(white,gray,lightblue,black);color:White;font-weight:bold;text-shadow:3px 3px 3px Black;padding:1px;vertical-align:middle;"><a target="_blank" href="https://www.bibleget.io"><?!= include("BibleIcon_32"); ?></a><span style="position:relative;top:-9px;">BibleGet I/O for Google Docs v.<?!=VERSION?></span></div>
-</div>
+		<div style="text-align:center;margin-top:16px;">
+			<button title="This will remove all of your current user preferences and reset them to default. Resort to this if you cannot open the settings / preferences window." class="button" id="RESET_DEFAULT_USERPROPS"><?=__('RESET PREFERENCES TO DEFAULT OPTIONS',locale)?></button>
+		</div>
+		<?  } ?>
+		<div
+			style="background:linear-gradient(white,gray,lightblue,black);color:White;font-weight:bold;text-shadow:3px 3px 3px Black;padding:1px;vertical-align:middle;">
+			<a target="_blank" href="https://www.bibleget.io">
+				<?!= include("BibleIcon_32"); ?></a><span style="position:relative;top:-9px;">BibleGet I/O for Google Docs v.<?!=VERSION?></span>
+		</div>
+	</div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
 
-<script>
+	<script>
 var queryServer = function(goodqueries){
   goodqueries = goodqueries || [];
   if(goodqueries.length===0){
@@ -161,13 +267,14 @@ var queryServer = function(goodqueries){
     return false;
   }else{
     let finalquery = goodqueries.join(';');
+    let preferorigin = $('#bibleget-preferorigin').prop('checked') ? 'GREEK' : 'HEBREW';
     if(finalquery != ''){
       let versions = $("select#text-version :selected").map(function(){ return this.value; }).get().join(',');
       if(versions.length<1){
         alertMe('<?!=__("Please select a version.",locale)?>');
         return false;
       }else{
-        let payload = {'query':finalquery,'version':versions};
+        let payload = {'query':finalquery,'version':versions,'preferorigin':preferorigin};
         google.script.run.withSuccessHandler(parseResponse).fetchData(payload);
       }
     }
@@ -276,7 +383,7 @@ $(document).ready(function(){
         return false;
       }
       let query = $('#bibleget-search').val();
-      let queries = queryClean(query);      
+      let queries = queryClean(query);   
       google.script.run.withSuccessHandler(queryServer).processQueries(queries,versions);
     });
     
@@ -300,6 +407,11 @@ $(document).ready(function(){
         }
       }
     });
+
+    $('#bibleget-preferorigin').on('click',function(){
+      LayoutPrefs.PREFERORIGIN = (this.checked ? <?!=BGET.PREFERORIGIN.GREEK?> : <?!=BGET.PREFERORIGIN.HEBREW?>);
+      google.script.run.setUserProperty("LayoutPrefs",JSON.stringify(LayoutPrefs));
+    });
     
     $('#RESET_DEFAULT_USERPROPS').on('click',function(){
       //$('.spinner').show();
@@ -307,6 +419,6 @@ $(document).ready(function(){
     });
     
 });
-</script>
+	</script>
 
 </body>
