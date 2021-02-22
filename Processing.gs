@@ -70,7 +70,7 @@ function hackRegex(regexpString){
   // Gets a regex written in a dialect that supports unicode categories and translates it to a dialect supported by JavaScript.
   let modifiers = "";
   if(regexpString instanceof RegExp){
-    modifiers = "u" + (regexpString.global ? "g" : "") + (regexpString.ignoreCase ? "i" : "") + (regexpString.multiline ? "m" : "");
+    modifiers = (regexpString.global ? "g" : "") + (regexpString.ignoreCase ? "i" : "") + (regexpString.multiline ? "m" : "");
     regexpString = regexpString.source;
   } else if (regexpString instanceof String){
     let regexpArray = regexpString.match(/\/(.+)\/([gmiu]*)/);
