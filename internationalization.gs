@@ -784,7 +784,7 @@ var __ = function(str,ling){
 				"es":"Afrikáans",
 				"fr":"Afrikaans",
 				"de":"Afrikaans",
-                "pt":"Afrikaans"
+        "pt":"Afrikaans"
 		},
 		"Albanian":{
 				"en":"Albanian",
@@ -792,7 +792,7 @@ var __ = function(str,ling){
 				"es":"Albanés",
 				"fr":"Albanais",
 				"de":"Albanisch",
-                "pt":"Albanês"
+        "pt":"Albanês"
 		},
 		"Arabic":{
 				"en":"Arabic",
@@ -800,7 +800,7 @@ var __ = function(str,ling){
 				"es":"Árabe",
 				"fr":"Arabe",
 				"de":"Arabisch",
-                "pt":"Árabe"
+        "pt":"Árabe"
 		},
 		"Chinese":{
 				"en":"Chinese",
@@ -808,7 +808,7 @@ var __ = function(str,ling){
 				"es":"Chino",
 				"fr":"Chinois",
 				"de":"Chinesische",
-                "pt":"Chinês"
+        "pt":"Chinês"
 		},
 		"Croatian":{
 				"en":"Croatian",
@@ -816,7 +816,7 @@ var __ = function(str,ling){
 				"es":"Croata",
 				"fr":"Croate",
 				"de":"Kroatisch",
-                "pt":"Croata"
+        "pt":"Croata"
 		},
 		"Czech":{
 				"en":"Czech",
@@ -824,7 +824,7 @@ var __ = function(str,ling){
 				"es":"Checo",
 				"fr":"Tchèque",
 				"de":"Tschechisch",
-                "pt":"Tcheco"
+        "pt":"Tcheco"
 		},
 		"English":{
 				"en":"English",
@@ -832,7 +832,7 @@ var __ = function(str,ling){
 				"es":"Inglés",
 				"fr":"Anglais",
 				"de":"Englisch",
-                "pt":"Inglês"
+        "pt":"Inglês"
 		},
 		"French":{
 				"en":"French",
@@ -840,7 +840,7 @@ var __ = function(str,ling){
 				"es":"Francés",
 				"fr":"Français",
 				"de":"Französisch",
-                "pt":"Francês"
+        "pt":"Francês"
 		},
 		"German":{
 				"en":"German",
@@ -848,7 +848,7 @@ var __ = function(str,ling){
 				"es":"Alemán",
 				"fr":"Allemand",
 				"de":"Deutsch",
-                "pt":"Alemão"
+        "pt":"Alemão"
 		},
 		"Greek":{
 				"en":"Greek",
@@ -856,7 +856,7 @@ var __ = function(str,ling){
 				"es":"Griego",
 				"fr":"Grec",
 				"de":"Griechisch",
-                "pt":"Grego"
+        "pt":"Grego"
 		},
 		"Hungarian":{
 				"en":"Hungarian",
@@ -864,7 +864,7 @@ var __ = function(str,ling){
 				"es":"Húngaro",
 				"fr":"Hongrois",
 				"de":"Ungarisch",
-                "pt":"Húngaro"
+        "pt":"Húngaro"
 		},
 		"Italian":{
 				"en":"Italian",
@@ -872,7 +872,7 @@ var __ = function(str,ling){
 				"es":"Italiano",
 				"fr":"Italien",
 				"de":"Italienisch",
-                "pt":"Italiano"
+        "pt":"Italiano"
 		},
 		"Japanese":{
 				"en":"Japanese",
@@ -880,7 +880,7 @@ var __ = function(str,ling){
 				"es":"Japonés",
 				"fr":"Japonais",
 				"de":"Japanisch",
-                "pt":"Japonês"
+        "pt":"Japonês"
 		},
 		"Korean":{
 				"en":"Korean",
@@ -888,7 +888,7 @@ var __ = function(str,ling){
 				"es":"Coreano",
 				"fr":"Coréen",
 				"de":"Koreanisch",
-                "pt":"Coreano"
+        "pt":"Coreano"
 		},
 		"Latin":{
 				"en":"Latin",
@@ -896,7 +896,7 @@ var __ = function(str,ling){
 				"es":"Latín",
 				"fr":"Latin",
 				"de":"Lateinisch",
-                "pt":"Latim"
+        "pt":"Latim"
 		},
 		"Polish":{
 				"en":"Polish",
@@ -904,7 +904,7 @@ var __ = function(str,ling){
 				"es":"Polaco",
 				"fr":"Polonais",
 				"de":"Russisch",
-                "pt":"Polonês"
+        "pt":"Polonês"
 		},
 		"Portuguese":{
 				"en":"Portuguese",
@@ -912,7 +912,7 @@ var __ = function(str,ling){
 				"es":"Portugués",
 				"fr":"Portugais",
 				"de":"Portugiesisch",
-                "pt":"Português"
+        "pt":"Português"
 		},
 		"Romanian":{
 				"en":"Romanian",
@@ -920,7 +920,7 @@ var __ = function(str,ling){
 				"es":"Rumano",
 				"fr":"Roumain",
 				"de":"Rumänischen",
-                "pt":"Romena"
+        "pt":"Romena"
 		},
 		"Russian":{
 				"en":"Russian",
@@ -928,7 +928,7 @@ var __ = function(str,ling){
 				"es":"Ruso",
 				"fr":"Russe",
 				"de":"Russisch",
-                "pt":"Russo"
+        "pt":"Russo"
 		},
 		"Spanish":{
 				"en":"Spanish",
@@ -936,7 +936,7 @@ var __ = function(str,ling){
 				"es":"Español",
 				"fr":"Espagnol",
 				"de":"Spanisch",
-                "pt":"Espanhol"
+        "pt":"Espanhol"
 		},
 		"Tagalog":{
 				"en":"Tagalog",
@@ -944,7 +944,7 @@ var __ = function(str,ling){
 				"es":"Tagalo",
 				"fr":"Tagalog",
 				"de":"Tagalog",
-                "pt":"Tagalo"
+        "pt":"Tagalo"
 		},
 		"Tamil":{
 				"en":"Tamil",
@@ -952,7 +952,7 @@ var __ = function(str,ling){
 				"es":"Tamil",
 				"fr":"Tamoul",
 				"de":"Tamilisch",
-                "pt":"Tâmil"
+        "pt":"Tâmil"
 		},
 		"Thai":{
 				"en":"Thai",
@@ -960,7 +960,7 @@ var __ = function(str,ling){
 				"es":"Thai",
 				"fr":"Thaï",
 				"de":"Thailändisch",
-                "pt":"Tailandês"
+        "pt":"Tailandês"
 		},
 		"Vietnamese":{
 				"en":"Vietnamese",
@@ -968,7 +968,7 @@ var __ = function(str,ling){
 				"es":"Vietnamita",
 				"fr":"Vietnamien",
 				"de":"Vietnamesisch",
-                "pt":"Vietnamita"
+        "pt":"Vietnamita"
 		}
 },
     ISOcodeFromLang = {"Afrikaans":"af","Akan":"ak","Albanian":"sq","Amharic":"am","Arabic":"ar","Armenian":"hy","Azerbaijani":"az","Basque":"eu","Belarusian":"be","Bengali":"bn","Bihari":"bh","Bosnian":"bs","Breton":"br","Bulgarian":"bg","Cambodian":"km","Catalan":"ca","Chichewa":"ny","Chinese":"zh","Corsican":"co","Croatian":"hr","Czech":"cs","Danish":"da","Dutch":"nl","English":"en","Esperanto":"eo","Estonian":"et","Faroese":"fo","Filipino":"tl","Finnish":"fi","French":"fr","Frisian":"fy","Galician":"gl","Georgian":"ka","German":"de","Greek":"el","Guarani":"gn","Gujarati":"gu","Haitian Creole":"ht","Hausa":"ha","Hebrew":"iw","Hindi":"hi","Hungarian":"hu","Icelandic":"is","Igbo":"ig","Indonesian":"id","Interlingua":"ia","Irish":"ga","Italian":"it","Japanese":"ja","Javanese":"jw","Kannada":"kn","Kazakh":"kk","Kinyarwanda":"rw","Kirundi":"rn","Kongo":"kg","Korean":"ko","Kurdish":"ku","Kyrgyz":"ky","Laothian":"lo","Latin":"la","Latvian":"lv","Lingala":"ln","Lithuanian":"lt","Luganda":"lg","Macedonian":"mk","Malagasy":"mg","Malay":"ms","Malayalam":"ml","Maltese":"mt","Maori":"mi","Marathi":"mr","Moldavian":"mo","Mongolian":"mn","Nepali":"ne","Norwegian":"no","Occitan":"oc","Oriya":"or","Oromo":"om","Pashto":"ps","Persian":"fa","Polish":"pl","Portuguese":"pt","Punjabi":"pa","Quechua":"qu","Romanian":"ro","Romansh":"rm","Russian":"ru","Scots Gaelic":"gd","Serbian":"sr","Serbo-Croatian":"sh","Sesotho":"st","Setswana":"tn","Shona":"sn","Sindhi":"sd","Sinhalese":"si","Slovak":"sk","Slovenian":"sl","Somali":"so","Spanish":"es","Sundanese":"su","Swahili":"sw","Swedish":"sv","Tajik":"tg","Tamil":"ta","Tatar":"tt","Telugu":"te","Thai":"th","Tigrinya":"ti","Tonga":"to","Turkish":"tr","Turkmen":"tk","Twi":"tw","Uighur":"ug","Ukrainian":"uk","Urdu":"ur","Uzbek":"uz","Vietnamese":"vi","Welsh":"cy","Wolof":"wo","Xhosa":"xh","Yiddish":"yi","Yoruba":"yo","Zulu":"zu"};
