@@ -160,6 +160,10 @@
       align-items: center;
       justify-content: space-evenly;
     }
+
+    input[type=search] {
+      max-width: 60%;
+    }
 	</style>
 </head>
 
@@ -208,7 +212,7 @@ successAcctTest = function(rtrn) {
 				<span id="selectedversions" <?if(recentSelectedVersions.length<1){?>class="empty">none<?}else{?>><?=recentSelectedVersions.join(',')?><?}?></span>
 			</div>
 		</div>
-		<div class="block form-group" style="margin-top:20px;">
+		<div class="block form-group" style="margin-top:30px;">
 			<label class="gapp-addon"><b><?=__('Insert citation',locale)?></b></label>
 			<div class="inline form-group">
 				<input class="gapp-addon" id="bibleget-search" type="search" placeholder="<?=__("e.g. Matthew 1:1-10,13-15",locale)?>" />
@@ -226,7 +230,7 @@ successAcctTest = function(rtrn) {
 				<label class="gapp-addon lbl-inline"><?=__('Prefer Greek origin',locale)?></label>
 			</div>
 		</div>
-		<div class="block form-group" style="margin-top:10px;">
+		<div class="block form-group" style="margin-top:30px;">
 			<label class="gapp-addon"><b><?=__('Find verses by keyword',locale)?></b></label>
 			<div class="inline form-group">
 				<input class="gapp-addon" id="bibleget-fulltextsearch" type="search" placeholder="<?=__("e.g. Creation",locale)?>" />
