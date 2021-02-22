@@ -75,7 +75,7 @@ function hackRegex(regexpString){
   } else if (regexpString instanceof String){
     let regexpArray = regexpString.match(/\/(.+)\/([gmiu]*)/);
     if(regexpArray !== null && Array.isArray(regexpArray)){
-      if(regexpArray,length === 3){
+      if(regexpArray.length === 3){
         modifiers = regexpArray[2];
       }
       regexpString = regexpArray[1];
